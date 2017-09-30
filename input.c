@@ -8,9 +8,8 @@
 /* Use this variable to remember original terminal attributes. */
 
 static struct termios saved_attributes;
-static int fdm, fds, rc;
 
-void reset_input_mode (void)
+static void reset_input_mode (void)
 {
   tcsetattr (STDIN_FILENO, TCSANOW, &saved_attributes);
   fprintf (stdout, "\nstdin terminal attributes restored\n");
