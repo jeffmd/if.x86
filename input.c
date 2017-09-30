@@ -7,8 +7,8 @@
 
 /* Use this variable to remember original terminal attributes. */
 
-struct termios saved_attributes;
-int fdm, fds, rc;
+static struct termios saved_attributes;
+static int fdm, fds, rc;
 
 void reset_input_mode (void)
 {

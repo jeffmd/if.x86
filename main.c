@@ -7,21 +7,23 @@
 
 #include <stdlib.h>     /* exit(3) */
 
+#include "input.h"
+
 static int argc_l;
-static char *argv_l[];
+static char **argv_l;
 
 
 void if_bye()
 {
-    exit(0);
+  exit(0);
 }
 
 int main(int argc, char *argv[])
 {
 	argc_l = argc;
-	*argv_l = *argv;
+	argv_l = argv;
 	
 	set_input_mode();
-
-    return 0;
+	
+	return 0;
 }
