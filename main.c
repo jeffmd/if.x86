@@ -9,8 +9,8 @@
 
 #include "input.h"
 
-static int argc_l;
-static char **argv_l;
+int argc_l;
+char **argv_l;
 
 
 void if_bye()
