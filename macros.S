@@ -121,6 +121,28 @@
   drop_
 .endm
 
+# Push constant on datastack
+.macro dolit_ val
+  pushtos_
+  movl $\val, %ebx
+.endm
+
+.macro oneplus_
+  inc %ebx
+.endm
+
+.macro oneminus_
+  dec %ebx
+.endm
+
+.macro ten_
+  dolit_ 10
+.endm
+
+.macro bl_
+  dolit_ 32
+.endm
+
 
 .macro ascii_ str, flg=0
   #.p2align 1 # Align to even locations
@@ -132,10 +154,12 @@
 .endm
 
 .macro Forthword_ lbl, flags, name
+.data
 VE_\lbl:
     ascii_ "\name", HFLAGS & ~(\flags)
-
     .long VE_HEAD
+    .long \lbl
     .set VE_HEAD, VE_\lbl
+.text
 \lbl:
 .endm

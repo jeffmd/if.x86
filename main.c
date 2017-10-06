@@ -16,18 +16,11 @@ int argc_l;
 char **argv_l;
 
 
-void if_bye()
-{
-  putchar('a');
-  //exit(0);
-}
-
 int main(int argc, char *argv[])
 {
 	argc_l = argc;
 	argv_l = argv;
 	
-  //if_bye();
 	set_input_mode();
 	cold();
 	return 0;

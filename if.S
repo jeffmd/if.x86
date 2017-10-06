@@ -2,6 +2,7 @@
 
 .include "macros.S"
 
+
 # size of the Terminal Input Buffer
 .set TIBSIZE, 100
 
@@ -50,6 +51,11 @@ DPSTART:
    .space 64000
 
 # start of hard coded program area that can not be modified at runtime
+.data
+.balign 1
+DICTIONARY_START:
+  .space 4
+  
 .text
 
 .set VE_HEAD, 0
@@ -65,8 +71,7 @@ DPSTART:
 # ( nx* -- ) (R: ny* -- )
 # initialize if further. EXECs turnkey operation and go to quit
 Forthword_ WARM, 0, "warm"
-  pushtos_
-  mov $'a', %ebx
+  dolit_ 'a'
   call EMIT
   ret
 

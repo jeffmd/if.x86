@@ -4,7 +4,7 @@ INCS = *.S
 all: if
 
 if :  main.o input.o if.o
-	gcc -Os -ldl -o $@ $+
+	gcc -O2 -ldl -o $@ $+
 
 if.o : if.S $(INCS)
 	as -o $@ $<

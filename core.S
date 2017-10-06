@@ -49,3 +49,15 @@ Forthword_ SP_FETCH, INLINE_OPT, "sp@"
 Forthword_ SP_STORE, INLINE_OPT, "sp!"
   spstore_
   ret
+
+# ( n1 -- n1+1 ) 
+# optimized increment
+Forthword_ ONEPLUS, INLINE_OPT, "1+"
+    oneplus_
+    ret
+
+# ( n1 -- n1-1 )
+# optimized decrement
+Forthword_ ONEMINUS, INLINE_OPT, "1-"
+    oneminus_
+    ret
