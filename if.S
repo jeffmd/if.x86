@@ -55,12 +55,38 @@ DPSTART:
 .set VE_HEAD, 0
 
 .include "core.S"
+#.include "defer.S"
+#.include "compiler.S"
+.include "interpret.S"
+#.include "asm.S"
+#.include "file.S"
+#.include "minimum.S"
 
-	.globl	cold
-	.type	cold, @function
+# ( nx* -- ) (R: ny* -- )
+# initialize if further. EXECs turnkey operation and go to quit
+Forthword_ WARM, 0, "warm"
+  pushtos_
+  mov $'a', %ebx
+  call EMIT
+  ret
+
+# ( -- addr)
+# start address of the data stack
+Forthword_ SP0, 0, "sp0"
+  pushtos_
+  movl $topdatastack, %eax
+  ret
+
+.globl cold
+.type cold, @function
 
 # ( -- )
 # start up asforth.
 Forthword_ cold, 0, "cold"
-
+  pushl %ebp
+  movl $topdatastack, %eax
+  movl $sysvar_base, %ebp
+  call WARM
+  movl %ebx, %eax
+  popl %ebp
   ret

@@ -98,6 +98,29 @@
   movl (%esp), %ebx
 .endm
 
+.macro rpfetch_
+  pushtos_
+  movl %esp, %ebx
+.endm
+
+.macro rpstore_
+  movl %ebx, %esp
+  poptos_
+.endm
+
+.macro nip_
+  addl $4, %eax
+.endm
+
+.macro dnip_
+  addl $8, %eax
+.endm
+
+.macro ddrop_
+  nip_
+  drop_
+.endm
+
 
 .macro ascii_ str, flg=0
   #.p2align 1 # Align to even locations

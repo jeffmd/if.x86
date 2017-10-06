@@ -6,6 +6,7 @@
  */
 
 #include <stdlib.h>     /* exit(3) */
+#include <stdio.h>
 
 #include "input.h"
 
@@ -17,7 +18,8 @@ char **argv_l;
 
 void if_bye()
 {
-  exit(0);
+  putchar('a');
+  //exit(0);
 }
 
 int main(int argc, char *argv[])
@@ -25,6 +27,7 @@ int main(int argc, char *argv[])
 	argc_l = argc;
 	argv_l = argv;
 	
+  //if_bye();
 	set_input_mode();
 	cold();
 	return 0;
