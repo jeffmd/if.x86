@@ -61,3 +61,18 @@ Forthword_ ONEPLUS, INLINE_OPT, "1+"
 Forthword_ ONEMINUS, INLINE_OPT, "1-"
     oneminus_
     ret
+
+# ( a-addr -- n32 )
+# read 1 cell (32 bits) from RAM address
+Forthword_ FETCH, INLINE_OPT, "@"
+  fetch_
+  ret
+
+# ( n32 a-addr -- )
+# store a word (32 bits) to RAM address
+Forthword_ STORE, 0, "!"
+  movl (%eax), %edx
+  movl %edx, (%ebx)
+  movl 4(%eax), %ebx
+  add $8, %eax
+  ret

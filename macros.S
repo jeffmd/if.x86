@@ -143,6 +143,9 @@
   dolit_ 32
 .endm
 
+.macro fetch_
+  movl (%ebx), %ebx
+.endm
 
 .macro ascii_ str, flg=0
   #.p2align 1 # Align to even locations

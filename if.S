@@ -73,6 +73,9 @@ DICTIONARY_START:
 Forthword_ WARM, 0, "warm"
   dolit_ 'a'
   call EMIT
+  call CR
+  call STDIN
+  call EMIT
   ret
 
 # ( -- addr)
