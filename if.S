@@ -82,7 +82,7 @@ Forthword_ WARM, 0, "warm"
 # start address of the data stack
 Forthword_ SP0, 0, "sp0"
   pushtos_
-  movl $topdatastack, %eax
+  movl $topdatastack, %ebx
   ret
 
 .globl cold

@@ -121,6 +121,30 @@
   drop_
 .endm
 
+.macro popnos_
+  xchg %eax, %esp
+  pop %edx
+  xchg %eax, %esp
+.endm
+
+.macro plus_
+  popnos_
+  addl %edx, %ebx
+.endm
+
+.macro minus_
+  movl %ebx, %edx
+  poptos_
+  sub %edx, %ebx
+.endm
+
+.macro douser_ sym
+    pushtos_
+    movl $(\sym-sysvar_base), %ebx
+    addl %ebp, %ebx
+    ret
+.endm
+
 # Push constant on datastack
 .macro dolit_ val
   pushtos_
@@ -135,6 +159,24 @@
   dec %ebx
 .endm
 
+.macro dupzerosense_
+    cmp $0, %ebx
+.endm
+
+.macro zerosense_
+    dupzerosense_
+    poptos_
+.endm
+
+.macro zerotos_
+    xor %ebx, %ebx
+.endm
+
+.macro zero_
+    pushtos_
+    zerotos_
+.endm
+
 .macro ten_
   dolit_ 10
 .endm
@@ -143,8 +185,22 @@
   dolit_ 32
 .endm
 
+.macro true_
+  pushtos_
+  or $-1, %ebx
+.endm
+
+
 .macro fetch_
   movl (%ebx), %ebx
+.endm
+
+.macro hfetch_
+  movsxw (%ebx), %ebx
+.endm
+
+.macro cfetch_
+  movsxb (%ebx), %ebx
 .endm
 
 .macro ascii_ str, flg=0
