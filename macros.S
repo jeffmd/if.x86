@@ -159,8 +159,24 @@
   dec %ebx
 .endm
 
+.macro twoplus_
+  add $2, %ebx
+.endm
+
+.macro fourplus_
+  add $4, %ebx
+.endm
+
+.macro twominus_
+  sub $2, %ebx
+.endm
+
+.macro fourminus_
+  sub $4, %ebx
+.endm
+
 .macro dupzerosense_
-    cmp $0, %ebx
+   test %ebx, %ebx
 .endm
 
 .macro zerosense_
@@ -201,6 +217,100 @@
 
 .macro cfetch_
   movsxb (%ebx), %ebx
+.endm
+
+.macro niptoa_
+  xchg %eax, %esp
+  pop %esi
+  xchg %eax, %esp  
+.endm
+
+.macro niptob_
+  xchg %eax, %esp
+  pop %edi
+  xchg %eax, %esp  
+.endm
+
+.macro copytoa_
+    mov %ebx, %esi
+.endm
+
+.macro copytob_
+    mov %ebx, %edi
+.endm
+
+.macro toa_
+    copytoa_
+    poptos_
+.endm
+
+.macro tob_
+    copytob_
+    poptos_
+.endm
+
+.macro geta_
+    pushtos_
+    mov %esi, %ebx
+.endm
+
+.macro getb_
+    pushtos_
+    mov %edi, %ebx
+.endm
+
+.macro afetch_
+  pushtos_
+  movl (%esi), %ebx
+.endm
+
+.macro bfetch_
+  pushtos_
+  movl (%edi), %ebx
+.endm
+
+.macro ahfetch_
+  pushtos_
+  movsxw (%esi), %ebx
+.endm
+
+.macro bhfetch_
+  pushtos_
+  movsxw (%edi), %ebx
+.endm
+
+.macro acfetch_
+  pushtos_
+  movsxb (%esi), %ebx
+.endm
+
+.macro bcfetch_
+  pushtos_
+  movsxb (%edi), %ebx
+.endm
+
+.macro aplus_
+  add $4, %esi
+.endm
+
+.macro bplus_
+  add $4, %edi
+.endm
+
+.macro ahplus_
+  add $2, %esi
+.endm
+
+.macro bhplus_
+  add $2, %edi
+.endm
+
+.macro acplus_
+  inc %esi
+.endm
+
+.macro bcplus_
+  inc %edi
 .endm
 
 .macro ascii_ str, flg=0

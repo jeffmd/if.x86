@@ -93,6 +93,35 @@ Forthword_ KEY, 0, "key"
   call KEYADDR
   fetch_
   jmp EXEC
+  
+# ( addr n -- )
+# print a counted string
+Forthword_ TYPE, 0, "type"
+   niptoa_           # Address of string
+   dupzerosense_
+   jmp TYPE2
+
+TYPE1:
+   acfetch_
+   acplus_
+   call EMIT
+   oneminus_
+
+TYPE2:
+   jnz TYPE1
+
+   drop_
+   ret
+
+# ( addr -- addr+2 n )
+# get string address and length information out of a counted string
+Forthword_ STRINGLEN, 0, "$l"
+    dup_
+    twoplus_
+    swap_
+    hfetch_
+    ret
+
 
 # ( -- flag )
 # receive a string of at most tibsize characters or cr/lf detected.
@@ -102,11 +131,11 @@ Forthword_ ACCEPT, 0, "accept"
     # <begin>
     call KEY        # ( k )
     dupzerosense_
-    jg ACCEPT_haskey
+    jg ACCEPT_checkeol
     addl $1, %ebx
     ret
 
-ACCEPT_haskey:
+ACCEPT_checkeol:
     # check for EOL
     cmp $10, %ebx
     # <if>

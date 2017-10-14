@@ -76,6 +76,10 @@ Forthword_ WARM, 0, "warm"
   call CR
   call STDIN
   call EMIT
+  dolit_ VE_WARM
+  call STRINGLEN
+  and $0xff, %ebx
+  call TYPE
   ret
 
 # ( -- addr)

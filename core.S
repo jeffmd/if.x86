@@ -197,3 +197,109 @@ PLUSCSTORE_do:
 Forthword_ ONEPLUSCSTORE, 0, "1+c!"
   mov $1, %edx
   jmp PLUSCSTORE_do
+
+# ( n1 n2 -- n2 ) A: n1
+# Remove next on stack and write to A register (Extended VM)
+Forthword_ NIPTOA, INLINE_OPT, "nip>a"
+  niptoa_
+  ret
+
+# ( n1 n2 -- n2 ) B: n1
+# Remove next on stack and write to B register (Extended VM)
+Forthword_ NIPTOB, INLINE_OPT, "nip>b"
+  niptob_
+  ret
+
+# ( n -- ) A: n
+# Move TOS to A register (Extended VM)
+Forthword_ TO_A, INLINE_OPT, ">a"
+  toa_
+  ret
+
+# ( n -- ) B: n
+# Move TOS to B register (Extended VM)
+Forthword_ TO_B, INLINE_OPT, ">b"
+  tob_
+  ret
+
+# ( n -- n ) A: n
+# copy TOS to A register (Extended VM)
+Forthword_ _A, INLINE_OPT, ":a"
+  copytoa_
+  ret
+
+# ( n -- n ) B: n
+# copy TOS to B register (Extended VM)
+Forthword_ _B, INLINE_OPT, ":b"
+  copytob_
+  ret
+
+# ( -- n )
+# read the A register (Extended VM)
+Forthword_ A_, INLINE_OPT, "a"
+  geta_
+  ret
+
+# ( -- n )
+# read the B register (Extended VM)
+Forthword_ B_, INLINE_OPT, "b"
+  getb_
+  ret
+
+# ( -- n )
+# Read a word (32bit) from memory pointed to by register A (Extended VM)
+Forthword_ AFETCH, INLINE_OPT, "a@"
+  afetch_
+  ret
+
+# ( n -- )
+# store a word to RAM address pointed to by areg
+Forthword_ ASTORE, 0, "a!"
+  mov %ebx, (%esi)
+  poptos_
+  ret
+
+# ( -- n )
+# Read a half word (32bit) from memory pointed to by register A (Extended VM)
+Forthword_ AHFETCH, INLINE_OPT, "ah@"
+  ahfetch_
+  ret
+
+# ( h -- )
+# store a half word to RAM address pointed to by areg
+Forthword_ AHSTORE, 0, "ah!"
+  movw %bx, (%esi)
+  poptos_
+  ret
+
+# ( -- n )
+# Read a byte from memory pointed to by register A (Extended VM)
+Forthword_ ACFETCH, INLINE_OPT, "ac@"
+  acfetch_
+  ret
+
+# ( c -- )
+# store a single byte to RAM address pointed to by areg
+Forthword_ ACSTORE, 0, "ac!"
+  movb %bl, (%esi)
+  poptos_
+  ret
+
+# ( -- )
+# update register A with post increment 4+ from last memory operation (Extended VM)
+Forthword_ APLUS, INLINE_OPT, "a+"
+  aplus_
+  ret
+
+# ( -- )
+# update register A with post increment 2+ from last memory operation (Extended VM)
+Forthword_ AHPLUS, INLINE_OPT, "ah+"
+  ahplus_
+  ret
+
+
+# ( -- )
+# update register A with post increment 1+ from last memory operation (Extended VM)
+Forthword_ ACPLUS, INLINE_OPT, "ac+"
+  acplus_
+  ret
