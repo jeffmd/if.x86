@@ -197,6 +197,18 @@
     zerotos_
 .endm
 
+.macro one_
+  dolit_ 1
+.endm
+
+.macro two_
+  dolit_ 2
+.endm
+
+.macro four_
+  dolit_ 4
+.endm
+
 .macro ten_
   dolit_ 10
 .endm

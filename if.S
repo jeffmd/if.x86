@@ -24,6 +24,7 @@ USER_BASE: .space 2
 USER_PAUSE: .space 4
 USER_KEY: .space 4
 USER_KEYFILE: .space 4
+USER_EMIT: .space 4
 USER_ARGC: .space 4
 USER_ARGV: .space 4
 USER_HERE: .space 4
@@ -33,7 +34,6 @@ ram_CONTEXT: .space 4 * 10 # 10 wordlists max
 fflags: .space 2
 ram_dp: .space 4
 rstack0: .space 4
-ram_LATEST: .space 4
 ram_handler: .space 4
 ram_sharptib: .space 2
 ram_tib: .space TIBSIZE
@@ -66,23 +66,22 @@ DICTIONARY_START:
 .include "interpret.S"
 #.include "asm.S"
 #.include "file.S"
-#.include "minimum.S"
+.include "minimum.S"
 
 # ( nx* -- ) (R: ny* -- )
 # initialize if further. EXECs turnkey operation and go to quit
 Forthword_ WARM, 0, "warm"
-  dolit_ 'a'
-  call EMIT
-  call CR
-  call STDIN
-  call EMIT
-  dolit_ VE_WARM
-  call STRINGLEN
-  and $0xff, %ebx
-  call TYPE
-  call CR
-  type_ "inline string test"
-  call PROMPTRDY
+	pushtos_
+	mov %esp, %ebx
+	call RP0
+	call STORE
+	#call ONLY
+  call RESET
+  call DECIMAL           # default to decimal base
+  type_ "if 0.1\n"
+  # check if command line args need to be loaded
+	#call DOCMDARG
+	#jmp QUIT
   ret
 
 # ( -- addr)

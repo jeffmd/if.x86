@@ -35,6 +35,11 @@ Forthword_ PAUSEADDR, 0, "pause#"
 Forthword_ KEYADDR, 0, "key#"
     douser_ USER_KEY
 
+# ( -- emitaddr )
+# get ram address of emit defer
+Forthword_ EMITADDR, 0, "emit#"
+    douser_ USER_EMIT
+
 # ( -- keyfileaddr )
 # get ram address of key file descriptor
 Forthword_ KEYFILEADDR, 0, "keyf#"
@@ -52,7 +57,7 @@ Forthword_ ARGVADDR, 0, "argv#"
 
 # ( c -- )
 # fetch the emit vector and EXEC it. Will emit a character from TOS
-Forthword_ EMIT, 0, "emit"
+Forthword_ PUTCHAR, 0, "putchar"
   push %eax
   push %ebx
   poptos_
@@ -60,6 +65,14 @@ Forthword_ EMIT, 0, "emit"
   pop %edx
   pop %eax
   ret
+
+# ( c -- )
+# fetch the emit vector and EXEC it. Will emit a character from TOS
+Forthword_ EMIT, 0, "emit"
+  call EMITADDR
+  fetch_
+  jmp EXEC
+
 
 # ( -- )
 # cause subsequent output appear at the beginning of the next line
@@ -187,6 +200,37 @@ QP_RD_exit:
     # <then>
     jmp PROMPTCOMPILE
 
+# ( -- )
+# Reset the input buffer
+Forthword_ INRESET, 0, "in_"
+  call G_IN                # ( >inaddr )
+  call ZEROHSTORE          # (  )
+  # reset input buffer cursor position
+  call SHARPTIB            # ( #tibaddr )
+  call ZEROHSTORE          # ( )
+  jmp QP_RD
+
+# ( -- )
+# reset input source
+Forthword_ RESET, 0, "reset"
+    call SMUDGE
+    call ZEROSTORE
+
+    # reset input source for key
+    dolit_ STDIN
+    call KEYADDR
+    call STORE
+
+    # reset output source for emit
+    dolit_ PUTCHAR
+    call EMITADDR
+    call STORE
+
+    # reset input buffer
+    call INRESET
+
+    # switch to interpret mode
+    jmp LBRACKET
 
 
 # ( -- flag )

@@ -138,6 +138,14 @@ Forthword_ STORE, 0, "!"
   add $8, %eax
   ret
 
+# ( a-addr -- )
+# store 0 (32 bits) to RAM address
+Forthword_ ZEROSTORE, 0, "0!"
+  movl $0, (%ebx)
+  poptos_
+  ret
+
+
 # ( a-addr -- n16 )
 # read half cell (16 bits) from RAM address
 Forthword_ HFETCH, INLINE_OPT, "h@"
