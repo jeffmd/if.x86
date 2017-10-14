@@ -121,6 +121,10 @@
   drop_
 .endm
 
+.macro flip_
+  xchg %ebx, 4(%eax)
+.endm
+
 .macro popnos_
   xchg %eax, %esp
   pop %edx
@@ -321,6 +325,17 @@
 8:
   #.p2align 1
 .endm
+
+.macro $lit_ str
+    call DOSLIT
+    ascii_ "\str"
+.endm
+
+.macro type_ str
+    $lit_ "\str"
+    call TYPE
+.endm
+
 
 .macro Forthword_ lbl, flags, name
 .data

@@ -122,6 +122,72 @@ Forthword_ STRINGLEN, 0, "$l"
     hfetch_
     ret
 
+# ( -- addr len )
+# runtime portion of sliteral
+# string literal is located starting at return cell
+# return cell is string length
+# string then occupies the following cells: c2c1 c4c3 ...
+Forthword_ DOSLIT, 0, "(slit)"
+  # get return address to get string length, calculate string address start,
+  # and calculate return address
+  pushtos_
+  pop %ebx       # ( raddr )  (R: raddr -- )
+  dup_           # ( raddr raddr )
+  # get the string length
+  hfetch_        # ( raddr slength )
+  over_          # ( raddr slength raddr )
+  # calculate string address
+  twoplus_       # ( raddr slength straddr )
+  # calculate the number of words to skip over for return address
+  flip_          # ( straddr slength raddr )
+  over_          # ( straddr slength raddr slength)
+  plus_          # ( straddr slength raddr+slength )
+  # also skip string length
+  twoplus_       # ( straddr slength raddr+k+2 )
+  push %ebx      
+  poptos_
+  ret
+
+# ( -- )
+# send the READY prompt to the command line
+Forthword_ PROMPTRDY, 0, ".>"
+	type_ "\n> "
+	ret
+
+# ( -- )
+# send the READY prompt to the command line
+Forthword_ PROMPTCOMPILE, 0, ".:"
+	type_ "\n: "
+	ret
+
+# ( -- )
+# send the OK prompt to the command line
+Forthword_ PROMPTOK, 0, ".ok"
+	type_ " ok"
+	ret
+
+# ( n -- )
+# process the error prompt
+Forthword_ PROMPTERROR, 0, ".??"
+	drop_
+	type_ " ?? "
+	ret
+
+# ( -- )
+# check if a ready prompt is required
+Forthword_ QP_RD, 0, "?prd"
+    call STATEFETCH
+    # output ready prompt if in interpret mode
+    # <-if>
+    zerosense_
+    jne QP_RD_exit
+      jmp PROMPTRDY
+
+QP_RD_exit:
+    # <then>
+    jmp PROMPTCOMPILE
+
+
 
 # ( -- flag )
 # receive a string of at most tibsize characters or cr/lf detected.

@@ -62,7 +62,7 @@ DICTIONARY_START:
 
 .include "core.S"
 #.include "defer.S"
-#.include "compiler.S"
+.include "compiler.S"
 .include "interpret.S"
 #.include "asm.S"
 #.include "file.S"
@@ -80,6 +80,9 @@ Forthword_ WARM, 0, "warm"
   call STRINGLEN
   and $0xff, %ebx
   call TYPE
+  call CR
+  type_ "inline string test"
+  call PROMPTRDY
   ret
 
 # ( -- addr)

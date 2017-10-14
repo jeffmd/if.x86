@@ -53,8 +53,24 @@ Forthword_ DROP, INLINE_OPT, "drop"
 # ( n n -- )
 # drop TOS twice
 Forthword_ DDROP, INLINE_OPT, "2drop"
-    ddrop_
-    ret
+  ddrop_
+  ret
+
+# ( n1 n2 -- n2 n1 n2)
+# tuck TOS before NOS, same as SWAP OVER
+Forthword_ TUCK, 0, "tuck"
+	popnos_
+	sub $8, %eax
+	mov %ebx, 4(%eax)
+	mov %edx, (%eax)
+	ret
+
+# ( n1 n2 n3 -- n3 n2 n1)
+# exchange TOS and stack cell before NOS, same as SWAP ROT
+Forthword_ FLIP,  INLINE_OPT, "flip"
+	flip_
+	ret
+
 
 # (  -- addr )
 # current data stack pointer
