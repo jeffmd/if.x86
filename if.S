@@ -75,14 +75,13 @@ Forthword_ WARM, 0, "warm"
 	mov %esp, %ebx
 	call RP0
 	call STORE
-	#call ONLY
+	call ONLY
   call RESET
   call DECIMAL           # default to decimal base
   type_ "if 0.1\n"
   # check if command line args need to be loaded
 	#call DOCMDARG
-	#jmp QUIT
-  ret
+	jmp QUIT
 
 # ( -- addr)
 # start address of the data stack
@@ -100,6 +99,7 @@ Forthword_ cold, 0, "cold"
   pushl %ebp
   movl $topdatastack, %eax
   movl $sysvar_base, %ebp
+  call WIPE
   call WARM
   movl %ebx, %eax
   popl %ebp

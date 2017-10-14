@@ -64,6 +64,12 @@
   poptos_
 .endm
 
+# test with bit constant
+.macro bittest_ v
+    test $\v, %ebx
+    poptos_
+.endm
+
 .macro swap_
   xchg %ebx, (%eax)
 .endm
@@ -140,6 +146,21 @@
   movl %ebx, %edx
   poptos_
   sub %edx, %ebx
+.endm
+
+.macro and_
+  popnos_
+  and %edx, %ebx
+.endm
+
+.macro or_
+  popnos_
+  or %edx, %ebx
+.endm
+
+.macro xor_
+  popnos_
+  xor %edx, %ebx
 .endm
 
 .macro douser_ sym

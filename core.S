@@ -84,6 +84,54 @@ Forthword_ SP_STORE, INLINE_OPT, "sp!"
   spstore_
   ret
 
+#@@@@@@@@@@@@@ Return Stack @@@@@@@@@@@@@
+
+# ( -- n ) (R: n --)
+# move TOR to TOS
+Forthword_ R_FROM, INLINE_OPT, "r>"
+	r_from_
+	ret
+
+# ( -- ) (R: n -- )
+# Drop TOR
+Forthword_ R_DROP, INLINE_OPT, "r>drop"
+	r_drop_
+	ret
+
+# ( n -- ) (R: -- n)
+# move TOS to TOR
+Forthword_ TO_R, INLINE_OPT, ">r"
+	to_r_
+	ret
+
+# ( n -- n ) (R: -- n )
+# copy TOS to TOR
+Forthword_ DUP_R, INLINE_OPT, "r>r"
+	dup_r_
+	ret
+
+# ( -- n) (R: n -- n )
+# put a copy of TOR on TOS
+Forthword_ R_FETCH, INLINE_OPT, "r"
+	r_fetch_
+	ret
+
+# (  -- n)
+# current return stack pointer address
+Forthword_ RP_FETCH, INLINE_OPT, "rp@"
+	rpfetch_
+	ret
+
+# ( addr  -- ) (R: -- x*y)
+# set return stack pointer
+# must be called
+Forthword_ RP_STORE, INLINE_OPT, "rp!"
+	# keep the return address
+	rpstore_
+	ret
+
+#@@@@@@@@@@@@@ Arithmatic @@@@@@@@@@@@@
+
 # ( n1 n2 -- n3)
 # add n1 and n2
 Forthword_ PLUS, INLINE_OPT, "+"
@@ -96,6 +144,23 @@ Forthword_ MINUS, INLINE_OPT, "-"
   minus_
   ret
 
+# ( n1 n2 -- n3 )
+# bitwise and
+Forthword_ AND_, INLINE_OPT, "and"
+  and_
+  ret
+
+# ( n1 n2 -- n3 )
+# logical or
+Forthword_ OR, INLINE_OPT, "or"
+  or_
+  ret
+
+# ( n1 n2 -- n3)
+# exclusive or
+Forthword_ XOR, INLINE_OPT, "xor"
+  xor_
+  ret
 
 # ( n1 -- n1+1 ) 
 # optimized increment

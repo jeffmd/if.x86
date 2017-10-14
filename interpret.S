@@ -1,6 +1,13 @@
 # interpret.S
 
 # ( -- addr )
+# flags address
+Forthword_ FFLAGS, 0, "fflags"
+    douser_  fflags
+    .set TERMINATE_F, 1
+    # bit 0 - Terminate Tasks
+
+# ( -- addr )
 # terminal input buffer address
 Forthword_ TIB, 0, "tib"
     douser_  ram_tib
@@ -211,6 +218,40 @@ Forthword_ INRESET, 0, "in_"
   jmp QP_RD
 
 # ( -- )
+# set terminate flag which indicates request to exit forth interpreter
+Forthword_ BYE, 0, "bye"
+	one_
+	call FFLAGS
+	hfetch_
+	or_
+	call FFLAGS
+	jmp HSTORE
+
+# ( -- )
+# Fetch pause vector and EXEC it. may make a context/task switch
+Forthword_ DOPAUSE, 0, "(pause)"
+    call PAUSEADDR
+    fetch_
+    jmp EXEC
+
+# ( -- )
+# main loop - iterate through scheduled tasks
+Forthword_ DOTASKS, 0, "(tasks)"
+	# <begin>
+DOTASKS1:
+	call BYE #DOREFILL
+	call DOPAUSE
+	
+
+	# check to see if tasks should be terminated
+	call FFLAGS
+	hfetch_
+	bittest_ TERMINATE_F
+	# <again>
+	je DOTASKS1
+	ret
+
+# ( -- )
 # reset input source
 Forthword_ RESET, 0, "reset"
     call SMUDGE
@@ -232,6 +273,18 @@ Forthword_ RESET, 0, "reset"
     # switch to interpret mode
     jmp LBRACKET
 
+# ( -- )
+# reset stacks and start over again
+Forthword_ QUIT, 0, "quit"
+	# reset data stack
+	call SP0
+	spstore_
+	# reset return stack pointers
+	call RP0
+	fetch_
+	rpstore_
+	call RESET
+	jmp DOTASKS
 
 # ( -- flag )
 # receive a string of at most tibsize characters or cr/lf detected.
