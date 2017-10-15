@@ -13,10 +13,21 @@ Forthword_ NOOP, INLINE_OPT, "noop"
     nop
     ret
 
+#@@@@@@@@@@@@@ Parameter Stack  Manipulation @@@@@@@@@@@@@@
+
 # ( n -- n n )
 # duplicate TOS
 Forthword_ DUP, INLINE_OPT, "dup"
     pushtos_
+    ret
+
+# ( n1 -- [ n1 n1 ] | 0)
+# duplicate TOS if non-zero
+Forthword_ QDUP, 0, "?dup"
+    dupzerosense_
+    je PFA_QDUP1
+    pushtos_
+PFA_QDUP1:
     ret
 
 # ( n1 n2 -- n2 n1)
@@ -144,6 +155,13 @@ Forthword_ MINUS, INLINE_OPT, "-"
   minus_
   ret
 
+# ( n1 -- -n1 )
+# 2-compliment of n1
+Forthword_ NEGATE, INLINE_OPT, "neg"
+  neg_
+  ret
+
+
 # ( n1 n2 -- n3 )
 # bitwise and
 Forthword_ AND_, INLINE_OPT, "and"
@@ -162,6 +180,12 @@ Forthword_ XOR, INLINE_OPT, "xor"
   xor_
   ret
 
+# ( n1 -- n2)
+# 1-complement of TOS
+Forthword_ NOT, INLINE_OPT, "not"
+  not_
+  ret
+
 # ( n1 -- n1+1 ) 
 # optimized increment
 Forthword_ ONEPLUS, INLINE_OPT, "1+"
@@ -174,12 +198,41 @@ Forthword_ ONEMINUS, INLINE_OPT, "1-"
   oneminus_
   ret
 
+# ( n1 -- flag )
+# flag is true if n1 is 0
+Forthword_ ZEROEQUAL, INLINE_OPT, "0="
+  zeroequal_
+  ret
+
+# ( n1 -- flag)
+# flag is true if TOS is less than zero
+forthword_ ZEROLESS, INLINE_OPT, "0<"
+  zeroless_
+  ret
+
 # ( -- 0 )
 # place a value 0 on TOS
 Forthword_ ZERO, INLINE_OPT, "0"
   zero_
   ret
 
+# ( -- 0 )
+# set TOS to 0
+Forthword_ ZEROSET, INLINE_OPT, "0:"
+	zerotos_
+	ret
+
+# ( n -- )
+# test TOS if zero
+Forthword_ ZEROSENSE, INLINE_OPT, "0?"
+	zerosense_
+	ret
+
+# ( n -- n)
+# test TOS if zero, does not consume TOS
+Forthword_ QZEROSENSE, INLINE_OPT, "?0?"
+	dupzerosense_
+	ret
   
 # ( -- -1 )
 # leaves the value -1 (true) on TOS

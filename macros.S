@@ -148,6 +148,10 @@
   sub %edx, %ebx
 .endm
 
+.macro neg_
+    neg %ebx
+.endm
+
 .macro and_
   popnos_
   and %edx, %ebx
@@ -161,6 +165,10 @@
 .macro xor_
   popnos_
   xor %edx, %ebx
+.endm
+
+.macro not_
+  not %ebx
 .endm
 
 .macro douser_ sym
@@ -200,6 +208,23 @@
   sub $4, %ebx
 .endm
 
+.macro twoslash_
+    sar %ebx
+.endm
+
+.macro fourslash_
+    sar $2, %ebx
+.endm
+
+.macro twostar_
+    sal %ebx
+.endm
+
+.macro fourstar_
+    sal $2, %ebx
+.endm
+
+
 .macro dupzerosense_
    test %ebx, %ebx
 .endm
@@ -209,6 +234,10 @@
     poptos_
 .endm
 
+.macro zeroless_
+  sar $31, %ebx    # Turn MSB into 0xffffffff or 0x00000000
+.endm
+
 .macro zerotos_
     xor %ebx, %ebx
 .endm
@@ -216,6 +245,11 @@
 .macro zero_
     pushtos_
     zerotos_
+.endm
+
+.macro zeroequal_
+  sub $1, %ebx
+  sbb %ebx, %ebx
 .endm
 
 .macro one_

@@ -54,6 +54,77 @@ Forthword_ HEX, 0, "hex"
 Forthword_ RP0, 0, "rp0"
   douser_ rstack0
 
+# ( -- n )
+# number of single-cell (4 byte) values contained in the data stack before n was placed on the stack.
+Forthword_ DEPTH, 0, "depth"
+    call SP0
+    spfetch_
+    minus_
+    fourslash_
+    # acount for value push on data stack
+    oneminus_
+    ret
+
+# ( --  )
+# check stack underflow, throw exception -4
+Forthword_ QSTACK, 0, "?sp"
+    call DEPTH
+    zeroless_
+    zerosense_
+    je QSTACKFIN
+      $lit_ " Stack Underflow!"
+      call THROW
+
+QSTACKFIN:
+    ret
+
+
+
+# USER variable used by catch/throw
+Forthword_ HANDLER, 0, "handler"
+  douser_ ram_handler
+
+# ( i*x xt -- j*x 0 | i*x n )
+# setup handler to catch exceptions and then EXEC XT.
+Forthword_ CATCH, 0, "catch"
+    # sp@ >r
+    spfetch_            # ( xt SP )
+    to_r_               # ( xt ) (R: ret -- callerret SP )
+    # handler @ >r
+    call HANDLER        # ( xt haddr )
+    fetch_              # ( xt hxt )
+    to_r_               # ( xt ) (R: callerret SP hxt )
+    # rp@ handler !
+    rpfetch_            # ( xt RP ) (R: callerret SP hxt)
+    call HANDLER        # ( xt RP haddr )
+    call STORE          # ( xt )
+    call EXEC
+    # restore handler
+    # r> handler !
+    r_from_             # ( hxt ) (R: callerret SP )
+    call HANDLER        # ( hxt haddr )
+    call STORE          # ( )
+    r_drop_             # ( ) (R: callerret)
+    zero_
+    ret
+
+# ( straddr len -- )
+# throw an exception
+# will type the string passed in
+Forthword_ THROW, 0, "throw"
+    call TYPE
+    call HANDLER       # ( haddr )
+    fetch_             # ( RP_handler )
+    rpstore_           # ( ) (R: callerret SP hxt)
+    r_from_            # ( hxt ) (R: callerret SP )
+    call HANDLER       # ( hxt haddr )
+    call STORE         # ( )
+    r_from_            # ( SP ) (R: callerret )
+    spstore_           # ( ... )
+    one_               # ( ... 1 )
+    ret
+
+
 # ( -- )
 # must be last word in core
 Forthword_ WIPE, 0, "WIPE"

@@ -113,6 +113,11 @@ Forthword_ KEY, 0, "key"
   call KEYADDR
   fetch_
   jmp EXEC
+
+# ( -- f )
+# refills the input buffer
+Forthword_ REFILL, 0, "refill"
+  jmp REFILLTIB
   
 # ( addr n -- )
 # print a counted string
@@ -168,6 +173,27 @@ Forthword_ DOSLIT, 0, "(slit)"
   poptos_
   ret
 
+# ( -- ) (R: i*x - j*x )
+# interpret input word by word.
+Forthword_ INTERPRET, 0, "interp"
+INTERPRET_DO:
+	# begin
+	#call PNAME            # ( -- addr len )
+
+	# ?while
+	#dupzerosense_       # ( -- addr len )
+	#je INTERPRET_END
+
+	#call RECX             # ( )
+	#call QSTACK           # ( )
+
+	# repeat
+	#jmp INTERPRET_DO
+
+INTERPRET_END:
+	#ddrop_
+	ret
+
 # ( -- )
 # send the READY prompt to the command line
 Forthword_ PROMPTRDY, 0, ".>"
@@ -218,6 +244,30 @@ Forthword_ INRESET, 0, "in_"
   jmp QP_RD
 
 # ( -- )
+# wait for the input buffer to be refilled then interpret
+Forthword_ DOREFILL, 0, "(refill)"
+  # if just starting new input line then check prompt and reset input position
+  call G_IN                # ( >inaddr )
+  hfetch_                  # ( >in )
+  zerosense_               # ( )
+  je DOREFILL_do
+    call INRESET
+
+DOREFILL_do:
+  # refill the input buffer
+  call REFILL              # ( f )
+  # <if>
+  zerosense_
+  je DOREFILL_end
+
+    # there is something in the input buffer, try interpreting it
+    call DOINTERPRET
+
+DOREFILL_end:
+  # <then>
+  ret
+
+# ( -- )
 # set terminate flag which indicates request to exit forth interpreter
 Forthword_ BYE, 0, "bye"
 	one_
@@ -239,7 +289,7 @@ Forthword_ DOPAUSE, 0, "(pause)"
 Forthword_ DOTASKS, 0, "(tasks)"
 	# <begin>
 DOTASKS1:
-	call BYE #DOREFILL
+	call DOREFILL
 	call DOPAUSE
 	
 
@@ -285,6 +335,29 @@ Forthword_ QUIT, 0, "quit"
 	rpstore_
 	call RESET
 	jmp DOTASKS
+
+# ( -- )
+# interpret what is in the input buffer
+Forthword_ DOINTERPRET, 0, "(interp)"
+  # input buffer has something so try to interpret it
+  # setup exception handling in case of error
+  dolit_ INTERPRET
+  call CATCH
+  # check to make sure no throws
+  call QDUP
+  # <if>
+  zerosense_
+  je DOINTERPRET_ok
+    call PROMPTERROR
+    call QUIT
+
+  # <then>
+DOINTERPRET_ok:
+  # make sure in buf pointer is not at zero
+  call G_IN               # ( 1 >inaddr )
+  call ONEPLUSHSTORE        # ( )
+  jmp PROMPTOK
+
 
 # ( -- flag )
 # receive a string of at most tibsize characters or cr/lf detected.
@@ -376,3 +449,14 @@ ACCEPT_checkmaxinput:
 ACCEPT_atmaxinput:
     # max number of characters in input buffer so have it processed
     jmp TRUE
+
+# ( -- f )
+# refills the input buffer - flag is true if buffer has something
+Forthword_ REFILLTIB, 0, "reftib"
+	call ACCEPT                # ( f )
+	dupzerosense_              # ( f )
+	je REFILLTIB_exit
+	call CR
+
+REFILLTIB_exit:
+	ret
