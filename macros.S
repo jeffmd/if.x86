@@ -81,11 +81,11 @@
 
 .macro spfetch_
   pushtos_
-  movl %esp, %ebx
+  movl %eax, %ebx
 .endm
 
 .macro spstore_
-  movl %ebx, %esp
+  movl %ebx, %eax
   poptos_
 .endm
 

@@ -67,10 +67,10 @@ Forthword_ ARGVADDR, 0, "argv#"
 Forthword_ PUTCHAR, 0, "putchar"
   push %eax
   push %ebx
-  poptos_
   call putchar
   pop %edx
   pop %eax
+  poptos_
   ret
 
 # ( c -- )
@@ -303,10 +303,6 @@ FINDNFA_NEXT:
 Forthword_ FINDROOT, 0, "froot"
 	# put root wid on stack
 	dolit_ VE_COLD
-  dup_
-  call STRINGLEN
-  and $31, %ebx
-  call TYPE
 	jmp FINDNFA_BEGIN
 
 # ( addr len idx -- 0 | nfa )
@@ -318,7 +314,6 @@ FINDWI:
       jmp FINDNFA        # ( nfa)
 
 FINDLAST:
-  type_ "findlast\n"
       drop_
       jmp FINDROOT
 
@@ -442,12 +437,12 @@ REC_WORD_OK:
 # recognize and execute name of word in ram using recognizer list.
 Forthword_ RECX, 0, "recx"
 	# test if its a word
-	call REC_WORD         # ( flag ) ( R: len addr )
-	# <if>
+	call REC_WORD         # ( addr len flag )
+	#zero_# <if>
 	zerosense_            # ( addr len )
 	jne RECX_DONE
 	# test if its a number
-	##call REC_NUM          # ( flag ) ( R: len addr )
+	##call REC_NUM          # ( addr len flag )
 	##zerosense_            # ( addr len )
 	##jne RECX_DONE
 	# not recognized so throw
@@ -579,7 +574,6 @@ Forthword_ DOTASKS, 0, "(tasks)"
 DOTASKS1:
 	call DOREFILL
 	call DOPAUSE
-	
 
 	# check to see if tasks should be terminated
 	call FFLAGS

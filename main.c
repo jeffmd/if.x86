@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
 {
 	argc_l = argc;
 	argv_l = argv;
-	
+
 	set_input_mode();
 	COLD();
 	return 0;
