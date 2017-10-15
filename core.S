@@ -216,6 +216,24 @@ Forthword_ ZEROEQUAL, INLINE_OPT, "0="
   zeroequal_
   ret
 
+# ( u1 u2 -- flag )
+# flag is true if u1 > u2 (unsigned)
+Forthword_ UGREATER, 0, "u>"
+  popnos_
+  sub %edx, %ebx
+  sbb %ebx, %ebx
+  ret
+
+# ( u1 u2 -- flag)
+# flag is true if u1 < u2 (unsigned)
+Forthword_ ULESS, 0, "u<"
+  popnos_
+  sub %ebx, %edx
+# TOS = a-b  -- carry set if a is less than b
+  sbb %edx, %edx
+  mov %edx, %ebx
+  ret
+
 # ( n1 -- flag)
 # flag is true if TOS is less than zero
 forthword_ ZEROLESS, INLINE_OPT, "0<"
@@ -252,6 +270,29 @@ Forthword_ TRUE, INLINE_OPT, "true"
   true_
   ret
 
+# ( -- 1 )
+# place a value 1 on TOS
+Forthword_ ONE, INLINE_OPT, "1"
+  one_
+  ret
+
+# ( -- 2 )
+# place a value 2 on TOS
+Forthword_ TWO, INLINE_OPT, "2"
+  two_
+  ret
+
+# ( -- 4 )
+# place a value 4 on TOS
+Forthword_ FOUR, INLINE_OPT, "4"
+  four_
+  ret
+
+# ( -- 10 )
+# place a value 10 on TOS
+Forthword_ TEN, INLINE_OPT, "10"
+  ten_
+  ret
 
 # ( a-addr -- n32 )
 # read 1 cell (32 bits) from RAM address

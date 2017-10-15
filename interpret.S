@@ -141,10 +141,60 @@ TYPE2:
 # ( r-addr r-len f-addr f-len --  f)
 # compares string in RAM with string in flash
 Forthword_ MCMP, 0, "mcmp"
-  ddrop_
-  ddrop_
-  zero_
-  ret
+    tob_                     # ( r-addr r-len f-addr)  B: f-len
+    over_                    # ( r-addr r-len f-addr r-len)
+    #getb_                   # ( r-addr r-len f-addr r-len f-len )
+    # check if strings are same length
+    xor %edi, %ebx           # ( r-addr r-len f-addr flag )
+    # if
+    zerosense_               # ( r-addr r-len f-addr )
+    je MCMP_SAMELEN
+
+    # strings are not the same length
+    dnip_
+    zerotos_                 # ( 0 )
+    ret
+
+    # then
+MCMP_SAMELEN:
+    toa_                     # ( r-addr len ) A: f-addr
+
+    # begin
+MCMP_LOOP:
+    copytob_                 # ( r-addr len ) B: len
+    # while
+    zerosense_               # ( r-addr )
+    je MCMP_DONE
+
+    dup_                     # ( r-addr r-addr )
+    cfetch_                  # ( r-addr r-cc )
+    acfetch_                 # ( r-addr r-cc f-cc )
+    acplus_
+
+    xor_                     # ( r-addr flag)
+    # if
+    zerosense_               # ( r-addr )
+    je MCMP_NEXTLOOP
+
+    # strings don't match
+    zerotos_                 # ( 0 )
+    ret
+
+    # then
+MCMP_NEXTLOOP:
+    oneplus_                 # ( r-addr+1 )
+    getb_                    # ( r-addr+1 len )
+    oneminus_                # ( r-addr+1 len-1 )
+
+    # repeat
+    jmp MCMP_LOOP
+
+MCMP_DONE:
+    # strings are the same
+    drop_
+    true_
+    ret
+
   
 # ( addr1 u1 n -- addr2 u2 )
 # adjust string from addr1 to addr1+n, reduce length from u1 to u2 by n
