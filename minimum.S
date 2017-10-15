@@ -49,6 +49,27 @@ Forthword_ HEX, 0, "hex"
     dolit_ 16
     jmp BASESTORE
 
+# ( n1 n2 -- n1|n2 )
+# compare two values leave the smaller one
+Forthword_ MIN, 0, "min"
+  popnos_
+  cmp %ebx, %edx 
+  jge 1f
+  mov %edx, %ebx
+1:
+  ret
+
+# ( n1 n2 -- n1|n2 )
+# compare two values, leave the bigger one
+Forthword_ MAX, 0, "max"
+  popnos_
+  cmp %ebx, %edx
+  jl 1f
+  mov %edx, %ebx
+1:
+  ret
+
+
 # ( -- addr)
 # start address of return stack
 Forthword_ RP0, 0, "rp0"

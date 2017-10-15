@@ -131,9 +131,26 @@
   xchg %ebx, 4(%eax)
 .endm
 
+.macro rot_
+  xchg %ebx, (%eax)
+  xchg %ebx, 4(%eax)
+.endm
+
+.macro rrot_
+  xchg %ebx, 4(%eax)
+  xchg %ebx, (%eax)
+.endm
+
 .macro popnos_
   xchg %eax, %esp
   pop %edx
+  xchg %eax, %esp
+.endm
+
+.macro pop2nos_
+  xchg %eax, %esp
+  pop %edx
+  pop %ecx
   xchg %eax, %esp
 .endm
 

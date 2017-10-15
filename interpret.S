@@ -122,30 +122,126 @@ Forthword_ REFILL, 0, "refill"
 # ( addr n -- )
 # print a counted string
 Forthword_ TYPE, 0, "type"
-   niptoa_           # Address of string
-   dupzerosense_
-   jmp TYPE2
-
+	niptoa_           # Address of string
+	dupzerosense_
+	jmp TYPE2
+	
 TYPE1:
-   acfetch_
-   acplus_
-   call EMIT
-   oneminus_
-
+	acfetch_
+	acplus_
+	call EMIT
+	oneminus_
+	
 TYPE2:
-   jnz TYPE1
+	jnz TYPE1
+	
+	drop_
+	ret
 
-   drop_
-   ret
+# ( addr1 u1 n -- addr2 u2 )
+# adjust string from addr1 to addr1+n, reduce length from u1 to u2 by n
+Forthword_ SLASHSTRING, 0, "/$"
+	over_         # ( -- addr1 u1 n u1 )
+	call MIN      # ( -- addr1 u1 n|u1 )
+	rot_          # ( -- u1 n addr1 )
+	over_         # ( -- u1 n addr1 n )
+	plus_         # ( -- u1 n addr2 )
+	rrot_         # ( -- addr2 u1 n )
+	minus_        # ( -- addr2 u2)
+	ret
 
 # ( addr -- addr+2 n )
 # get string address and length information out of a counted string
 Forthword_ STRINGLEN, 0, "$l"
-    dup_
-    twoplus_
-    swap_
-    hfetch_
-    ret
+	dup_
+	twoplus_
+	swap_
+	hfetch_
+	ret
+
+# ( addr1 n1 c -- n2 )
+# skips leading occurances in string at addr1 leaving n2 as an index
+# pointing to the 1st non-c character
+# n1 is max number of characters to search
+Forthword_ CSKIP, 0, "cskip"
+	tob_                 # ( addr1 n1 ) B: c
+	niptoa_              # ( n1 ) A: addr1
+	dup_                 # ( n1 n1 )
+PFA_CSKIP1:
+	dupzerosense_        # ( n1 n')
+	je PFA_CSKIP2
+	acfetch_             # ( n1 n' c' )
+	acplus_
+	cmp %edi, %ebx       # ( n1 n' c' )
+	drop_                # ( n1 n' )
+	jne PFA_CSKIP2
+	oneminus_
+	jmp PFA_CSKIP1
+
+PFA_CSKIP2:
+	minus_               # ( n1-n' )
+	ret
+
+# ( addr1 n1 c -- addr1 n2 )
+# Scan string at addr1 for the first occurance of c, leaving addr1 n2,
+# n1 is max number of characters to search
+# char at n2 is first c character
+Forthword_ CSCAN, 0, "cscan"
+	tob_                 # ( addr1 n1 ) B: c
+	over_                # ( addr1 n1 addr1 )
+	toa_                 # ( addr1 n1 ) A: addr1
+	dup_                 # ( addr1 n1 n1 )
+PFA_CSCAN1:
+	dupzerosense_        # ( addr1 n1 n')
+	je PFA_CSCAN2
+	acfetch_             # ( addr1 n1 n' c' )
+	acplus_
+	cmp %edi, %ebx       # ( addr1 n1 n' c' )
+	drop_                # ( addr1 n1 n' )
+	je PFA_CSCAN2
+	oneminus_
+	jmp PFA_CSCAN1
+
+PFA_CSCAN2:
+	minus_               # ( addr1 n1-n' )
+	ret
+
+# ( -- srcaddr len  )
+# Adjust the source addr using >in.
+Forthword_ SRCIN, 0, "srcin"
+	call STIB           # ( srcaddr len )
+	call G_IN           # ( srcaddr len ginaddr )
+	hfetch_             # ( srcaddr len gin)
+	jmp SLASHSTRING     # ( srcaddr' len' )
+
+# ( -- )
+# skip space in input source.
+Forthword_ SKIPBL, 0, "skipbl"
+	call SRCIN          # ( srcaddr len )
+	bl_                 # ( srcaddr' len' c )
+	call CSKIP          # ( n2 )
+
+	# adjust >IN
+	call G_IN           # ( n2 ginaddr )
+	jmp PLUSHSTORE      # (  )
+
+# ( char "ccc<char>" -- c-addr u )
+# in input buffer parse ccc delimited string by the delimiter char.
+Forthword_ PARSE, 0, "parse"
+	call SRCIN         # ( -- c addr len)
+	rot_               # ( -- addr' len' c)
+	call CSCAN         # ( -- len'')
+	dup_               # ( -- addr' len'' len'')
+	oneplus_           # ( -- addr' len'' len''+1 )
+	call G_IN          # ( -- addr' len'' len''+1 >in)
+	jmp PLUSHSTORE     # ( -- addr' len'')
+
+# ( "<name>" -- c-addr len )
+# In the SOURCE buffer parse whitespace delimited string. Returns string address within SOURCE.
+Forthword_ PNAME, 0, "pname"
+	call SKIPBL
+	bl_
+	jmp PARSE
 
 # ( -- addr len )
 # runtime portion of sliteral
@@ -178,20 +274,20 @@ Forthword_ DOSLIT, 0, "(slit)"
 Forthword_ INTERPRET, 0, "interp"
 INTERPRET_DO:
 	# begin
-	#call PNAME            # ( -- addr len )
+	call PNAME            # ( -- addr len )
 
 	# ?while
-	#dupzerosense_       # ( -- addr len )
-	#je INTERPRET_END
+	dupzerosense_         # ( -- addr len )
+	je INTERPRET_END
 
 	#call RECX             # ( )
-	#call QSTACK           # ( )
+	call QSTACK           # ( )
 
 	# repeat
-	#jmp INTERPRET_DO
+	jmp INTERPRET_DO
 
 INTERPRET_END:
-	#ddrop_
+	ddrop_
 	ret
 
 # ( -- )

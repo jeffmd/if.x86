@@ -82,6 +82,18 @@ Forthword_ FLIP,  INLINE_OPT, "flip"
 	flip_
 	ret
 
+# ( n1 n2 n3 -- n2 n3 n1)
+# rotate the three top level cells
+Forthword_ ROT, INLINE_OPT, "rot"
+  rot_
+  ret
+
+# ( n1 n2 n3 -- n3 n1 n2)
+# reverse rotate the three top level cells
+# equivalent to rotate twice but faster
+Forthword_ RROT, 0, "-rot"
+  rrot_
+  ret
 
 # (  -- addr )
 # current data stack pointer
