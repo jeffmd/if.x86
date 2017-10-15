@@ -49,6 +49,32 @@ Forthword_ LBRACKET, IMMEDIATE_EN, "["
 	call STATE
 	jmp ZEROHSTORE
 
+# ( nfa -- lfa )
+# get the link field address from the name field address
+Forthword_ NFA2LFA, 0, "nfa>lfa"
+	call STRINGLEN               # ( nfa+2 len+flags )
+	# mask out flags in len, allow up to 31 characters
+	and $31, %ebx                # ( nfa+2 len )
+	plus_
+	ret
+
+# ( nfa -- [ 0 ] | [ xt xtflags] )
+# convert name field address to xt and xtflags
+Forthword_ NFATOXTF, 0, "nfa>xtf"
+	dupzerosense_               # ( n )
+	je NFATOXTF_EXIT
+
+	dup_                        # ( nfa nfa )
+	hfetch_                     # ( nfa xtflags )
+	to_r_                       # ( nfa ) (R: xtflags)
+	call NFA2LFA                # ( lfa )
+	fourplus_   # lfa>xtlink    # ( xtlink )
+	fetch_                      # ( xt )
+	r_from_                     # ( xt xtflags )
+
+NFATOXTF_EXIT:
+	ret
+
 # ( -- )
 # set the context and current to root forth vocabulary and remove
 # other vocabularies

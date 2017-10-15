@@ -41,6 +41,8 @@ ram_tib: .space TIBSIZE
 EE_FORTHWORDLIST:
   .space 4 # head pointer
   .space 4 # name pointer
+  .space 4 # sibling link pointer
+  .space 4 # child pointer
 
 # start of user ram area
 HERESTART:
@@ -90,12 +92,12 @@ Forthword_ SP0, 0, "sp0"
   movl $topdatastack, %ebx
   ret
 
-.globl cold
-.type cold, @function
+.globl COLD
+.type COLD, @function
 
 # ( -- )
 # start up asforth.
-Forthword_ cold, 0, "cold"
+Forthword_ COLD, 0, "cold"
   pushl %ebp
   movl $topdatastack, %eax
   movl $sysvar_base, %ebp

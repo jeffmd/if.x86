@@ -138,6 +138,14 @@ TYPE2:
 	drop_
 	ret
 
+# ( r-addr r-len f-addr f-len --  f)
+# compares string in RAM with string in flash
+Forthword_ MCMP, 0, "mcmp"
+  ddrop_
+  ddrop_
+  zero_
+  ret
+  
 # ( addr1 u1 n -- addr2 u2 )
 # adjust string from addr1 to addr1+n, reduce length from u1 to u2 by n
 Forthword_ SLASHSTRING, 0, "/$"
@@ -243,6 +251,109 @@ Forthword_ PNAME, 0, "pname"
 	bl_
 	jmp PARSE
 
+# ( c-addr len wid -- [ 0 | nfa ] )
+# find a word in the dictionary
+# 0 if word not found in dictionary
+# nfa if word is found
+Forthword_ FINDNFA, 0, "findnfa"
+	dupzerosense_
+	jne FINDNFA_
+		# terminating, wid is empty
+		dnip_
+		ret
+		
+FINDNFA_:
+	fetch_                      # ( c-addr len nfa )
+
+	# <begin>
+FINDNFA_BEGIN:
+  #type_ "FINDNFA_BEGIN\n"
+	# <while>
+	dupzerosense_               # ( c-addr len nfa )
+	jne FINDNFA_CHECK
+		# terminating, 0 found
+		dnip_                     # ( 0 )
+		ret
+
+FINDNFA_CHECK:
+	to_r_                       # ( c-addr len ) (R: nfa )
+	call TWOOVER                # ( c-addr len c-addr len )
+	r_fetch_                    # ( c-addr len c-addr len nfa )
+	call STRINGLEN              # ( c-addr len c-addr len f-addr len )
+	and $31, %ebx               # ( c-addr len c-addr len f-addr 0:len )
+	call MCMP                   # ( c-addr len flag )
+	# <if>
+	zerosense_
+	je FINDNFA_NEXT
+		# we found the string
+		ddrop_                    # ( )
+		r_from_                   # ( nfa )
+		ret
+	# <then>
+FINDNFA_NEXT:
+		# next try
+		r_from_
+		call NFA2LFA
+		fetch_
+		# <repeat>
+		jmp FINDNFA_BEGIN
+
+# ( addr len --  0 | nfa )
+# search root wordlists for the name from string addr/len
+Forthword_ FINDROOT, 0, "froot"
+	# put root wid on stack
+	dolit_ VE_COLD
+  dup_
+  call STRINGLEN
+  and $31, %ebx
+  call TYPE
+	jmp FINDNFA_BEGIN
+
+# ( addr len idx -- 0 | nfa )
+FINDWI:
+      fourstar_          # ( addr len idx*4)
+      call CONTEXT       # ( addr len idx*4 context )
+      plus_              # ( addr len context' )
+      fetch_             # ( addr len wid )
+      jmp FINDNFA        # ( nfa)
+
+FINDLAST:
+  type_ "findlast\n"
+      drop_
+      jmp FINDROOT
+
+# ( addr len --  0 | nfa )
+# search wordlists for the name from string addr/len
+Forthword_ FINDW, 0, "findw"
+	# loop through context slots to find a word
+	# start with last slot
+	call CONTEXT        # ( addr len context )
+	# get context index and use as counter
+	twominus_           # ( addr len context-2 )
+	hfetch_             # ( addr len idx )
+FINDW_BEGIN:
+	dupzerosense_
+	js FINDLAST         # ( addr len idx )
+		to_r_             # ( addr len ) ( R: idx )
+		call TWOOVER      # ( addr len addr len ) ( R: idx )
+		# get next wordlist in array
+		r_fetch_          # ( addr len addr len idx ) ( R: idx)
+		call FINDWI
+		r_from_           # ( addr len nfa idx ) ( R: )
+		swap_             # ( addr len idx nfa )
+		dupzerosense_
+		# end loop if word found
+		je FINDW_NEXT
+			dnip_           # ( addr nfa )
+			nip_            # ( nfa )
+			ret
+
+FINDW_NEXT:
+		drop_             # ( addr len idx )
+		# decrement index
+		oneminus_         # ( addr len idx-1 )
+		jmp FINDW_BEGIN
+
 # ( -- addr len )
 # runtime portion of sliteral
 # string literal is located starting at return cell
@@ -269,6 +380,87 @@ Forthword_ DOSLIT, 0, "(slit)"
   poptos_
   ret
 
+# ( addr len -- ** [addr len] f )
+# recognize a word in the dictionary
+Forthword_ REC_WORD, 0, "recw"
+	call TWOOVER
+	to_r_
+	to_r_
+	call FINDW
+	dupzerosense_
+	jne REC_WORD_FOUND
+		r_from_
+		r_from_
+		rot_
+		ret
+
+REC_WORD_FOUND:
+	r_drop_
+	r_drop_
+	call NFATOXTF
+	# check if compile only word
+	#sbrc tosh, COMPILE_ONLY_FB
+	#    rjmp CHECK_IMMEDIATE
+
+CHECK_COMPILE_ONLY:
+#    bl STATEFETCH
+#    zerosense_
+#    bne.n CHECK_IMMEDIATE
+        # word can only be used in compile state
+        #jmp THROW
+
+
+CHECK_IMMEDIATE:
+  # either compile or EXEC the XT
+    # check if word is immediate: bit 15 is clear if immediate
+  #sbrs tosh, IMMEDIATE_EN_FB @ skip next instruction if bit 7 is set: not immediate word
+  mov  $IMMEDIATE_EN, %edx
+  rol $8, %edx
+  test %edx, %ebx
+  # flag is 0: always EXEC
+  je REC_WORD_EXECUTE
+
+REC_WORD_CHECKSTATE:
+        # check state
+      call STATEFETCH
+      zerosense_
+      je REC_WORD_EXECUTE
+        # in compile mode so compile xt
+      ##call COMPILEXT
+      true_
+      ret
+
+REC_WORD_EXECUTE:
+    drop_
+    # state is zero, EXEC xt
+    call EXEC
+REC_WORD_OK:
+    true_
+    ret
+
+# ( addr len -- )
+# recognize and execute name of word in ram using recognizer list.
+Forthword_ RECX, 0, "recx"
+	# test if its a word
+	call REC_WORD         # ( flag ) ( R: len addr )
+	# <if>
+	zerosense_            # ( addr len )
+	jne RECX_DONE
+	# test if its a number
+	##call REC_NUM          # ( flag ) ( R: len addr )
+	##zerosense_            # ( addr len )
+	##jne RECX_DONE
+	# not recognized so throw
+	call CR
+	# print unrecognized word
+	call TYPE
+	
+	$lit_ " Unknown!"
+	call THROW
+
+RECX_DONE:
+	ret
+
 # ( -- ) (R: i*x - j*x )
 # interpret input word by word.
 Forthword_ INTERPRET, 0, "interp"
@@ -280,7 +472,7 @@ INTERPRET_DO:
 	dupzerosense_         # ( -- addr len )
 	je INTERPRET_END
 
-	#call RECX             # ( )
+	call RECX             # ( )
 	call QSTACK           # ( )
 
 	# repeat

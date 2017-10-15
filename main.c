@@ -10,7 +10,7 @@
 
 #include "input.h"
 
-extern void cold(void);
+extern void COLD(void);
 
 int argc_l;
 char **argv_l;
@@ -22,6 +22,6 @@ int main(int argc, char *argv[])
 	argv_l = argv;
 	
 	set_input_mode();
-	cold();
+	COLD();
 	return 0;
 }
