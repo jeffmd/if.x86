@@ -74,7 +74,7 @@ Forthword_ MAX, 0, "max"
 Forthword_ NHEX, 0, "#h"
     and $0x0f, %ebx
     cmp $10, %ebx
-    jl NHEX_NEXT
+    jb NHEX_NEXT
     add $7, %ebx
 
 NHEX_NEXT:
