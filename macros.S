@@ -294,6 +294,17 @@
   or $-1, %ebx
 .endm
 
+.macro lshift_
+  mov %ebx, %ecx
+  poptos_
+  shl %cl, %ebx
+.endm
+
+.macro rshift_
+  mov %ebx, %ecx
+  poptos_
+  shr %cl, %ebx
+.endm
 
 .macro fetch_
   movl (%ebx), %ebx

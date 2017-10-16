@@ -69,6 +69,43 @@ Forthword_ MAX, 0, "max"
 1:
   ret
 
+# ( val -- char )
+# convert low byte of val to a printable hex character
+Forthword_ NHEX, 0, "#h"
+    and $0x0f, %ebx
+    cmp $10, %ebx
+    jl NHEX_NEXT
+    add $7, %ebx
+
+NHEX_NEXT:
+    add $48, %ebx
+    ret
+
+# ( n -- )
+# simple 4 bit hex print
+Forthword_ PNIB, 0, ".h"
+    call NHEX
+    jmp EMIT
+
+# ( n -- )
+# simple 32 bit hex print
+Forthword_ PHEX, 0, ".$"
+    dolit_ '$
+    call EMIT
+    dolit_ 28
+PHEX_BEGIN:
+    call TWOOVER
+    rshift_
+    call PNIB
+    sub $4, %ebx
+    jne PHEX_BEGIN
+
+    drop_
+    dup_
+    call PNIB
+    movl $32, %ebx
+    jmp EMIT
+
 
 # ( -- addr)
 # start address of return stack

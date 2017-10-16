@@ -294,6 +294,19 @@ Forthword_ TEN, INLINE_OPT, "10"
   ten_
   ret
 
+# ( n1 n2 -- n3)
+# logically shift n1 left n2 times
+forthword_ LSHIFT, INLINE_OPT, "<<"
+  lshift_
+  ret
+
+# ( n1 n2 -- n3)
+# logically shift n1 right n2 times
+forthword_ RSHIFT, INLINE_OPT, ">>"
+  rshift_
+  ret
+
+
 # ( a-addr -- n32 )
 # read 1 cell (32 bits) from RAM address
 Forthword_ FETCH, INLINE_OPT, "@"
