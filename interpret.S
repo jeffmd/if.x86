@@ -425,6 +425,34 @@ Forthword_ DOSLIT, 0, "(slit)"
   poptos_
   ret
 
+# ( addr len -- [n] [addr len] f )
+# recognizer for integer numbers
+Forthword_ REC_NUM, 0, "rec#"
+	calll TWOOVER
+	to_r_
+	to_r_
+	# try converting to a number
+	call NUMBER              # ( [n] f )
+	zerosense_
+	je REC_NONUMBER
+
+		call STATEFETCH        # ( n state )
+		zerosense_
+		je REC_NUMBER_OK
+			##call LIT
+
+REC_NUMBER_OK:
+		r_drop_
+		r_drop_
+		true_                # ( n true )
+		ret
+
+REC_NONUMBER:
+	r_from_
+	r_from_
+	zero_                  # ( 0 )
+	ret
+
 # ( addr len -- ** [addr len] f )
 # recognize a word in the dictionary
 Forthword_ REC_WORD, 0, "recw"
@@ -492,9 +520,9 @@ Forthword_ RECX, 0, "recx"
 	zerosense_            # ( addr len )
 	jne RECX_DONE
 	# test if its a number
-	##call REC_NUM          # ( addr len flag )
-	##zerosense_            # ( addr len )
-	##jne RECX_DONE
+	call REC_NUM          # ( addr len flag )
+	zerosense_            # ( addr len )
+	jne RECX_DONE
 	# not recognized so throw
 	call CR
 	# print unrecognized word

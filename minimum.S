@@ -106,6 +106,185 @@ PHEX_BEGIN:
     movl $32, %ebx
     jmp EMIT
 
+# ( u1 u2 -- flag )
+# compare two unsigned numbers, returns true flag if u1 is less then or equal to u2
+Forthword_ ULESSEQUAL, 0, "u<="
+	call UGREATER
+	not_
+	ret
+
+# ( u1 u2 -- flag )
+# compare two unsigned numbers, returns true flag if u1 is greater then or equal to u2
+Forthword_ UGREATEREQUAL, 0, "u>="
+	call ULESS
+	not_
+	ret
+
+# ( c -- (number|) flag )
+# tries to convert a character to a number, set flag accordingly
+Forthword_ DIGITQ, 0, "digit?"
+	sub $0x30, %ebx
+	cmp $10, %ebx
+	jb DIGITQ0
+	sub $7, %ebx
+	cmp $10, %ebx
+	jge DIGITQ0
+
+	zerotos_
+	ret
+
+DIGITQ0:
+	dup_
+	call BASEFETCH
+	call UGREATEREQUAL
+	zerosense_
+	je PFA_DIGITQ2
+	zerotos_
+	ret
+
+PFA_DIGITQ2:
+	true_
+	ret
+
+# (c -- ) Numeric IO
+# R( -- )
+# set the BASE value depending on the character
+#forthword_ SETBASE, 0, "setbase"
+SETBASE:        # ( c -- )
+	mov %ebx, %edx
+	drop_
+	cmp $'$, %edx
+	jne PFA_SETBASE0
+	jmp HEX
+
+PFA_SETBASE0:
+	cmp $'%, %edx
+	jne PFA_SETBASE1
+	jmp BIN
+
+PFA_SETBASE1:
+	cmp $'&, %edx
+	jne PFA_SETBASE2
+	jmp DECIMAL
+
+PFA_SETBASE2:        # ( error)
+	dup_
+	mov %edx, %ebx
+	call EMIT
+	$lit_ " Bad Base!"
+	call THROW
+
+# ( addr len -- addr' len' )
+# skip a numeric prefix character
+#forthword_ PRAEFIX, 0, "praefix"
+PRAEFIX:        # ( adr1 len1 -- adr2 len2 )
+	over_
+	cfetch_
+	cmp $0x30, %ebx
+	jb PFA_PRAEFIX0
+	# no praefix
+	drop_
+	ret
+
+PFA_PRAEFIX0:
+	call SETBASE
+	one_
+	call SLASHSTRING
+	ret
+
+# (addr len -- addr len flag) Numeric IO
+# check for - sign
+# forthword_ NUMBERSIGN, 0, "#-"
+NUMBERSIGN:        # ( addr len -- )
+	over_          # ( addr len addr )
+	cfetch_        # ( addr len char )
+	cmp $'-, %ebx
+	je NUMBERSIGN_HASSIGN
+		zerotos_
+		ret
+
+NUMBERSIGN_HASSIGN:
+	to_r_
+	one_
+	call SLASHSTRING
+	r_from_
+	ret
+
+# ( u1 c-addr1 len1 -- u2 c-addr2 len2 )
+# convert a string to a number  c-addr2/u2 is the unconverted string
+Forthword_ TO_NUMBER, 0, ">num"
+TO_NUMBER_AGAIN:
+  dupzerosense_
+  je TO_NUMBER_END
+		over_                # ( u adr len adr)
+		cfetch_              # ( u adr len char)
+		call DIGITQ          # ( u adr len digit flag)
+		zerosense_
+		jne TO_NUMBER_CONV
+			# character is not a recognized number
+			ret
+
+TO_NUMBER_CONV:
+		tob_                 # ( u adr len) B: digit
+		rot_                 # ( adr len u)
+		call BASEFETCH       # ( adr len u base)
+		#bl STAR             # ( adr len u*base)
+		mov %ebx, %edx
+		poptos_
+		imul %edx, %ebx
+		getb_                # ( adr len u' digit)
+		plus_                # ( adr len u')
+		rrot_                # ( u' adr len )
+		one_
+		call SLASHSTRING
+		jmp TO_NUMBER_AGAIN
+
+TO_NUMBER_END:
+  ret
+
+# (addr len -- [n] f)
+# convert a string at addr to a number
+Forthword_ NUMBER, 0, "num"
+  call BASEFETCH
+  to_r_                   # ( addr len ) (R: base)
+  call NUMBERSIGN
+  to_r_                   # ( addr len ) (R: base flagsign)
+  call PRAEFIX
+  call NUMBERSIGN         # ( addr len flagsign2 )
+  r_from_                 # ( addr len flagsign2 flagsign ) (R: base )
+  or_                     # ( addr len flagsign' )
+  to_r_                   # ( addr len ) (R: base flagsign')
+  zero_                   # ( addr len 0 ) starting value
+  rrot_                   # ( 0 addr len )
+  call TO_NUMBER          # ( n addr' len' )
+  # check length of the remaining string.
+  # if zero: a single cell number is entered
+  zerosense_
+  je PFA_NUMBER1
+
+  # error in string to number conversion
+PFA_NUMBER2:
+  nip_                    # ( addr' )  (R: base flagsign' )
+  r_drop_                 # ( addr' ) (R: base )
+  zerotos_                # ( 0 ) (R: base )
+  jmp PFA_NUMBER5
+
+PFA_NUMBER1:
+  drop_                   # ( n )  (R: base flagsign' )
+  # incorporate sign into number
+  r_from_                 # ( n flagsign' ) (R: base )
+  zerosense_
+  je PFA_NUMBER4
+  neg_
+
+PFA_NUMBER4:
+  true_                   # ( n true ) (R: base )
+
+PFA_NUMBER5:
+  r_from_                 # ( n true base ) (R: )
+  jmp BASESTORE           # ( n true )
+
+
 
 # ( -- addr)
 # start address of return stack
