@@ -43,6 +43,60 @@ Forthword_ DP, 0, "dp"
 	fetch_
 	ret
 
+# ( offset -- )
+# add offset to (dictionary pointer) DP
+Forthword_ DPPLUS, 0, "dp+"
+    call DPSHARP
+    jmp PLUSSTORE
+
+# ( -- )
+# increment 32 bit (dictionary pointer) DP by one cell
+Forthword_ DPPLUSONE, 0, "dp+1"
+    one_
+    jmp DPPLUS
+
+# ( -- f-addr )
+# get address of the code cell
+Forthword_ CPSHARP, 0, "cp#"
+	pushtos_
+	movl $(ram_cp-sysvar_base), %ebx 
+	add %ebp, %ebx
+	ret
+
+# ( -- f-addr )
+# address of the next free code cell
+Forthword_ CP, 0, "cp"
+	call CPSHARP
+	fetch_
+	ret
+
+# ( offset -- )
+# add offset to (code pointer) CP
+Forthword_ CPPLUS, 0, "cp+"
+    call CPSHARP
+    jmp PLUSSTORE
+
+# ( -- )
+# increment 32 bit (code pointer) CP by one cell
+Forthword_ CPPLUSONE, 0, "cp+1"
+    one_
+    jmp CPPLUS
+
+# ( n -- )
+# store 8 bit value on TOS into ram at (code pointer) CP
+Forthword_ COMMA, 0, ","
+    call CP
+    calll CSTORE
+    jmp CPPLUSONE
+
+# ( n -- )
+# store 32 bit value on TOS into ram at (code pointer) CP
+Forthword_ DCOMMA, 0, "d,"
+    call CP
+    call STORE
+    four_
+    jmp CPPLUS
+
 # ( --  )
 # enter interpreter mode
 Forthword_ LBRACKET, IMMEDIATE_EN, "["

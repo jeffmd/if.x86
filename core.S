@@ -329,6 +329,24 @@ Forthword_ ZEROSTORE, 0, "0!"
   poptos_
   ret
 
+# ( n32 a-addr -- )
+# add n32 to content of cell RAM address a-addr
+Forthword_ PLUSSTORE, 0, "+!"
+  # X is the new TOS after the store completes.
+  xchg %eax, %esp
+  pop %edx
+  pop %ecx
+  xchg %eax, %esp
+  addl  %edx, (%ebx)   
+  mov %ecx, %ebx
+  ret
+
+# ( a-addr -- )
+# add 1 to content of cell RAM address a-addr
+Forthword_ ONEPLUSSTORE, 0, "1+!"
+  addl  $1, (%ebx)
+  poptos_
+  ret
 
 # ( a-addr -- n16 )
 # read half cell (16 bits) from RAM address

@@ -124,7 +124,7 @@ Forthword_ REFILL, 0, "refill"
 Forthword_ TYPE, 0, "type"
 	niptoa_           # Address of string
 	dupzerosense_
-	jmp TYPE2
+	jz TYPE_END
 	
 TYPE1:
 	acfetch_
@@ -134,7 +134,8 @@ TYPE1:
 	
 TYPE2:
 	jnz TYPE1
-	
+
+TYPE_END:	
 	drop_
 	ret
 
@@ -317,7 +318,6 @@ FINDNFA_:
 
 	# <begin>
 FINDNFA_BEGIN:
-  #type_ "FINDNFA_BEGIN\n"
 	# <while>
 	dupzerosense_               # ( c-addr len nfa )
 	jne FINDNFA_CHECK

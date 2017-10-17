@@ -33,6 +33,7 @@ ram_CONTEXTidx: .space 2
 ram_CONTEXT: .space 4 * 10 # 10 wordlists max
 fflags: .space 2
 ram_dp: .space 4
+ram_cp: .space 4
 rstack0: .space 4
 ram_handler: .space 4
 ram_sharptib: .space 2
@@ -46,12 +47,16 @@ EE_FORTHWORDLIST:
 
 # start of user ram area
 HERESTART:
-   .space 64000
+   .space 65000
 
-# start of user program area
+# start of user dictionary area
 DPSTART:
-   .space 64000
-
+   .space 65000
+   
+# start of user code area
+CPSTART:
+   .space 65000
+    
 # start of hard coded program area that can not be modified at runtime
 .data
 .balign 1
