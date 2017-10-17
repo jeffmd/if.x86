@@ -374,16 +374,14 @@ Forthword_ ZEROHSTORE, 0, "0h!"
 Forthword_ PLUSHSTORE, 0, "+h!"
   popnos_          
 PLUSHSTORE_do:
-  movsxw (%ebx), %ecx     # Load the current cell value
-  add %ecx, %edx          # Do the add
-  movw %dx, (%ebx)        # Store it back
+  addw %dx, (%ebx)
   poptos_
   ret
 
 # ( a-addr -- )
 # add 1 to content of half cell RAM address a-addr
 Forthword_ ONEPLUSHSTORE, 0, "1+h!"
-  mov $1, %edx
+  movw $1, %dx
   jmp PLUSHSTORE_do
 
 # ( a-addr -- n8 )
@@ -412,16 +410,14 @@ Forthword_ ZEROCSTORE, 0, "0c!"
 Forthword_ PLUSCSTORE, 0, "+c!"
   popnos_ 
 PLUSCSTORE_do:
-  movsxb (%ebx), %ecx     # Load the current cell value
-  add %ecx, %edx          # Do the add
-  movb %dl, (%ebx)        # Store it back
+  addb %dl, (%ebx)
   poptos_
   ret
 
 # ( a-addr -- )
 # add 1 to content of byte cell RAM address a-addr
 Forthword_ ONEPLUSCSTORE, 0, "1+c!"
-  mov $1, %edx
+  movb $1, %dl
   jmp PLUSCSTORE_do
 
 # ( n1 n2 -- n2 ) A: n1
