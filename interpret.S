@@ -139,17 +139,18 @@ TYPE_END:
 	drop_
 	ret
 
+
 # ( r-addr r-len f-addr f-len --  f)
-# compares string in RAM with string in flash
+# compares two counted strings in RAM
+# flag is true if strings match
 Forthword_ MCMP, 0, "mcmp"
     tob_                     # ( r-addr r-len f-addr)  B: f-len
     over_                    # ( r-addr r-len f-addr r-len)
-    #getb_                   # ( r-addr r-len f-addr r-len f-len )
     # check if strings are same length
     xor %edi, %ebx           # ( r-addr r-len f-addr flag )
     # if
     zerosense_               # ( r-addr r-len f-addr )
-    je MCMP_SAMELEN
+    je CMPSB
 
     # strings are not the same length
     dnip_
@@ -157,42 +158,26 @@ Forthword_ MCMP, 0, "mcmp"
     ret
 
     # then
-MCMP_SAMELEN:
-    toa_                     # ( r-addr len ) A: f-addr
 
-    # begin
-MCMP_LOOP:
-    copytob_                 # ( r-addr len ) B: len
+# ( r-addr r-len f-addr -- flag)
+# compare two strings of same length
+# flag is true if strings match
+Forthword_ CMPSB, 0, "cmpsb"
+    toa_                     # ( r-addr len ) A: f-addr
+    movl %ebx, %ecx          # ( r-addr ) CX: len
+    poptos_
+    tob_                     # ( ) B: r-addr
+    cld
+    repe cmpsb
     # while
-    zerosense_               # ( r-addr )
     je MCMP_DONE
 
-    dup_                     # ( r-addr r-addr )
-    cfetch_                  # ( r-addr r-cc )
-    acfetch_                 # ( r-addr r-cc f-cc )
-    acplus_
-
-    xor_                     # ( r-addr flag)
-    # if
-    zerosense_               # ( r-addr )
-    je MCMP_NEXTLOOP
-
     # strings don't match
-    zerotos_                 # ( 0 )
+    zero_                 # ( 0 )
     ret
-
-    # then
-MCMP_NEXTLOOP:
-    oneplus_                 # ( r-addr+1 )
-    getb_                    # ( r-addr+1 len )
-    oneminus_                # ( r-addr+1 len-1 )
-
-    # repeat
-    jmp MCMP_LOOP
 
 MCMP_DONE:
     # strings are the same
-    drop_
     true_
     ret
 
