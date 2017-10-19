@@ -369,6 +369,10 @@ Forthword_ WIPE, 0, "WIPE"
 	call DPSHARP
 	call STORE
 	
+	dolit_ CPSTART
+	call CPSHARP
+	call STORE
+
 	dolit_ EE_FORTHWORDLIST
 	dup_
 	call ZEROSTORE

@@ -97,6 +97,39 @@ Forthword_ DCOMMA, 0, "d,"
     four_
     jmp CPPLUS
 
+# ( s-addr len len' d-addr-- d-addr+len)
+# copies a counted string with flags from s-addr to d-addr
+# returns destination address + len
+Forthword_ COPYSTRING, 0, "copy$"
+	tob_               # ( s-addr len len' ) B: d-addr
+	movw %bx, (%edi)
+	addl $2, %edi
+	poptos_            # ( s-addr len )
+	mov %ebx, %ecx
+	poptos_            # ( s-addr )
+	copytoa_           # ( s-addr ) A: addr
+	cld
+	rep movsb
+	mov %edi, %ebx     # ( s-addr+len )
+	ret
+
+# ( addr len len' -- )
+# copies a counted string with flags to program ram
+Forthword_ STRINGPROGSTORE, 0, "$cp!"
+  call CP
+  call COPYSTRING
+  call CPSHARP
+  jmp STORE
+  
+# ( addr len len' -- )
+# copies a counted string with flags to dictionary ram
+Forthword_ STRINGDICTSTORE, 0, "$dp!"
+  call DP
+  call COPYSTRING
+  call DPSHARP
+  jmp STORE
+  
+    
 # ( --  )
 # enter interpreter mode
 Forthword_ LBRACKET, IMMEDIATE_EN, "["
