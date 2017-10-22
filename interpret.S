@@ -589,8 +589,9 @@ Forthword_ INRESET, 0, "in_"
   call ZEROHSTORE          # ( )
   jmp QP_RD
 
-# ( -- )
-# wait for the input buffer to be refilled then interpret
+# ( -- flag)
+# fill up the input buffer some more
+# flag is true if input buffer is full or needs processing
 Forthword_ DOREFILL, 0, "(refill)"
   # if just starting new input line then check prompt and reset input position
   call G_IN                # ( >inaddr )
@@ -602,16 +603,30 @@ Forthword_ DOREFILL, 0, "(refill)"
 DOREFILL_do:
   # refill the input buffer
   call REFILL              # ( f )
+  ret
+
+# ( -- )
+# interpret what is in the input buffer
+Forthword_ DOINTERPRET, 0, "(interp)"
+  # input buffer has something so try to interpret it
+  # setup exception handling in case of error
+  dolit_ INTERPRET
+  call CATCH
+  # check to make sure no throws
+  call QDUP
   # <if>
   zerosense_
-  je DOREFILL_end
+  je DOINTERPRET_ok
+    call PROMPTERROR
+    call QUIT
 
-    # there is something in the input buffer, try interpreting it
-    call DOINTERPRET
-
-DOREFILL_end:
   # <then>
-  ret
+DOINTERPRET_ok:
+  # make sure in buf pointer is not at zero
+  call G_IN               # ( 1 >inaddr )
+  call ONEPLUSHSTORE        # ( )
+  jmp PROMPTOK
+
 
 # ( -- )
 # set terminate flag which indicates request to exit forth interpreter
@@ -635,7 +650,12 @@ Forthword_ DOPAUSE, 0, "(pause)"
 Forthword_ DOTASKS, 0, "(tasks)"
 	# <begin>
 DOTASKS1:
-	call DOREFILL
+	call DOREFILL     # ( flag )
+  zerosense_
+  je DOTASKS_N1
+    # there is something in the input buffer, try interpreting it
+    call DOINTERPRET
+DOTASKS_N1:
 	call DOPAUSE
 
 	# check to see if tasks should be terminated
@@ -680,28 +700,6 @@ Forthword_ QUIT, 0, "quit"
 	rpstore_
 	call RESET
 	jmp DOTASKS
-
-# ( -- )
-# interpret what is in the input buffer
-Forthword_ DOINTERPRET, 0, "(interp)"
-  # input buffer has something so try to interpret it
-  # setup exception handling in case of error
-  dolit_ INTERPRET
-  call CATCH
-  # check to make sure no throws
-  call QDUP
-  # <if>
-  zerosense_
-  je DOINTERPRET_ok
-    call PROMPTERROR
-    call QUIT
-
-  # <then>
-DOINTERPRET_ok:
-  # make sure in buf pointer is not at zero
-  call G_IN               # ( 1 >inaddr )
-  call ONEPLUSHSTORE        # ( )
-  jmp PROMPTOK
 
 
 # ( -- flag )

@@ -1,5 +1,11 @@
 # compiler.S
 
+# dictionary structure:
+# length | flags : word: highbyte is flags, lowbyte is string length
+# name : string
+# previouse word: 32 bit pointer to previousely defined word
+# code: 32 bit pointer to executable code
+
 # ( -- addr )
 # system state variable. 0 is interpret mode. Not 0 is compile mode
 # is half word
