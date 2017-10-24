@@ -1,0 +1,75 @@
+# asm.$ - words that generate inline assembly 
+
+# calc relative distance in half word alignment
+# ( dest start  -- distance )
+Forthword_ RELDST, 0, "reldst"
+    # calculate relative distance in half words from start to dest
+    # rel dist = dest - start
+    # account for 3 stage pipeline
+    fourplus_            # ( dest start+4 )
+    minus_               # ( dist )
+    ret
+
+# build assembler instruction jmp - unconditional long jump
+# ( reldist -- jumprellong )
+# reldist: relative distance as 2's compliment 32 bit
+Forthword_ JUMP, 0, "jmpl"
+    # 0xe9 XXXX XXXX XXXX 
+    ret
+
+# build assembler instruction jmp - unconditional short jump
+# ( reldist -- jumprellong )
+# reldist: relative distance as 2's compliment 32 bit
+Forthword_ JUMPS, 0, "jmps"
+    # 0xe9 XXXX XXXX XXXX 
+    ret
+
+# compile assembler instruction jmp - unconditional jump
+# ( reldist -- )
+# reldist: relative distance as 2's compliment
+Forthword_ BC, 0, "jmp,"
+    call JUMP
+    jmp COMMA
+
+# compile jump at start address
+# ( start dest -- )
+Forthword_ JMPC, 0, "jmpc"
+    over_                # ( start dest start )
+    call RELDST          # ( start reldst )
+    call JUMP            # ( start branchinst )
+    swap_                # ( branchinst start )
+    jmp HSTORE           # ( )
+
+
+# compile call to xt at the current code position (CP)
+# If word flag indicates inlining then the word is inlined.
+# ( xt flags -- )
+Forthword_ COMPILEXT, 0, "cxt"
+    #movs r0, $INLINE_OPT
+    #lsls r0, #8
+    #tst tos, r0
+    # if bit 0 of high byte flag is 0 then word is to be inlinned
+    drop_           # ( xt )
+    je COMPILEXT_INLINE
+    jmp DO_COMPILEXT
+
+COMPILEXT_INLINE:
+      jmp INLINE
+
+DO_COMPILEXT:
+    # calculate relative distance in words from start to dest
+    call CP              # ( xt cp )
+    call RELDST          # ( distance )
+    # fall through into CALLC
+
+# compile call at start address
+# ( dist -- )
+# dist: 2's compliment dword offset
+Forthword_ CALLC, 0, "call,"
+    # call is an 8 bit instruction with a 32 bit 2's compliment offset
+    # bit pattern:
+    #
+    dolit_ 0xe8
+    call COMMA           # ( dist )
+    # store offset
+    jmp DCOMMA

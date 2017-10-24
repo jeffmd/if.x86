@@ -88,6 +88,33 @@ Forthword_ CPPLUSONE, 0, "cp+1"
     one_
     jmp CPPLUS
 
+# ( -- )
+# update wid from smudge if valid
+Forthword_ UWID, 0, "uwid"
+	call SMUDGE
+	fetch_
+	call QDUP
+	zerosense_
+	je UWID_end
+		# wid.word = smudge
+		call CURRENT
+		fetch_
+		call STORE
+		#call CLRCACHE
+		# set smudge to zero indicating no longer compiling a word
+		call SMUDGE
+		call ZEROSTORE
+	UWID_end:
+	ret
+
+
+# ( --  )
+# enter interpreter mode
+Forthword_ LBRACKET, IMMEDIATE_EN, "["
+	call STATE
+	jmp ZEROHSTORE
+
+
 # ( n -- )
 # store 8 bit value on TOS into ram at (code pointer) CP
 Forthword_ COMMA, 0, ","
@@ -135,13 +162,23 @@ Forthword_ STRINGDICTSTORE, 0, "$dp!"
   call DPSHARP
   jmp STORE
   
-    
-# ( --  )
-# enter interpreter mode
-Forthword_ LBRACKET, IMMEDIATE_EN, "["
-	call STATE
-	jmp ZEROHSTORE
 
+# ( start -- )
+# copy code to current dictionary entry
+Forthword_ INLINE, 0, "inline"
+    # find the ret instruction, want count to ret
+    # count will be number of bytes to inline
+    dolit_ 0xc3
+    #call FINDH                 # ( start count )
+
+    # dp swap dup dp+ itoi
+    call DP                    # ( start count dp )
+    swap_                    # ( start dp count )
+    dup_                     # ( start dp count count )
+    call CPPLUS                # ( start dp count )
+    #jmp MCPY                 # ( )
+    ret
+    
 # ( nfa -- lfa )
 # get the link field address from the name field address
 Forthword_ NFA2LFA, 0, "nfa>lfa"

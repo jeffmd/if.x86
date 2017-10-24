@@ -484,7 +484,7 @@ REC_WORD_CHECKSTATE:
       zerosense_
       je REC_WORD_EXECUTE
         # in compile mode so compile xt
-      ##call COMPILEXT
+      call COMPILEXT
       true_
       ret
 

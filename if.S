@@ -71,7 +71,7 @@ DICTIONARY_START:
 #.include "defer.S"
 .include "compiler.S"
 .include "interpret.S"
-#.include "asm.S"
+.include "asm.S"
 #.include "file.S"
 .include "minimum.S"
 
