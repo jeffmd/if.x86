@@ -1,13 +1,17 @@
 # asm.$ - words that generate inline assembly 
 
-# calc relative distance in half word alignment
+# ( -- )
+# compile assembler pop {pc}
+Forthword_ RET_C, 0, "ret,"
+    dolit_ 0xc3
+    jmp COMMA
+
+# calc relative distance
 # ( dest start  -- distance )
 Forthword_ RELDST, 0, "reldst"
-    # calculate relative distance in half words from start to dest
+    # calculate relative distance in bytes from start to dest
     # rel dist = dest - start
-    # account for 3 stage pipeline
-    fourplus_            # ( dest start+4 )
-    minus_               # ( dist )
+    minus_               # ( dest-start )
     ret
 
 # build assembler instruction jmp - unconditional long jump
@@ -50,11 +54,11 @@ Forthword_ COMPILEXT, 0, "cxt"
     #tst tos, r0
     # if bit 0 of high byte flag is 0 then word is to be inlinned
     drop_           # ( xt )
-    je COMPILEXT_INLINE
+    #je COMPILEXT_INLINE
     jmp DO_COMPILEXT
 
 COMPILEXT_INLINE:
-      jmp INLINE
+      #jmp INLINE
 
 DO_COMPILEXT:
     # calculate relative distance in words from start to dest
@@ -71,5 +75,8 @@ Forthword_ CALLC, 0, "call,"
     #
     dolit_ 0xe8
     call COMMA           # ( dist )
+    # adjust rel distance to account for instruction length of call
+    dolit_ 5
+    minus_
     # store offset
-    jmp DCOMMA
+    jmp DWCOMMA

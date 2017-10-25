@@ -107,7 +107,6 @@ Forthword_ UWID, 0, "uwid"
 	UWID_end:
 	ret
 
-
 # ( --  )
 # enter interpreter mode
 Forthword_ LBRACKET, IMMEDIATE_EN, "["
@@ -116,19 +115,28 @@ Forthword_ LBRACKET, IMMEDIATE_EN, "["
 
 
 # ( n -- )
-# store 8 bit value on TOS into ram at (code pointer) CP
+# store 8 bit value on TOS into code section ram at (code pointer) CP
 Forthword_ COMMA, 0, ","
     call CP
     calll CSTORE
     jmp CPPLUSONE
 
 # ( n -- )
-# store 32 bit value on TOS into ram at (code pointer) CP
-Forthword_ DCOMMA, 0, "d,"
+# store double word 32 bit value on TOS into code section ram at (code pointer) CP
+Forthword_ DWCOMMA, 0, "dw,"
     call CP
     call STORE
     four_
     jmp CPPLUS
+
+# ( n -- )
+# store 32 bit value on TOS into dictionary section ram at (dictionary pointer) DP
+# automaticaly increment dp position by 4 bytes
+Forthword_ DPSTORE, 0, "dp!"
+    call DP
+    call STORE
+    four_
+    jmp DPPLUS
 
 # ( s-addr len len' d-addr-- d-addr+len)
 # copies a counted string with flags from s-addr to d-addr
