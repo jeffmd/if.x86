@@ -79,3 +79,12 @@ Forthword_ CALLC, 0, "call,"
     minus_
     # store offset
     jmp DWCOMMA
+
+# compile top of stack as inlinned immediate 32 bit constant
+# ( n -- )
+Forthword_ LIT, 0, "lit"
+    # compile pushtos_
+    dolit_ 0xbb945394
+    call DWCOMMA
+    # store 32 bit val from tos
+    jmp DWCOMMA

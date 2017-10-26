@@ -89,6 +89,20 @@ Forthword_ CPPLUSONE, 0, "cp+1"
     jmp CPPLUS
 
 # ( -- )
+# tail call optimize: change last call into jmp
+Forthword_ TAILOPT, 0, ";opt"
+    # optimize only if smudge is not zero
+    call SMUDGE
+    call FETCH
+    zerosense_
+    jne TAILOPT_OPT
+    ret
+
+TAILOPT_OPT:
+    # don't optimize tail call, just compile a ret.
+    jmp RET_C          # ( )
+
+# ( -- )
 # update wid from smudge if valid
 Forthword_ UWID, 0, "uwid"
 	call SMUDGE
