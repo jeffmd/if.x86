@@ -49,16 +49,15 @@ Forthword_ JMPC, 0, "jmpc"
 # If word flag indicates inlining then the word is inlined.
 # ( xt flags -- )
 Forthword_ COMPILEXT, 0, "cxt"
-    #movs r0, $INLINE_OPT
-    #lsls r0, #8
-    #tst tos, r0
+    movl $(INLINE_OPT << 8), %edx
+    test %ebx, %edx
     # if bit 0 of high byte flag is 0 then word is to be inlinned
     drop_           # ( xt )
-    #je COMPILEXT_INLINE
+    je COMPILEXT_INLINE
     jmp DO_COMPILEXT
 
 COMPILEXT_INLINE:
-      #jmp INLINE
+      jmp INLINE
 
 DO_COMPILEXT:
     # calculate relative distance in words from start to dest

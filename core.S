@@ -525,3 +525,21 @@ Forthword_ AHPLUS, INLINE_OPT, "ah+"
 Forthword_ ACPLUS, INLINE_OPT, "ac+"
   acplus_
   ret
+
+# (start dest count -- )
+# count is the number of bytes to copy
+# copy ram using bytes.  Assumes no overlap.
+Forthword_ MCPY, 0, "mcpy"
+	niptob_         # ( start count ) B: dest
+MCPY_B:
+	dupzerosense_   # ( start count )
+	je MCPY_END
+	mov %ebx, %ecx
+	poptos_         # ( start ) ecx: count
+	toa_            # ( ) esi: start
+	cld
+	rep movsb
+	ret
+	
+MCPY_END:
+	jmp DDROP

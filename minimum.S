@@ -361,6 +361,23 @@ Forthword_ THROW, 0, "throw"
     one_               # ( ... 1 )
     ret
 
+# ( n -- )
+# sleep for n micro seconds
+Forthword_ USLEEP, 0, "usleep"
+  push %eax
+  push %ebx
+  call usleep
+  pop %edx
+  pop %eax
+  poptos_
+  ret
+
+# ( n -- )
+# sleep for n micro seconds
+Forthword_ FIVEMSSLEEP, 0, "5mssleep"
+  dolit_ 5000
+  jmp USLEEP
+
 
 # ( -- )
 # must be last word in core

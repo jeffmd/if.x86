@@ -138,7 +138,7 @@ Forthword_ DPSTORE, 0, "dp!"
     four_
     jmp DPPLUS
 
-# ( s-addr len len' d-addr-- d-addr+len)
+# ( s-addr len len' d-addr -- d-addr+len)
 # copies a counted string with flags from s-addr to d-addr
 # returns destination address + len
 Forthword_ COPYSTRING, 0, "copy$"
@@ -169,6 +169,32 @@ Forthword_ STRINGDICTSTORE, 0, "$dp!"
   call COPYSTRING
   call DPSHARP
   jmp STORE
+
+# ( start match -- start count )
+# match is the 8 bit value to search for in ram
+# start is the start address of the search in ram
+# the search goes up in ram address space
+# count is number of bytes to get to match value in ram
+# or get word index of match
+Forthword_ FINDB, 0, "findb"
+	# fetch from ram and check if equal to match byte
+	tob_             # ( start ) B: match
+	copytoa_         # ( start ) A: start
+	# begin
+FINDI_BEGIN:
+		movsxb (%esi), %edx # ( start )
+		acplus_
+		and $0xFF, %edx
+		cmp %edx, %edi    # ( start )
+	# until
+	jne FINDI_BEGIN
+
+	geta_            # ( start end )
+	oneminus_        # ( start end-1 )
+	over_            # ( start end-1 start )
+	minus_           # ( start count )
+	ret
+
   
 
 # ( start -- )
@@ -177,15 +203,14 @@ Forthword_ INLINE, 0, "inline"
     # find the ret instruction, want count to ret
     # count will be number of bytes to inline
     dolit_ 0xc3
-    #call FINDH                 # ( start count )
+    call FINDB               # ( start count )
 
     # dp swap dup dp+ itoi
-    call DP                    # ( start count dp )
-    swap_                    # ( start dp count )
-    dup_                     # ( start dp count count )
-    call CPPLUS                # ( start dp count )
-    #jmp MCPY                 # ( )
-    ret
+    call CP                  # ( start count cp )
+    swap_                    # ( start cp count )
+    dup_                     # ( start cp count count )
+    call CPPLUS              # ( start cp count )
+    jmp MCPY                 # ( )
     
 # ( nfa -- lfa )
 # get the link field address from the name field address
