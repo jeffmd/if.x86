@@ -114,14 +114,13 @@ Forthword_ KEYFILE, 0, "keyfile"
   call KEYFILEADDR         # ( 0 keyfile# )
   fetch_                   # ( 0 filedes )
   pushtos_                 # ( 0 filedes ? )
-  mov %esp, %ebx           # ( 0 filedes esp )
-  add $4, %ebx             # ( 0 filedes esp+4 )
+  leal 4(%eax), %ebx       # ( 0 filedes esp+4 
   one_                     # ( 0 filedes esp+4 1 )
   call READF               # ( key count )
   # was one key read from the file?
   one_                     # ( key count 1 )
   call EQUAL               # ( key flag )
-  zerosense_
+  zerosense_               # ( key )
   jne KEYEND
   sub $1, %ebx
   jmp BYE  

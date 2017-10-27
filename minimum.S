@@ -384,7 +384,6 @@ Forthword_ FIVEMSSLEEP, 0, "5mssleep"
 Forthword_ DOINCLUDE, 0, "doinclude"
 	# set file open mode to reading
 	zero_
-	swap_
 	call OPENF     # ( filedes )
 	# if file descriptor > 0 then open is success
 	dup_

@@ -1,14 +1,13 @@
 # file.S - words used to work with files and shared libraries
 
-# ( flags path -- filedes )
+# ( path flags -- filedes )
 # open a file
 # path - address of path string null terminated
 # option flags 
 Forthword_ OPENF, 0, "open"
   push %eax
-  push %ebx   # path
-  poptos_
-  push %ebx   # flags
+  push %ebx     # flags
+  push (%eax)   # path
   call open
   mov %eax, %ebx
   add $8, %esp
@@ -33,11 +32,9 @@ Forthword_ CLOSEF, 0, "close"
 # number of bytes read left on TOS
 Forthword_ READF, 0, "read"
   push %eax
-  push %ebx   # length
-  poptos_
-  push %ebx   # buffer
-  poptos_
-  push %ebx   # filedes
+  push %ebx     # length
+  push (%eax)   # buffer
+  push 4(%eax)  # filedes
   call read 
   mov %eax, %ebx
   add $12, %esp
