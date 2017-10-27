@@ -107,6 +107,28 @@ Forthword_ STDIN, 0, "stdin"
   ret
 
 # ( -- key )
+# fetch key from an open file using filedes, should leave
+# a single character on TOS or -1 if no more to read in file.
+Forthword_ KEYFILE, 0, "keyfile"
+  zero_                    # ( 0 )
+  call KEYFILEADDR         # ( 0 keyfile# )
+  fetch_                   # ( 0 filedes )
+  pushtos_                 # ( 0 filedes ? )
+  mov %esp, %ebx           # ( 0 filedes esp )
+  add $4, %ebx             # ( 0 filedes esp+4 )
+  one_                     # ( 0 filedes esp+4 1 )
+  call READF               # ( key count )
+  # was one key read from the file?
+  one_                     # ( key count 1 )
+  call EQUAL               # ( key flag )
+  zerosense_
+  jne KEYEND
+  sub $1, %ebx
+  jmp BYE  
+ KEYEND:
+  ret
+
+# ( -- key )
 # fetch key from deffered routine, should leave a single character
 # on TOS if a key was pressed. If no key pressed then -1 is on TOS.
 Forthword_ KEY, 0, "key"

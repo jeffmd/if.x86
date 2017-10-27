@@ -72,7 +72,7 @@ DICTIONARY_START:
 .include "compiler.S"
 .include "interpret.S"
 .include "asm.S"
-#.include "file.S"
+.include "file.S"
 .include "minimum.S"
 
 # ( nx* -- ) (R: ny* -- )

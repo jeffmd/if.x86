@@ -198,6 +198,49 @@ Forthword_ NOT, INLINE_OPT, "not"
   not_
   ret
 
+# ( n1 n2 -- flag)
+# flag is true if n1 is not equal to n2
+Forthword_ NOTEQUAL, INLINE_OPT, "<>"
+  xor_
+  ret
+
+# ( n1 n2 -- flag )
+# flag is true if TOS and NOS are equal
+Forthword_ EQUAL, 0, "="
+  popnos_
+  sub %edx, %ebx
+  sub $1, %ebx
+  sbb %ebx, %ebx
+  ret
+
+# ( n1 n2 -- flag)
+# flag is true if n1 is less than n2
+Forthword_ LESS, 0, "<"
+  popnos_
+  cmp %ebx, %edx
+  jge 1f
+  zerotos_
+  not_
+  ret
+1:
+  mov $0, %ebx
+  ret
+
+# ( n1 n2 -- flag )
+# flag is true if n1 is greater than n2
+Forthword_ GREATER, 0, ">"
+  popnos_         # Get x1 into a register.
+  cmp %ebx, %edx  # Is x2 greater?
+GREATER_CHK:
+  jle 1f
+  zerotos_
+  not_
+  ret
+1:
+  zerotos_
+  ret
+
+
 # ( n1 -- n1+1 ) 
 # optimized increment
 Forthword_ ONEPLUS, INLINE_OPT, "1+"
@@ -215,6 +258,12 @@ Forthword_ ONEMINUS, INLINE_OPT, "1-"
 Forthword_ ZEROEQUAL, INLINE_OPT, "0="
   zeroequal_
   ret
+
+# ( n1 -- flag )
+# flag is true if n1 is greater than 0
+Forthword_ ZEROGREATER, 0, "0>"
+  sub $0, %ebx
+  jmp GREATER_CHK
 
 # ( u1 u2 -- flag )
 # flag is true if u1 > u2 (unsigned)

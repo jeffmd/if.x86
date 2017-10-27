@@ -378,6 +378,72 @@ Forthword_ FIVEMSSLEEP, 0, "5mssleep"
   dolit_ 5000
   jmp USLEEP
 
+# ( caddr -- ** )
+# open a file that will be used for key input
+# caddr points to null terminated file name
+Forthword_ DOINCLUDE, 0, "doinclude"
+	# set file open mode to reading
+	zero_
+	swap_
+	call OPENF     # ( filedes )
+	# if file descriptor > 0 then open is success
+	dup_
+	call ZEROGREATER
+	zerosense_
+	
+	je DOINCLUDE_EXIT
+		# push FFLAGS on tor
+		call FFLAGS
+		hfetch_
+		to_r_
+		# push on return stack the old defer key
+		call KEYADDR
+		fetch_
+		to_r_
+		# push old keyfile on return stack
+		call KEYFILEADDR
+		fetch_
+		to_r_
+		call KEYFILEADDR
+		call STORE
+		# defer key to keyfile for input
+		dolit_ KEYFILE
+		call KEYADDR
+		call STORE
+		# run interpreter
+		call DOTASKS
+		# close keyfile
+		call KEYFILEADDR
+		fetch_
+		call CLOSEF
+		# pop tor into keyfile
+		r_from_
+		call KEYFILEADDR
+		call STORE
+		# pop top of return into defer key
+		r_from_
+		call KEYADDR
+		call STORE
+		# restore FFLAGS
+		r_from_
+		call FFLAGS
+		jmp HSTORE
+		 
+DOINCLUDE_EXIT:
+	drop_
+	type_ "File not found!"
+	ret
+
+# ( C:filepath -- ** )
+# open a file that will be used for key input
+Forthword_ INCLUDEF, 0, "include"
+	# parse input for filename to include
+	call PNAME     # ( addr len )
+	# add null to end of string
+	over_         
+	plus_
+	call ZEROCSTORE
+	jmp DOINCLUDE
 
 # ( -- )
 # must be last word in core
