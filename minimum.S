@@ -13,6 +13,24 @@ Forthword_ HERE, 0, "here"
   ret
 
 # ( -- a-addr )
+# address of idletime
+Forthword_ IDLETIMEADDR, 0, "idletime#"
+  douser_ USER_IDLETIME
+
+# ( n -- )
+# set idletime
+Forthword_ IDLETIMESTORE, 0, "idletime!"
+  call IDLETIMEADDR
+  jmp STORE
+
+# ( -- n )
+# get idletime
+Forthword_ IDLETIMEFETCH, 0, "idletime@"
+  call IDLETIMEADDR
+  fetch_
+  ret
+
+# ( -- a-addr )
 # location of the cell containing the number conversion radix
 Forthword_ BASE, 0, "base"
 	douser_ USER_BASE
@@ -374,9 +392,27 @@ Forthword_ USLEEP, 0, "usleep"
 
 # ( n -- )
 # sleep for n micro seconds
-Forthword_ FIVEMSSLEEP, 0, "5mssleep"
-  dolit_ 5000
+Forthword_ SLEEP, 0, "sleep"
+  call IDLETIMEFETCH
+  dupzerosense_
+  je NO_IDLESLEEP
   jmp USLEEP
+NO_IDLESLEEP:
+  drop_
+  ret
+
+# ( -- )
+# turn sleep off
+Forthword_ SLEEPOFF, 0, "sleepoff"
+  zero_
+  jmp IDLETIMESTORE
+ 
+# ( -- )
+# turn sleep on
+Forthword_ SLEEPON, 0, "sleepon"
+  dolit_ 5000
+  jmp IDLETIMESTORE
+ 
 
 # ( caddr -- ** )
 # open a file that will be used for key input
@@ -391,6 +427,9 @@ Forthword_ DOINCLUDE, 0, "doinclude"
 	zerosense_
 	
 	je DOINCLUDE_EXIT
+	  call IDLETIMEFETCH
+	  to_r_
+	  call SLEEPOFF
 		# push FFLAGS on tor
 		call FFLAGS
 		hfetch_
@@ -426,7 +465,9 @@ Forthword_ DOINCLUDE, 0, "doinclude"
 		# restore FFLAGS
 		r_from_
 		call FFLAGS
-		jmp HSTORE
+		call HSTORE
+		r_from_
+		jmp IDLETIMESTORE
 		 
 DOINCLUDE_EXIT:
 	drop_

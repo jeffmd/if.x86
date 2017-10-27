@@ -662,7 +662,7 @@ Forthword_ BYE, 0, "bye"
 # ( -- )
 # Fetch pause vector and EXEC it. may make a context/task switch
 Forthword_ DOPAUSE, 0, "(pause)"
-    call FIVEMSSLEEP ## temp fix for cpu hogging
+    call SLEEP ## temp fix for cpu hogging
     call PAUSEADDR
     fetch_
     jmp EXEC
