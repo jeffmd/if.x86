@@ -390,7 +390,7 @@ Forthword_ USLEEP, 0, "usleep"
   poptos_
   ret
 
-# ( n -- )
+# ( -- )
 # sleep for n micro seconds
 Forthword_ SLEEP, 0, "sleep"
   call IDLETIMEFETCH
