@@ -363,14 +363,29 @@
   movl (%esi), %ebx
 .endm
 
+.macro astore_
+  mov %ebx, (%esi)
+  poptos_
+.endm
+
 .macro bfetch_
   pushtos_
   movl (%edi), %ebx
 .endm
 
+.macro bstore_
+  mov %ebx, (%edi)
+  poptos_
+.endm
+
 .macro ahfetch_
   pushtos_
   movsxw (%esi), %ebx
+.endm
+
+.macro ahstore_
+  movw %bx, (%esi)
+  poptos_
 .endm
 
 .macro bhfetch_
@@ -383,9 +398,19 @@
   movsxb (%esi), %ebx
 .endm
 
+.macro acstore_
+  movb %bl, (%esi)
+  poptos_
+.endm
+
 .macro bcfetch_
   pushtos_
   movsxb (%edi), %ebx
+.endm
+
+.macro bcstore_
+  movb %bl, (%edi)
+  poptos_
 .endm
 
 .macro aplus_

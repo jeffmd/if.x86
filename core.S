@@ -147,11 +147,31 @@ Forthword_ RP_FETCH, INLINE_OPT, "rp@"
 
 # ( addr  -- ) (R: -- x*y)
 # set return stack pointer
-# must be called
 Forthword_ RP_STORE, INLINE_OPT, "rp!"
 	# keep the return address
 	rpstore_
 	ret
+
+# ( -- retaddr )
+# pop second return onto data stack and exit caller
+# used if data in program mem and need an address to it
+# must be called
+Forthword_ POPRET, 0, "popret"
+    pushtos_
+    pop %ebx
+    ret
+    
+
+# ( -- n) (R: n -- n+1 )
+# get TOR and then increment TOR by 1 cell (32 bit)
+# assumes TOR content will be used for 32 bit memory access
+# since this word must be called, skip the top most item on the return stack
+Forthword_ RTORPLUS, 0, "r>r+"
+	pushtos_
+	mov 4(%esp), %ebx
+	addl $4, 4(%esp)
+	ret
+
 
 #@@@@@@@@@@@@@ Arithmatic @@@@@@@@@@@@@
 
@@ -525,9 +545,8 @@ Forthword_ AFETCH, INLINE_OPT, "a@"
 
 # ( n -- )
 # store a word to RAM address pointed to by areg
-Forthword_ ASTORE, 0, "a!"
-  mov %ebx, (%esi)
-  poptos_
+Forthword_ ASTORE, INLINE_OPT, "a!"
+  astore_
   ret
 
 # ( -- n )
@@ -538,9 +557,8 @@ Forthword_ AHFETCH, INLINE_OPT, "ah@"
 
 # ( h -- )
 # store a half word to RAM address pointed to by areg
-Forthword_ AHSTORE, 0, "ah!"
-  movw %bx, (%esi)
-  poptos_
+Forthword_ AHSTORE, INLINE_OPT, "ah!"
+  ahstore_
   ret
 
 # ( -- n )
@@ -551,9 +569,8 @@ Forthword_ ACFETCH, INLINE_OPT, "ac@"
 
 # ( c -- )
 # store a single byte to RAM address pointed to by areg
-Forthword_ ACSTORE, 0, "ac!"
-  movb %bl, (%esi)
-  poptos_
+Forthword_ ACSTORE, INLINE_OPT, "ac!"
+  acstore_
   ret
 
 # ( -- )

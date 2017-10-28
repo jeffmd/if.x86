@@ -15,10 +15,12 @@ Forthword_ RELDST, 0, "reldst"
     ret
 
 # build assembler instruction jmp - unconditional long jump
-# ( reldist -- jumprellong )
+# ( reldist -- rellong jumpinst)
 # reldist: relative distance as 2's compliment 32 bit
 Forthword_ JUMP, 0, "jmpl"
-    # 0xe9 XXXX XXXX XXXX 
+    # 0xe9 XXXX XXXX XXXX
+    sub $4, %ebx
+    dolit_ 0xe9
     ret
 
 # build assembler instruction jmp - unconditional short jump
@@ -32,17 +34,22 @@ Forthword_ JUMPS, 0, "jmps"
 # ( reldist -- )
 # reldist: relative distance as 2's compliment
 Forthword_ BC, 0, "jmp,"
-    call JUMP
-    jmp COMMA
+    call JUMP            # ( rellong jumpinst )
+    call COMMA           # ( rellong )
+    jmp DWCOMMA          # ( )
 
 # compile jump at start address
 # ( start dest -- )
 Forthword_ JMPC, 0, "jmpc"
     over_                # ( start dest start )
     call RELDST          # ( start reldst )
-    call JUMP            # ( start branchinst )
-    swap_                # ( branchinst start )
-    jmp HSTORE           # ( )
+    call JUMP            # ( start rellong jumpinst )
+    call ROT             # ( rellong jumpinst start )
+    toa_                 # ( rellong jumpinst ) A: start
+    acstore_             # ( rellong )
+    acplus_
+    astore_              # ( )
+    ret
 
 
 # compile call to xt at the current code position (CP)
