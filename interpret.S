@@ -692,20 +692,22 @@ DOTASKS_N1:
 # reset input source
 Forthword_ RESET, 0, "reset"
     call SMUDGE
-    call ZEROSTORE
+    zerostore_
 
     # reset input source for key
     dolit_ STDIN
     call KEYADDR
-    call STORE
+    store_
 
     # reset output source for emit
     dolit_ PUTCHAR
     call EMITADDR
-    call STORE
+    store_
 
     # reset input buffer
     call INRESET
+    
+    call SLEEPON
 
     # switch to interpret mode
     jmp LBRACKET

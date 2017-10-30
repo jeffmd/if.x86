@@ -113,11 +113,11 @@ Forthword_ UWID, 0, "uwid"
 		# wid.word = smudge
 		call CURRENT
 		fetch_
-		call STORE
+		store_
 		#call CLRCACHE
 		# set smudge to zero indicating no longer compiling a word
 		call SMUDGE
-		call ZEROSTORE
+		zerostore_
 	UWID_end:
 	ret
 
@@ -139,7 +139,7 @@ Forthword_ COMMA, 0, ","
 # store double word 32 bit value on TOS into code section ram at (code pointer) CP
 Forthword_ DWCOMMA, 0, "dw,"
     call CP
-    call STORE
+    store_
     four_
     jmp CPPLUS
 
@@ -148,7 +148,7 @@ Forthword_ DWCOMMA, 0, "dw,"
 # automaticaly increment dp position by 4 bytes
 Forthword_ DPSTORE, 0, "dp!"
     call DP
-    call STORE
+    store_
     four_
     jmp DPPLUS
 
@@ -260,10 +260,10 @@ Forthword_ ONLY, IMMEDIATE_EN, "only"
 	dolit_ EE_FORTHWORDLIST
 	dup_
 	call CONTEXT
-	call STORE
+	store_
 	# make current also forth vocab
 	call CURRENT
-	call STORE
+	store_
 	# move index to next slot
 	one_
 	call CONTEXT

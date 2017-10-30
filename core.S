@@ -288,9 +288,11 @@ Forthword_ ZEROGREATER, 0, "0>"
 # ( u1 u2 -- flag )
 # flag is true if u1 > u2 (unsigned)
 Forthword_ UGREATER, 0, "u>"
-  popnos_
+  xchg %eax, %esp
+  pop %edx
   sub %edx, %ebx
   sbb %ebx, %ebx
+  xchg %eax, %esp
   ret
 
 # ( u1 u2 -- flag)
@@ -384,37 +386,34 @@ Forthword_ FETCH, INLINE_OPT, "@"
 
 # ( n32 a-addr -- )
 # store a word (32 bits) to RAM address
-Forthword_ STORE, 0, "!"
-  movl (%eax), %edx
-  movl %edx, (%ebx)
-  movl 4(%eax), %ebx
-  add $8, %eax
+Forthword_ STORE, INLINE_OPT, "!"
+  store_
   ret
 
 # ( a-addr -- )
 # store 0 (32 bits) to RAM address
-Forthword_ ZEROSTORE, 0, "0!"
-  movl $0, (%ebx)
-  poptos_
+Forthword_ ZEROSTORE, INLINE_OPT, "0!"
+  zerostore_
   ret
 
 # ( n32 a-addr -- )
 # add n32 to content of cell RAM address a-addr
-Forthword_ PLUSSTORE, 0, "+!"
+Forthword_ PLUSSTORE, INLINE_OPT, "+!"
   # X is the new TOS after the store completes.
   xchg %eax, %esp
   pop %edx
-  pop %ecx
-  xchg %eax, %esp
   addl  %edx, (%ebx)   
-  mov %ecx, %ebx
+  pop %ebx
+  xchg %eax, %esp
   ret
 
 # ( a-addr -- )
 # add 1 to content of cell RAM address a-addr
-Forthword_ ONEPLUSSTORE, 0, "1+!"
+Forthword_ ONEPLUSSTORE, INLINE_OPT, "1+!"
+  xchg %eax, %esp
   addl  $1, (%ebx)
-  poptos_
+  pop %ebx
+  xchg %eax, %esp
   ret
 
 # ( a-addr -- n16 )
@@ -425,33 +424,41 @@ Forthword_ HFETCH, INLINE_OPT, "h@"
 
 # ( n16 a-addr -- )
 # store a half word (16 bits) to RAM address
-Forthword_ HSTORE, 0, "h!"
-  popnos_
+Forthword_ HSTORE, INLINE_OPT, "h!"
+  xchg %eax, %esp
+  pop %edx
   movw %dx, (%ebx)     
-  poptos_
+  pop %ebx
+  xchg %eax, %esp
   ret
 
 # ( a-addr -- )
 # store 0 (16 bits) to RAM address
-Forthword_ ZEROHSTORE, 0, "0h!"
+Forthword_ ZEROHSTORE, INLINE_OPT, "0h!"
+  xchg %eax, %esp
   movw $0, (%ebx)
-  poptos_
+  pop %ebx
+  xchg %eax, %esp
   ret
 
 # ( n16 a-addr -- )
 # add n16 to content of half cell RAM address a-addr
-Forthword_ PLUSHSTORE, 0, "+h!"
-  popnos_          
-PLUSHSTORE_do:
+Forthword_ PLUSHSTORE, INLINE_OPT, "+h!"
+  xchg %eax, %esp
+  pop %edx
   addw %dx, (%ebx)
-  poptos_
+  pop %ebx
+  xchg %eax, %esp
   ret
 
 # ( a-addr -- )
 # add 1 to content of half cell RAM address a-addr
-Forthword_ ONEPLUSHSTORE, 0, "1+h!"
-  movw $1, %dx
-  jmp PLUSHSTORE_do
+Forthword_ ONEPLUSHSTORE, INLINE_OPT, "1+h!"
+  xchg %eax, %esp
+  addw  $1, (%ebx)
+  pop %ebx
+  xchg %eax, %esp
+  ret
 
 # ( a-addr -- n8 )
 # read byte (8 bits) from RAM address
@@ -461,34 +468,42 @@ Forthword_ CFETCH, INLINE_OPT, "c@"
 
 # ( c a-addr -- )
 # store a single byte to RAM address
-Forthword_ CSTORE, 0, "c!"
-  popnos_ 
+Forthword_ CSTORE, INLINE_OPT, "c!"
+  xchg %eax, %esp
+  pop %edx
   movb %dl, (%ebx)
-  poptos_
+  pop %ebx
+  xchg %eax, %esp
   ret
 
 # ( a-addr -- )
 # store 0 (16 bits) to RAM address
-Forthword_ ZEROCSTORE, 0, "0c!"
+Forthword_ ZEROCSTORE, INLINE_OPT, "0c!"
+  xchg %eax, %esp
   movb $0, (%ebx)
-  poptos_
+  pop %ebx
+  xchg %eax, %esp
   ret
 
 # ( c a-addr -- )
 # add c byte to content of byte RAM address a-addr
-Forthword_ PLUSCSTORE, 0, "+c!"
-  popnos_ 
-PLUSCSTORE_do:
+Forthword_ PLUSCSTORE, INLINE_OPT, "+c!"
+  xchg %eax, %esp
+  pop %edx
   addb %dl, (%ebx)
-  poptos_
+  pop %ebx
+  xchg %eax, %esp
   ret
 
 # ( a-addr -- )
 # add 1 to content of byte cell RAM address a-addr
-Forthword_ ONEPLUSCSTORE, 0, "1+c!"
-  movb $1, %dl
-  jmp PLUSCSTORE_do
-
+Forthword_ ONEPLUSCSTORE, INLINE_OPT, "1+c!"
+  xchg %eax, %esp
+  addb $1, (%ebx)
+  pop %ebx
+  xchg %eax, %esp
+  ret
+  
 # ( n1 n2 -- n2 ) A: n1
 # Remove next on stack and write to A register (Extended VM)
 Forthword_ NIPTOA, INLINE_OPT, "nip>a"

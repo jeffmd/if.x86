@@ -352,13 +352,13 @@ Forthword_ CATCH, 0, "catch"
     # rp@ handler !
     rpfetch_            # ( xt RP ) (R: callerret SP hxt)
     call HANDLER        # ( xt RP haddr )
-    call STORE          # ( xt )
+    store_              # ( xt )
     call EXEC
     # restore handler
     # r> handler !
     r_from_             # ( hxt ) (R: callerret SP )
     call HANDLER        # ( hxt haddr )
-    call STORE          # ( )
+    store_              # ( )
     r_drop_             # ( ) (R: callerret)
     zero_
     ret
@@ -373,7 +373,7 @@ Forthword_ THROW, 0, "throw"
     rpstore_           # ( ) (R: callerret SP hxt)
     r_from_            # ( hxt ) (R: callerret SP )
     call HANDLER       # ( hxt haddr )
-    call STORE         # ( )
+    store_             # ( )
     r_from_            # ( SP ) (R: callerret )
     spstore_           # ( ... )
     one_               # ( ... 1 )
@@ -443,11 +443,11 @@ Forthword_ DOINCLUDE, 0, "doinclude"
 		fetch_
 		to_r_
 		call KEYFILEADDR
-		call STORE
+		store_
 		# defer key to keyfile for input
 		dolit_ KEYFILE
 		call KEYADDR
-		call STORE
+		store_
 		# run interpreter
 		call DOTASKS
 		# close keyfile
@@ -457,11 +457,11 @@ Forthword_ DOINCLUDE, 0, "doinclude"
 		# pop tor into keyfile
 		r_from_
 		call KEYFILEADDR
-		call STORE
+		store_
 		# pop top of return into defer key
 		r_from_
 		call KEYADDR
-		call STORE
+		store_
 		# restore FFLAGS
 		r_from_
 		call FFLAGS
@@ -490,24 +490,24 @@ Forthword_ INCLUDEF, 0, "include"
 Forthword_ WIPE, 0, "WIPE"
 	dolit_ DPSTART
 	call DPSHARP
-	call STORE
+	store_
 	
 	dolit_ CPSTART
 	call CPSHARP
-	call STORE
+	store_
 
 	dolit_ EE_FORTHWORDLIST
 	dup_
-	call ZEROSTORE
+	zerostore_
 	fourplus_
-	call ZEROSTORE
+	zerostore_
 	
 	# init pause to noop
 	dolit_ NOOP
 	call PAUSEADDR
-	call STORE
+	store_
 	
 	dolit_ HERESTART
 	call HEREADDR
-	call STORE
+	store_
 	jmp ONLY    
