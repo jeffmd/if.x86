@@ -24,7 +24,9 @@ Forthword_ CLOSEF, 0, "close"
   call close
   pop %edx
   pop %eax
+  datastack_
   poptos_
+  datastack_
   ret
 
 # (  filedes buffer length -- bytesread )
@@ -48,10 +50,8 @@ Forthword_ READF, 0, "read"
 Forthword_ WRITEF, 0, "write"
   push %eax
   push %ebx # length
-  poptos_
-  push %ebx # buffer
-  poptos_
-  push %ebx # filedes
+  push (%eax) # buffer
+  push 4(%eax) # filedes
   call write 
   mov %eax, %ebx
   add $12, %esp

@@ -37,7 +37,9 @@ Forthword_ SMUDGE, 0, "smudge"
 # ( -- f-addr )
 # get address of the dictionary cell
 Forthword_ DPSHARP, 0, "dp#"
+  datastack_
 	pushtos_
+  datastack_
 	movl $(ram_dp-sysvar_base), %ebx 
 	add %ebp, %ebx
 	ret
@@ -58,13 +60,17 @@ Forthword_ DPPLUS, 0, "dp+"
 # ( -- )
 # increment 32 bit (dictionary pointer) DP by one cell
 Forthword_ DPPLUSONE, 0, "dp+1"
-    one_
-    jmp DPPLUS
+  datastack_
+  one_
+  datastack_
+  jmp DPPLUS
 
 # ( -- f-addr )
 # get address of the code cell
 Forthword_ CPSHARP, 0, "cp#"
+  datastack_
 	pushtos_
+  datastack_
 	movl $(ram_cp-sysvar_base), %ebx 
 	add %ebp, %ebx
 	ret
@@ -85,18 +91,22 @@ Forthword_ CPPLUS, 0, "cp+"
 # ( -- )
 # increment 32 bit (code pointer) CP by one cell
 Forthword_ CPPLUSONE, 0, "cp+1"
-    one_
-    jmp CPPLUS
+  datastack_
+  one_
+  datastack_
+  jmp CPPLUS
 
 # ( -- )
 # tail call optimize: change last call into jmp
 Forthword_ TAILOPT, 0, ";opt"
-    # optimize only if smudge is not zero
-    call SMUDGE
-    call FETCH
-    zerosense_
-    jne TAILOPT_OPT
-    ret
+	# optimize only if smudge is not zero
+	call SMUDGE
+	call FETCH
+  datastack_
+  zerosense_
+  datastack_
+	jne TAILOPT_OPT
+	ret
 
 TAILOPT_OPT:
     # don't optimize tail call, just compile a ret.
@@ -108,16 +118,22 @@ Forthword_ UWID, 0, "uwid"
 	call SMUDGE
 	fetch_
 	call QDUP
+  datastack_
 	zerosense_
+  datastack_
 	je UWID_end
 		# wid.word = smudge
 		call CURRENT
 		fetch_
+    datastack_
 		store_
+    datastack_
 		#call CLRCACHE
 		# set smudge to zero indicating no longer compiling a word
 		call SMUDGE
+    datastack_
 		zerostore_
+    datastack_
 	UWID_end:
 	ret
 
@@ -138,30 +154,36 @@ Forthword_ COMMA, 0, ","
 # ( n -- )
 # store double word 32 bit value on TOS into code section ram at (code pointer) CP
 Forthword_ DWCOMMA, 0, "dw,"
-    call CP
-    store_
-    four_
-    jmp CPPLUS
+  call CP
+  datastack_
+  store_
+  four_
+  datastack_
+  jmp CPPLUS
 
 # ( n -- )
 # store 32 bit value on TOS into dictionary section ram at (dictionary pointer) DP
 # automaticaly increment dp position by 4 bytes
 Forthword_ DPSTORE, 0, "dp!"
-    call DP
-    store_
-    four_
-    jmp DPPLUS
+	call DP
+  datastack_
+	store_
+	four_
+  datastack_
+	jmp DPPLUS
 
 # ( s-addr len len' d-addr -- d-addr+len)
 # copies a counted string with flags from s-addr to d-addr
 # returns destination address + len
 Forthword_ COPYSTRING, 0, "copy$"
+  datastack_
 	tob_               # ( s-addr len len' ) B: d-addr
 	movw %bx, (%edi)
 	addl $2, %edi
 	poptos_            # ( s-addr len )
 	mov %ebx, %ecx
 	poptos_            # ( s-addr )
+  datastack_
 	copytoa_           # ( s-addr ) A: addr
 	cld
 	rep movsb
@@ -192,7 +214,9 @@ Forthword_ STRINGDICTSTORE, 0, "$dp!"
 # or get word index of match
 Forthword_ FINDB, 0, "findb"
 	# fetch from ram and check if equal to match byte
+  datastack_
 	tob_             # ( start ) B: match
+  datastack_
 	copytoa_         # ( start ) A: start
 	# begin
 FINDI_BEGIN:
@@ -203,10 +227,12 @@ FINDI_BEGIN:
 	# until
 	jne FINDI_BEGIN
 
+  datastack_
 	geta_            # ( start end )
 	oneminus_        # ( start end-1 )
 	over_            # ( start end-1 start )
 	minus_           # ( start count )
+  datastack_
 	ret
 
   
@@ -214,17 +240,21 @@ FINDI_BEGIN:
 # ( start -- )
 # copy code to current dictionary entry
 Forthword_ INLINE, 0, "inline"
-    # find the ret instruction, want count to ret
-    # count will be number of bytes to inline
-    dolit_ 0xc3
-    call FINDB               # ( start count )
+	# find the ret instruction, want count to ret
+	# count will be number of bytes to inline
+  datastack_
+	dolit_ 0xc3
+  datastack_
+	call FINDB               # ( start count )
 
-    # dp swap dup dp+ itoi
-    call CP                  # ( start count cp )
-    swap_                    # ( start cp count )
-    dup_                     # ( start cp count count )
-    call CPPLUS              # ( start cp count )
-    jmp MCPY                 # ( )
+	# dp swap dup dp+ itoi
+	call CP                  # ( start count cp )
+	swap_                    # ( start cp count )
+  datastack_
+  dup_                     # ( start cp count count )
+  datastack_
+	call CPPLUS              # ( start cp count )
+	jmp MCPY                 # ( )
     
 # ( nfa -- lfa )
 # get the link field address from the name field address
@@ -232,7 +262,9 @@ Forthword_ NFA2LFA, 0, "nfa>lfa"
 	call STRINGLEN               # ( nfa+2 len+flags )
 	# mask out flags in len, allow up to 31 characters
 	and $31, %ebx                # ( nfa+2 len )
+  datastack_
 	plus_
+  datastack_
 	ret
 
 # ( nfa -- [ 0 ] | [ xt xtflags] )
@@ -241,7 +273,9 @@ Forthword_ NFATOXTF, 0, "nfa>xtf"
 	dupzerosense_               # ( n )
 	je NFATOXTF_EXIT
 
+  datastack_
 	dup_                        # ( nfa nfa )
+  datastack_
 	hfetch_                     # ( nfa xtflags )
 	to_r_                       # ( nfa ) (R: xtflags)
 	call NFA2LFA                # ( lfa )
@@ -257,15 +291,21 @@ NFATOXTF_EXIT:
 # other vocabularies
 Forthword_ ONLY, IMMEDIATE_EN, "only"
 	# forth vocab always takes slot 0
+  datastack_
 	dolit_ EE_FORTHWORDLIST
 	dup_
+  datastack_
 	call CONTEXT
+  datastack_
 	store_
+  datastack_
 	# make current also forth vocab
 	call CURRENT
+  datastack_
 	store_
 	# move index to next slot
 	one_
+	datastack_
 	call CONTEXT
 	twominus_
 	call HSTORE

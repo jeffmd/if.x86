@@ -79,7 +79,9 @@ DICTIONARY_START:
 # ( nx* -- ) (R: ny* -- )
 # initialize if further. EXECs turnkey operation and go to quit
 Forthword_ WARM, 0, "warm"
+  datastack_
 	pushtos_
+  datastack_
 	mov %esp, %ebx
 	call RP0
 	call STORE
@@ -94,7 +96,9 @@ Forthword_ WARM, 0, "warm"
 # ( -- addr)
 # start address of the data stack
 Forthword_ SP0, 0, "sp0"
+  datastack_
   pushtos_
+  datastack_
   movl $topdatastack, %ebx
   ret
 
