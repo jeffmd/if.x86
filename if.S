@@ -10,7 +10,7 @@
 .balign 4
 
 datastack:
-  .space 800
+  .space 200
 topdatastack:
   .space 8
 
@@ -46,24 +46,23 @@ EE_FORTHWORDLIST:
   .space 4 # sibling link pointer
   .space 4 # child pointer
 
-# start of user ram area
-HERESTART:
-   .space 65000
 
-# start of user dictionary area
-DPSTART:
-   .space 65000
-   
-# start of user code area
-CPSTART:
-   .space 65000
-    
-# start of hard coded program area that can not be modified at runtime
-.data
-.balign 1
 DICTIONARY_START:
   .space 4
+# start of user dictionary area
+DPSTART:
+  .space  0xffff
   
+# start of user ram area
+HERESTART:
+   .space 0xffff
+
+# start of user code area
+CPSTART:
+   .space 0xffff
+    
+
+# start of hard coded program area that can not be modified at runtime
 .text
 
 .set VE_HEAD, 0

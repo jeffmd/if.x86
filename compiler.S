@@ -37,12 +37,7 @@ Forthword_ SMUDGE, 0, "smudge"
 # ( -- f-addr )
 # get address of the dictionary cell
 Forthword_ DPSHARP, 0, "dp#"
-  datastack_
-	pushtos_
-  datastack_
-	movl $(ram_dp-sysvar_base), %ebx 
-	add %ebp, %ebx
-	ret
+  douser_ ram_dp
 
 # ( -- f-addr )
 # address of the next free dictionary cell
@@ -68,12 +63,7 @@ Forthword_ DPPLUSONE, 0, "dp+1"
 # ( -- f-addr )
 # get address of the code cell
 Forthword_ CPSHARP, 0, "cp#"
-  datastack_
-	pushtos_
-  datastack_
-	movl $(ram_cp-sysvar_base), %ebx 
-	add %ebp, %ebx
-	ret
+  douser_ ram_cp
 
 # ( -- f-addr )
 # address of the next free code cell
@@ -148,7 +138,7 @@ Forthword_ LBRACKET, IMMEDIATE_EN, "["
 # store 8 bit value on TOS into code section ram at (code pointer) CP
 Forthword_ COMMA, 0, ","
     call CP
-    calll CSTORE
+    call CSTORE
     jmp CPPLUSONE
 
 # ( n -- )

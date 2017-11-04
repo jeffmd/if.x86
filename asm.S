@@ -61,6 +61,15 @@ Forthword_ JMPC, 0, "jmpc"
   datastack_
   ret
 
+# conditional jump over a jmp if not zero
+# ( -- )
+Forthword_ JMPNZ1_COMPILE, 0, "jne1,"
+    # compile jne $06 : 0x7506
+    dolit_ 0x75
+    call COMMA
+    dolit_ 6
+    jmp COMMA
+
 
 # compile call to xt at the current code position (CP)
 # If word flag indicates inlining then the word is inlined.
