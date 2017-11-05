@@ -70,9 +70,7 @@ Forthword_ PUTCHAR, 0, "putchar"
   call putchar
   pop %edx
   pop %eax
-  datastack_
   poptos_
-  datastack_
   ret
 
 # ( c -- )
@@ -86,28 +84,22 @@ Forthword_ EMIT, 0, "emit"
 # ( -- )
 # cause subsequent output appear at the beginning of the next line
 Forthword_ CR, 0, "cr"
-  datastack_
   ten_
   dolit_ 13
-  datastack_
   call EMIT
   jmp EMIT
 
 # ( -- 32 )
 # put ascii code of the blank/space character to the stack
 Forthword_ BL, 0, "bl"
-  datastack_
   bl_
-  datastack_
   ret
 
 # ( -- key )
 # fetch key from standard input, should leave a single character on TOS
 # if a key was pressed. If no key pressed then -1 is on TOS.
 Forthword_ STDIN, 0, "stdin"
-  datastack_
   pushtos_
-  datastack_
   push %eax
   call getchar
   movl %eax, %ebx
@@ -118,25 +110,17 @@ Forthword_ STDIN, 0, "stdin"
 # fetch key from an open file using filedes, should leave
 # a single character on TOS or -1 if no more to read in file.
 Forthword_ KEYFILE, 0, "keyfile"
-  datastack_
   zero_                    # ( 0 )
-  datastack_
   call KEYFILEADDR         # ( 0 keyfile# )
   fetch_                   # ( 0 filedes )
-  datastack_
   pushtos_                 # ( 0 filedes ? )
-  leal 4(%esp), %ebx       # ( 0 filedes esp+4 
-  one_                     # ( 0 filedes esp+4 1 )
-  datastack_
+  leal 4(%eax), %ebx       # ( 0 filedes eax+4 
+  one_                     # ( 0 filedes eax+4 1 )
   call READF               # ( key count )
   # was one key read from the file?
-  datastack_
   one_                     # ( key count 1 )
-  datastack_
   call EQUAL               # ( key flag )
-  datastack_
   zerosense_               # ( key )
-  datastack_
   jne KEYEND
   sub $1, %ebx
   jmp BYE  
@@ -159,16 +143,12 @@ Forthword_ REFILL, 0, "refill"
 # ( addr n -- )
 # print a counted string
 Forthword_ TYPE, 0, "type"
-  datastack_
 	niptoa_           # Address of string
-  datastack_
 	dupzerosense_
 	jz TYPE_END
 	
 TYPE1:
-  datastack_
 	acfetch_
-  datastack_
 	acplus_
 	call EMIT
 	oneminus_
@@ -177,9 +157,7 @@ TYPE2:
 	jnz TYPE1
 
 TYPE_END:	
-  datastack_
 	drop_
-  datastack_
 	ret
 
 
@@ -187,14 +165,12 @@ TYPE_END:
 # compares two counted strings in RAM
 # flag is true if strings match
 Forthword_ MCMP, 0, "mcmp"
-  datastack_
   tob_                     # ( r-addr r-len f-addr)  B: f-len
   over_                    # ( r-addr r-len f-addr r-len)
   # check if strings are same length
   xor %edi, %ebx           # ( r-addr r-len f-addr flag )
   # if
   zerosense_               # ( r-addr r-len f-addr )
-  datastack_
   je CMPSB
 
   # strings are not the same length
@@ -207,55 +183,41 @@ Forthword_ MCMP, 0, "mcmp"
 # compare two strings of same length
 # flag is true if strings match
 Forthword_ CMPSB, 0, "cmpsb"
-  datastack_
   toa_                     # ( r-addr len ) A: f-addr
   movl %ebx, %ecx          # ( r-addr ) CX: len
   poptos_
   tob_                     # ( ) B: r-addr
-  datastack_
   cld
   repe cmpsb
   # while
   je MCMP_DONE
 
   # strings don't match
-  datastack_
   zero_                 # ( 0 )
-  datastack_
   ret
 
 MCMP_DONE:
   # strings are the same
-  datastack_
   true_
-  datastack_
   ret
 
   
 # ( addr1 u1 n -- addr2 u2 )
 # adjust string from addr1 to addr1+n, reduce length from u1 to u2 by n
 Forthword_ SLASHSTRING, 0, "/$"
-  datastack_
 	over_         # ( -- addr1 u1 n u1 )
-  datastack_
 	call MIN      # ( -- addr1 u1 n|u1 )
 	rot_          # ( -- u1 n addr1 )
-  datastack_
 	over_         # ( -- u1 n addr1 n )
 	plus_         # ( -- u1 n addr2 )
-  datastack_
 	rrot_         # ( -- addr2 u1 n )
-  datastack_
 	minus_        # ( -- addr2 u2)
-  datastack_
 	ret
 
 # ( addr -- addr+2 n )
 # get string address and length information out of a counted string
 Forthword_ STRINGLEN, 0, "$l"
-  datastack_
 	dup_
-  datastack_
 	twoplus_
 	swap_
 	hfetch_
@@ -266,28 +228,22 @@ Forthword_ STRINGLEN, 0, "$l"
 # pointing to the 1st non-c character
 # n1 is max number of characters to search
 Forthword_ CSKIP, 0, "cskip"
-  datastack_
 	tob_                 # ( addr1 n1 ) B: c
 	niptoa_              # ( n1 ) A: addr1
 	dup_                 # ( n1 n1 )
-  datastack_
 PFA_CSKIP1:
 	dupzerosense_        # ( n1 n')
 	je PFA_CSKIP2
-  datastack_
 	acfetch_             # ( n1 n' c' )
 	acplus_
 	cmp %edi, %ebx       # ( n1 n' c' )
 	drop_                # ( n1 n' )
-  datastack_
 	jne PFA_CSKIP2
 	oneminus_
 	jmp PFA_CSKIP1
 
 PFA_CSKIP2:
-  datastack_
 	minus_               # ( n1-n' )
-  datastack_
 	ret
 
 # ( addr1 n1 c -- addr1 n2 )
@@ -295,29 +251,23 @@ PFA_CSKIP2:
 # n1 is max number of characters to search
 # char at n2 is first c character
 Forthword_ CSCAN, 0, "cscan"
-  datastack_
 	tob_                 # ( addr1 n1 ) B: c
 	over_                # ( addr1 n1 addr1 )
 	toa_                 # ( addr1 n1 ) A: addr1
 	dup_                 # ( addr1 n1 n1 )
-  datastack_
 PFA_CSCAN1:
 	dupzerosense_        # ( addr1 n1 n')
 	je PFA_CSCAN2
-  datastack_
 	acfetch_             # ( addr1 n1 n' c' )
 	acplus_
 	cmp %edi, %ebx       # ( addr1 n1 n' c' )
 	drop_                # ( addr1 n1 n' )
-  datastack_
 	je PFA_CSCAN2
 	oneminus_
 	jmp PFA_CSCAN1
 
 PFA_CSCAN2:
-  datastack_
 	minus_               # ( addr1 n1-n' )
-  datastack_
 	ret
 
 # ( -- srcaddr len  )
@@ -332,9 +282,7 @@ Forthword_ SRCIN, 0, "srcin"
 # skip space in input source.
 Forthword_ SKIPBL, 0, "skipbl"
 	call SRCIN          # ( srcaddr len )
-  datastack_
 	bl_                 # ( srcaddr' len' c )
-  datastack_
 	call CSKIP          # ( n2 )
 
 	# adjust >IN
@@ -347,9 +295,7 @@ Forthword_ PARSE, 0, "parse"
 	call SRCIN         # ( -- c addr len)
 	rot_               # ( -- addr' len' c)
 	call CSCAN         # ( -- len'')
-  datastack_
 	dup_               # ( -- addr' len'' len'')
-  datastack_
 	oneplus_           # ( -- addr' len'' len''+1 )
 	call G_IN          # ( -- addr' len'' len''+1 >in)
 	jmp PLUSHSTORE     # ( -- addr' len'')
@@ -358,9 +304,7 @@ Forthword_ PARSE, 0, "parse"
 # In the SOURCE buffer parse whitespace delimited string. Returns string address within SOURCE.
 Forthword_ PNAME, 0, "pname"
 	call SKIPBL
-  datastack_
 	bl_
-  datastack_
 	jmp PARSE
 
 # ( c-addr len wid -- [ 0 | nfa ] )
@@ -394,9 +338,7 @@ FINDNFA_CHECK:
 	and $31, %ebx               # ( c-addr len c-addr len f-addr 0:len )
 	call MCMP                   # ( c-addr len flag )
 	# <if>
-  datastack_
 	zerosense_
-  datastack_
 	je FINDNFA_NEXT
 		# we found the string
 		ddrop_                    # ( )
@@ -415,25 +357,19 @@ FINDNFA_NEXT:
 # search root wordlists for the name from string addr/len
 Forthword_ FINDROOT, 0, "froot"
 	# put root wid on stack
-  datastack_
 	dolit_ VE_COLD
-  datastack_
 	jmp FINDNFA_BEGIN
 
 # ( addr len idx -- 0 | nfa )
 FINDWI:
   fourstar_          # ( addr len idx*4)
   call CONTEXT       # ( addr len idx*4 context )
-  datastack_
   plus_              # ( addr len context' )
-  datastack_
   fetch_             # ( addr len wid )
   jmp FINDNFA        # ( nfa)
 
 FINDLAST:
-  datastack_
   drop_
-  datastack_
   jmp FINDROOT
 
 # ( addr len --  0 | nfa )
@@ -463,9 +399,7 @@ FINDW_BEGIN:
 			ret
 
 FINDW_NEXT:
-  datastack_
   drop_             # ( addr len idx )
-  datastack_
   # decrement index
 	oneminus_         # ( addr len idx-1 )
 	jmp FINDW_BEGIN
@@ -478,32 +412,22 @@ FINDW_NEXT:
 Forthword_ DOSLIT, 0, "(slit)"
   # get return address to get string length, calculate string address start,
   # and calculate return address
-  datastack_
   pushtos_
-  datastack_
   pop %ebx       # ( raddr )  (R: raddr -- )
-  datastack_
   dup_           # ( raddr raddr )
-  datastack_
   # get the string length
   hfetch_        # ( raddr slength )
-  datastack_
   over_          # ( raddr slength raddr )
-  datastack_
   # calculate string address
   twoplus_       # ( raddr slength straddr )
   # calculate the number of words to skip over for return address
   flip_          # ( straddr slength raddr )
-  datastack_
   over_          # ( straddr slength raddr slength)
   plus_          # ( straddr slength raddr+slength )
-  datastack_
   # also skip string length
   twoplus_       # ( straddr slength raddr+k+2 )
   push %ebx      
-  datastack_
   poptos_
-  datastack_
   ret
 
 # ( addr len -- [n] [addr len] f )
@@ -514,32 +438,24 @@ Forthword_ REC_NUM, 0, "rec#"
 	to_r_
 	# try converting to a number
 	call NUMBER              # ( [n] f )
-  datastack_
 	zerosense_
-  datastack_
 	je REC_NONUMBER
 
 		call STATEFETCH        # ( n state )
-    datastack_
-		zerosense_
-    datastack_
-		je REC_NUMBER_OK
+  		zerosense_
+  		je REC_NUMBER_OK
 			call LIT
 
 REC_NUMBER_OK:
 		r_drop_
 		r_drop_
-    datastack_
-		true_                # ( n true )
-    datastack_
-		ret
+  		true_                # ( n true )
+  		ret
 
 REC_NONUMBER:
 	r_from_
 	r_from_
-  datastack_
 	zero_                  # ( 0 )
-  datastack_
 	ret
 
 # ( addr len -- ** [addr len] f )
@@ -585,26 +501,18 @@ CHECK_IMMEDIATE:
 REC_WORD_CHECKSTATE:
       # check state
     call STATEFETCH
-    datastack_
-    zerosense_
-    datastack_
-    je REC_WORD_EXECUTE
+      zerosense_
+      je REC_WORD_EXECUTE
       # in compile mode so compile xt
     call COMPILEXT
-    datastack_
-    true_
-    datastack_
-    ret
+      true_
+      ret
 
 REC_WORD_EXECUTE:
-  datastack_
   drop_
-  datastack_
   # state is zero, EXEC xt
   call EXEC
-  datastack_
   true_
-  datastack_
   ret
 
 # ( addr len -- )
@@ -613,15 +521,11 @@ Forthword_ RECX, 0, "recx"
 	# test if its a word
 	call REC_WORD         # ( addr len flag )
 	#zero_# <if>
-  datastack_
 	zerosense_            # ( addr len )
-  datastack_
 	jne RECX_DONE
 	# test if its a number
 	call REC_NUM          # ( addr len flag )
-  datastack_
 	zerosense_            # ( addr len )
-  datastack_
 	jne RECX_DONE
 	# not recognized so throw
 	call CR
@@ -676,9 +580,7 @@ Forthword_ PROMPTOK, 0, ".ok"
 # ( n -- )
 # process the error prompt
 Forthword_ PROMPTERROR, 0, ".??"
-  datastack_
 	drop_
-  datastack_
 	type_ " ?? "
 	ret
 
@@ -688,9 +590,7 @@ Forthword_ QP_RD, 0, "?prd"
   call STATEFETCH
   # output ready prompt if in interpret mode
   # <-if>
-  datastack_
   zerosense_
-  datastack_
   jne QP_RD_exit
     jmp PROMPTRDY
 
@@ -715,9 +615,7 @@ Forthword_ DOREFILL, 0, "(refill)"
   # if just starting new input line then check prompt and reset input position
   call G_IN                # ( >inaddr )
   hfetch_                  # ( >in )
-  datastack_
   zerosense_               # ( )
-  datastack_
   je DOREFILL_do
     call INRESET
 
@@ -731,16 +629,12 @@ DOREFILL_do:
 Forthword_ DOINTERPRET, 0, "(interp)"
   # input buffer has something so try to interpret it
   # setup exception handling in case of error
-  datastack_
   dolit_ INTERPRET
-  datastack_
   call CATCH
   # check to make sure no throws
   call QDUP
   # <if>
-  datastack_
   zerosense_
-  datastack_
   je DOINTERPRET_ok
     call PROMPTERROR
     call QUIT
@@ -756,14 +650,10 @@ DOINTERPRET_ok:
 # ( -- )
 # set terminate flag which indicates request to exit forth interpreter
 Forthword_ BYE, 0, "bye"
-  datastack_
 	one_
-  datastack_
 	call FFLAGS
 	hfetch_
-  datastack_
 	or_
-  datastack_
 	call FFLAGS
 	jmp HSTORE
 
@@ -781,9 +671,7 @@ Forthword_ DOTASKS, 0, "(tasks)"
 	# <begin>
 DOTASKS1:
 	call DOREFILL     # ( flag )
-  datastack_
   zerosense_
-  datastack_
   je DOTASKS_N1
     # there is something in the input buffer, try interpreting it
     call DOINTERPRET
@@ -802,23 +690,17 @@ DOTASKS_N1:
 # reset input source
 Forthword_ RESET, 0, "reset"
   call SMUDGE
-  datastack_
   zerostore_
 
   # reset input source for key
   dolit_ STDIN
-  datastack_
   call KEYADDR
-  datastack_
   store_
 
   # reset output source for emit
   dolit_ PUTCHAR
-  datastack_
   call EMITADDR
-  datastack_
   store_
-  datastack_
 
   # reset input buffer
   call INRESET
@@ -878,25 +760,17 @@ ACCEPT_checkdelete:
   call SHARPTIB
   hfetch_           # ( k #tib )
   # <if>
-  datastack_
   zerosense_        # ( k )
-  datastack_
   jne ACCEPT_dodelete
   # at the beginning of the line, ignore this character
-  datastack_
   drop_
-  datastack_
   jmp ZERO
 
 ACCEPT_dodelete:
   andl $8, %ebx
-  datastack_
   dup_                # ( k k )
-  datastack_
   call EMIT           # ( k )
-  datastack_
   bl_                 # ( k bl )
-  datastack_
   call EMIT           # ( k )
   call EMIT           # ( )
   # decrease cursor position by one
@@ -910,23 +784,17 @@ ACCEPT_checkcontrol:
   # check for remaining control characters, replace them with blank
   cmp $32, %ebx          # ( k k bl )
   jge ACCEPT_echo
-  datastack_
   drop_
   # replace control key with a space
   bl_
-  datastack_
 
 ACCEPT_echo:
     # emit the key
-  datastack_
   dup_                   # ( k k)
-  datastack_
   call EMIT              # ( k)
   # now store the key in the input buffer
   call STIB              # ( k tibaddr #tib)
-  datastack_
   plus_                  # ( k tibaddr+#tib )
-  datastack_
   call CSTORE            # ( )
 
   call SHARPTIB          # ( 1 #tibaddr )
@@ -934,18 +802,12 @@ ACCEPT_echo:
 
 ACCEPT_checkmaxinput:
   # check if max number of char input
-  datastack_
   dolit_ TIBSIZE       # ( tibsize )
-  datastack_
   call SHARPTIB        # ( tibsize #tibaddr )
   call HFETCH          # ( tibsize #tib)
-  datastack_
   minus_               # ( tibsize-#tib)
-  datastack_
   # <if>
-  datastack_
   zerosense_           # ( )
-  datastack_
   je ACCEPT_atmaxinput
   jmp ZERO
 

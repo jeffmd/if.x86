@@ -37,20 +37,17 @@
 
 # Inline macros
 
-.macro datastack_
-  xchg %eax, %esp
-.endm
-
 .macro dup_r_ # put copy of tos on return stack
-    pushl %ebx
+  pushl %ebx
 .endm
 
 .macro r_drop_ # drop TOR
-    popl %edx
+  popl %edx
 .endm
 
 .macro pushtos_ # save tos on data stack, same as dup
-  pushl %ebx 
+  leal -4(%eax), %eax
+  mov %ebx, (%eax) 
 .endm
 
 .macro dup_
@@ -62,7 +59,8 @@
 .endm
 
 .macro poptos_ # load tos from stack, same as drop
-  popl %ebx
+  mov (%eax), %ebx
+  leal 4(%eax), %eax
 .endm
 
 .macro drop_
@@ -71,87 +69,73 @@
 
 # test with bit constant
 .macro bittest_ v
-  xchg %eax, %esp  
   test $\v, %ebx
-  pop %ebx
-  xchg %eax, %esp  
+  poptos_
 .endm
 
 .macro swap_
-  xchg %ebx, (%eax)
+  mov (%eax), %edx
+  mov %ebx, (%eax)
+  mov %edx, %ebx
 .endm
 
 .macro over_
-  push %ebx
-  movl 4(%esp), %ebx
+  pushtos_
+  movl 4(%eax), %ebx
 .endm
 
 .macro spfetch_
-  datastack_
   pushtos_
-  datastack_
   movl %eax, %ebx
 .endm
 
 .macro spstore_
   movl %ebx, %eax
-  datastack_
   poptos_
-  datastack_
 .endm
 
 .macro to_r_
   dup_r_
-  datastack_
   drop_
-  datastack_
 .endm
 
 .macro r_from_
-  datastack_
   pushtos_
-  datastack_
   pop %ebx
 .endm
 
 .macro r_fetch_
-  datastack_
   pushtos_
-  datastack_
   movl (%esp), %ebx
 .endm
 
 .macro rpfetch_
-  datastack_
   pushtos_
-  datastack_
   movl %esp, %ebx
 .endm
 
 .macro rpstore_
   movl %ebx, %esp
-  datastack_
   poptos_
-  datastack_
 .endm
 
 .macro nip_
-  addl $4, %eax
+  leal 4(%eax), %eax
 .endm
 
 .macro dnip_
-  addl $8, %eax
+  leal 8(%eax), %eax
 .endm
 
 .macro ddrop_
   nip_
-  datastack_
   drop_
-  datastack_
 .endm
 
 .macro flip_
-  xchg %ebx, 4(%eax)
+  mov 4(%eax), %edx
+  mov %ebx, 4(%eax)
+  mov %edx, %ebx
 .endm
 
 .macro rot_
@@ -165,26 +149,24 @@
 .endm
 
 .macro popnos_
-  xchg %eax, %esp
-  pop %edx
-  xchg %eax, %esp
+  mov (%eax), %edx
+  leal 4(%eax), %eax
 .endm
 
 .macro pop2nos_
-  xchg %eax, %esp
-  pop %edx
-  pop %ecx
-  xchg %eax, %esp
+  mov (%eax), %edx
+  mov 4(%eax), %ecx
+  leal 8(%eax), %eax
 .endm
 
 .macro plus_
-  pop %edx
+  popnos_
   addl %edx, %ebx
 .endm
 
 .macro minus_
   movl %ebx, %edx
-  pop %ebx
+  poptos_
   sub %edx, %ebx
 .endm
 
@@ -193,17 +175,17 @@
 .endm
 
 .macro and_
-  pop %edx
+  popnos_
   and %edx, %ebx
 .endm
 
 .macro or_
-  pop %edx
+  popnos_
   or %edx, %ebx
 .endm
 
 .macro xor_
-  pop %edx
+  popnos_
   xor %edx, %ebx
 .endm
 
@@ -212,9 +194,7 @@
 .endm
 
 .macro douser_ sym
-  datastack_
   pushtos_
-  datastack_
   leal (\sym-sysvar_base)(%ebp), %ebx
   ret
 .endm
@@ -267,7 +247,7 @@
 
 
 .macro dupzerosense_
-  test %ebx, %ebx
+  or %ebx, %ebx
 .endm
 
 .macro zerosense_
@@ -284,7 +264,7 @@
 .endm
 
 .macro zero_
-  push %ebx
+  pushtos_
   zerotos_
 .endm
 
@@ -319,19 +299,15 @@
 .endm
 
 .macro lshift_
-  xchg %eax, %esp  
   mov %ebx, %ecx
-  pop %ebx
+  poptos_
   shl %cl, %ebx
-  xchg %eax, %esp  
 .endm
 
 .macro rshift_
-  xchg %eax, %esp  
   mov %ebx, %ecx
-  pop %ebx
+  poptos_
   shr %cl, %ebx
-  xchg %eax, %esp  
 .endm
 
 .macro fetch_
@@ -339,15 +315,15 @@
 .endm
 
 .macro store_
-  pop %edx  
+  popnos_
   movl %edx, (%ebx)
-  pop %ebx
+  poptos_
 .endm
 
 .macro zerostore_
   xor %edx, %edx
   movl %edx, (%ebx)
-  pop %ebx
+  poptos_
 .endm
 
 .macro hfetch_
@@ -359,11 +335,13 @@
 .endm
 
 .macro niptoa_
-  pop %esi
+  mov (%eax), %esi
+  add $4, %eax
 .endm
 
 .macro niptob_
-  pop %edi
+  mov (%eax), %edi
+  add $4, %eax
 .endm
 
 .macro copytoa_
@@ -376,77 +354,77 @@
 
 .macro toa_
   copytoa_
-  pop %ebx
+  poptos_
 .endm
 
 .macro tob_
   copytob_
-  pop %ebx
+  poptos_
 .endm
 
 .macro geta_
-  push %ebx
+  pushtos_
   mov %esi, %ebx
 .endm
 
 .macro getb_
-  push %ebx
+  pushtos_
   mov %edi, %ebx
 .endm
 
 .macro afetch_
-  push %ebx
+  pushtos_
   movl (%esi), %ebx
 .endm
 
 .macro astore_
   mov %ebx, (%esi)
-  pop %ebx
+  poptos_
 .endm
 
 .macro bfetch_
-  push %ebx
+  pushtos_
   movl (%edi), %ebx
 .endm
 
 .macro bstore_
   mov %ebx, (%edi)
-  pop %ebx
+  poptos_
 .endm
 
 .macro ahfetch_
-  push %ebx
+  pushtos_
   movsxw (%esi), %ebx
 .endm
 
 .macro ahstore_
   movw %bx, (%esi)
-  pop %ebx
+  poptos_
 .endm
 
 .macro bhfetch_
-  push %ebx
+  pushtos_
   movsxw (%edi), %ebx
 .endm
 
 .macro acfetch_
-  push %ebx
+  pushtos_
   movsxb (%esi), %ebx
 .endm
 
 .macro acstore_
   movb %bl, (%esi)
-  pop %ebx
+  poptos_
 .endm
 
 .macro bcfetch_
-  push %ebx
+  pushtos_
   movsxb (%edi), %ebx
 .endm
 
 .macro bcstore_
   movb %bl, (%edi)
-  pop %ebx
+  poptos_
 .endm
 
 .macro aplus_

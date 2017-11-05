@@ -4,9 +4,7 @@
 # execute XT
 Forthword_ EXEC, 0, "exec"
   push %ebx
-  datastack_
   poptos_
-  datastack_
   ret
 
 # ( xt -- )
@@ -20,9 +18,7 @@ Forthword_ NOOP, INLINE_OPT, "noop"
 # ( n -- n n )
 # duplicate TOS
 Forthword_ DUP, INLINE_OPT, "dup"
-  datastack_
   pushtos_
-  datastack_
   ret
 
 # ( n1 -- [ n1 n1 ] | 0)
@@ -30,9 +26,7 @@ Forthword_ DUP, INLINE_OPT, "dup"
 Forthword_ QDUP, 0, "?dup"
 	dupzerosense_
 	je PFA_QDUP1	
-  datastack_
 	pushtos_
-  datastack_
 PFA_QDUP1:
 	ret
 
@@ -58,25 +52,19 @@ Forthword_ NIP, INLINE_OPT, "nip"
 # ( x1 x2 -- x1 x2 x1 )
 # Place a copy of x1 on top of the stack
 Forthword_ OVER, INLINE_OPT, "over"
-  datastack_
   over_
-  datastack_
   ret
 
 # ( x1 x2 -- x1 x2 x1 x2)
 # Place a copy of x1 and x2 on top of the stack
 Forthword_ TWOOVER, 0, "2over"
-  datastack_
   over_
-  datastack_
   jmp OVER
 
 # ( n -- )
 # drop TOS
 Forthword_ DROP, INLINE_OPT, "drop"
-  datastack_
   drop_
-  datastack_
   ret
 
 # ( n n -- )
@@ -175,9 +163,7 @@ Forthword_ RP_STORE, INLINE_OPT, "rp!"
 # used if data in program mem and need an address to it
 # must be called
 Forthword_ POPRET, 0, "popret"
-  datastack_
   pushtos_
-  datastack_
 	pop %ebx
 	ret
     
@@ -187,9 +173,7 @@ Forthword_ POPRET, 0, "popret"
 # assumes TOR content will be used for 32 bit memory access
 # since this word must be called, skip the top most item on the return stack
 Forthword_ RTORPLUS, 0, "r>r+"
-  datastack_
 	pushtos_
-  datastack_
 	mov 4(%esp), %ebx
 	addl $4, 4(%esp)
 	ret
@@ -200,17 +184,13 @@ Forthword_ RTORPLUS, 0, "r>r+"
 # ( n1 n2 -- n3)
 # add n1 and n2
 Forthword_ PLUS, INLINE_OPT, "+"
-  datastack_
   plus_
-  datastack_
   ret
 
 # ( n1|u1 n2|u2 -- n3|u3 )
 # subtract n2 from n1
 Forthword_ MINUS, INLINE_OPT, "-"
-  datastack_
   minus_
-  datastack_
   ret
 
 # ( n1 -- -n1 )
@@ -223,25 +203,19 @@ Forthword_ NEGATE, INLINE_OPT, "neg"
 # ( n1 n2 -- n3 )
 # bitwise and
 Forthword_ AND_, INLINE_OPT, "and"
-  datastack_
   and_
-  datastack_
   ret
 
 # ( n1 n2 -- n3 )
 # logical or
 Forthword_ OR, INLINE_OPT, "or"
-  datastack_
   or_
-  datastack_
   ret
 
 # ( n1 n2 -- n3)
 # exclusive or
 Forthword_ XOR, INLINE_OPT, "xor"
-  datastack_
   xor_
-  datastack_
   ret
 
 # ( n1 -- n2)
@@ -253,9 +227,7 @@ Forthword_ NOT, INLINE_OPT, "not"
 # ( n1 n2 -- flag)
 # flag is true if n1 is not equal to n2
 Forthword_ NOTEQUAL, INLINE_OPT, "<>"
-  datastack_
   xor_
-  datastack_
   ret
 
 # ( n1 n2 -- flag )
@@ -322,11 +294,9 @@ Forthword_ ZEROGREATER, 0, "0>"
 # ( u1 u2 -- flag )
 # flag is true if u1 > u2 (unsigned)
 Forthword_ UGREATER, 0, "u>"
-  xchg %eax, %esp
-  pop %edx
+  popnos_
   sub %edx, %ebx
   sbb %ebx, %ebx
-  xchg %eax, %esp
   ret
 
 # ( u1 u2 -- flag)
@@ -348,9 +318,7 @@ forthword_ ZEROLESS, INLINE_OPT, "0<"
 # ( -- 0 )
 # place a value 0 on TOS
 Forthword_ ZERO, INLINE_OPT, "0"
-  datastack_
   zero_
-  datastack_
   ret
 
 # ( -- 0 )
@@ -362,9 +330,7 @@ Forthword_ ZEROSET, INLINE_OPT, "0:"
 # ( n -- )
 # test TOS if zero
 Forthword_ ZEROSENSE, INLINE_OPT, "0?"
-  datastack_
 	zerosense_
-  datastack_
 	ret
 
 # ( n -- n)
@@ -376,41 +342,31 @@ Forthword_ QZEROSENSE, INLINE_OPT, "?0?"
 # ( -- -1 )
 # leaves the value -1 (true) on TOS
 Forthword_ TRUE, INLINE_OPT, "true"
-  datastack_
   true_
-  datastack_
   ret
 
 # ( -- 1 )
 # place a value 1 on TOS
 Forthword_ ONE, INLINE_OPT, "1"
-  datastack_
   one_
-  datastack_
   ret
 
 # ( -- 2 )
 # place a value 2 on TOS
 Forthword_ TWO, INLINE_OPT, "2"
-  datastack_
   two_
-  datastack_
   ret
 
 # ( -- 4 )
 # place a value 4 on TOS
 Forthword_ FOUR, INLINE_OPT, "4"
-  datastack_
   four_
-  datastack_
   ret
 
 # ( -- 10 )
 # place a value 10 on TOS
 Forthword_ TEN, INLINE_OPT, "10"
-  datastack_
   ten_
-  datastack_
   ret
 
 # ( n1 n2 -- n3)
@@ -435,37 +391,29 @@ Forthword_ FETCH, INLINE_OPT, "@"
 # ( n32 a-addr -- )
 # store a word (32 bits) to RAM address
 Forthword_ STORE, INLINE_OPT, "!"
-  datastack_
   store_
-  datastack_
   ret
 
 # ( a-addr -- )
 # store 0 (32 bits) to RAM address
 Forthword_ ZEROSTORE, INLINE_OPT, "0!"
-  datastack_
   zerostore_
-  datastack_
   ret
 
 # ( n32 a-addr -- )
 # add n32 to content of cell RAM address a-addr
 Forthword_ PLUSSTORE, INLINE_OPT, "+!"
   # X is the new TOS after the store completes.
-  xchg %eax, %esp
-  pop %edx
+  popnos_
   addl  %edx, (%ebx)   
-  pop %ebx
-  xchg %eax, %esp
+  poptos_
   ret
 
 # ( a-addr -- )
 # add 1 to content of cell RAM address a-addr
 Forthword_ ONEPLUSSTORE, INLINE_OPT, "1+!"
-  xchg %eax, %esp
   addl  $1, (%ebx)
-  pop %ebx
-  xchg %eax, %esp
+  poptos_
   ret
 
 # ( a-addr -- n16 )
@@ -477,39 +425,31 @@ Forthword_ HFETCH, INLINE_OPT, "h@"
 # ( n16 a-addr -- )
 # store a half word (16 bits) to RAM address
 Forthword_ HSTORE, INLINE_OPT, "h!"
-  xchg %eax, %esp
-  pop %edx
+  popnos_
   movw %dx, (%ebx)     
-  pop %ebx
-  xchg %eax, %esp
+  poptos_
   ret
 
 # ( a-addr -- )
 # store 0 (16 bits) to RAM address
 Forthword_ ZEROHSTORE, INLINE_OPT, "0h!"
-  xchg %eax, %esp
   movw $0, (%ebx)
-  pop %ebx
-  xchg %eax, %esp
+  poptos_
   ret
 
 # ( n16 a-addr -- )
 # add n16 to content of half cell RAM address a-addr
 Forthword_ PLUSHSTORE, INLINE_OPT, "+h!"
-  xchg %eax, %esp
-  pop %edx
+  popnos_
   addw %dx, (%ebx)
-  pop %ebx
-  xchg %eax, %esp
+  poptos_
   ret
 
 # ( a-addr -- )
 # add 1 to content of half cell RAM address a-addr
 Forthword_ ONEPLUSHSTORE, INLINE_OPT, "1+h!"
-  xchg %eax, %esp
   addw  $1, (%ebx)
-  pop %ebx
-  xchg %eax, %esp
+  poptos_
   ret
 
 # ( a-addr -- n8 )
@@ -521,71 +461,55 @@ Forthword_ CFETCH, INLINE_OPT, "c@"
 # ( c a-addr -- )
 # store a single byte to RAM address
 Forthword_ CSTORE, INLINE_OPT, "c!"
-  xchg %eax, %esp
-  pop %edx
+  popnos_
   movb %dl, (%ebx)
-  pop %ebx
-  xchg %eax, %esp
+  poptos_
   ret
 
 # ( a-addr -- )
 # store 0 (16 bits) to RAM address
 Forthword_ ZEROCSTORE, INLINE_OPT, "0c!"
-  xchg %eax, %esp
   movb $0, (%ebx)
-  pop %ebx
-  xchg %eax, %esp
+  poptos_
   ret
 
 # ( c a-addr -- )
 # add c byte to content of byte RAM address a-addr
 Forthword_ PLUSCSTORE, INLINE_OPT, "+c!"
-  xchg %eax, %esp
-  pop %edx
+  popnos_
   addb %dl, (%ebx)
-  pop %ebx
-  xchg %eax, %esp
+  poptos_
   ret
 
 # ( a-addr -- )
 # add 1 to content of byte cell RAM address a-addr
 Forthword_ ONEPLUSCSTORE, INLINE_OPT, "1+c!"
-  xchg %eax, %esp
   addb $1, (%ebx)
-  pop %ebx
-  xchg %eax, %esp
+  poptos_
   ret
   
 # ( n1 n2 -- n2 ) A: n1
 # Remove next on stack and write to A register (Extended VM)
 Forthword_ NIPTOA, INLINE_OPT, "nip>a"
-  datastack_
   niptoa_
-  datastack_
   ret
 
 # ( n1 n2 -- n2 ) B: n1
 # Remove next on stack and write to B register (Extended VM)
 Forthword_ NIPTOB, INLINE_OPT, "nip>b"
-  datastack_
   niptob_
-  datastack_
   ret
 
 # ( n -- ) A: n
 # Move TOS to A register (Extended VM)
 Forthword_ TO_A, INLINE_OPT, ">a"
-  datastack_
   toa_
-  datastack_
   ret
 
 # ( n -- ) B: n
 # Move TOS to B register (Extended VM)
 Forthword_ TO_B, INLINE_OPT, ">b"
-  datastack_
   tob_
-  datastack_
   ret
 
 # ( n -- n ) A: n
@@ -603,65 +527,49 @@ Forthword_ _B, INLINE_OPT, ":b"
 # ( -- n )
 # read the A register (Extended VM)
 Forthword_ A_, INLINE_OPT, "a"
-  datastack_
   geta_
-  datastack_
   ret
 
 # ( -- n )
 # read the B register (Extended VM)
 Forthword_ B_, INLINE_OPT, "b"
-  datastack_
   getb_
-  datastack_
   ret
 
 # ( -- n )
 # Read a word (32bit) from memory pointed to by register A (Extended VM)
 Forthword_ AFETCH, INLINE_OPT, "a@"
-  datastack_
   afetch_
-  datastack_
   ret
 
 # ( n -- )
 # store a word to RAM address pointed to by areg
 Forthword_ ASTORE, INLINE_OPT, "a!"
-  datastack_
   astore_
-  datastack_
   ret
 
 # ( -- n )
 # Read a half word (32bit) from memory pointed to by register A (Extended VM)
 Forthword_ AHFETCH, INLINE_OPT, "ah@"
-  datastack_
   ahfetch_
-  datastack_
   ret
 
 # ( h -- )
 # store a half word to RAM address pointed to by areg
 Forthword_ AHSTORE, INLINE_OPT, "ah!"
-  datastack_
   ahstore_
-  datastack_
   ret
 
 # ( -- n )
 # Read a byte from memory pointed to by register A (Extended VM)
 Forthword_ ACFETCH, INLINE_OPT, "ac@"
-  datastack_
   acfetch_
-  datastack_
   ret
 
 # ( c -- )
 # store a single byte to RAM address pointed to by areg
 Forthword_ ACSTORE, INLINE_OPT, "ac!"
-  datastack_
   acstore_
-  datastack_
   ret
 
 # ( -- )
@@ -687,17 +595,13 @@ Forthword_ ACPLUS, INLINE_OPT, "ac+"
 # count is the number of bytes to copy
 # copy ram using bytes.  Assumes no overlap.
 Forthword_ MCPY, 0, "mcpy"
-  datastack_
 	niptob_         # ( start count ) B: dest
-  datastack_
 MCPY_B:
 	dupzerosense_   # ( start count )
 	je MCPY_END
 	mov %ebx, %ecx
-  datastack_
 	poptos_         # ( start ) ecx: count
 	toa_            # ( ) esi: start
-  datastack_
 	cld
 	rep movsb
 	ret
