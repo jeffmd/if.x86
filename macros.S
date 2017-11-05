@@ -54,13 +54,21 @@
   pushtos_
 .endm
 
+.macro nip_
+  leal 4(%eax), %eax
+.endm
+
+.macro dnip_
+  leal 8(%eax), %eax
+.endm
+
 .macro dropdup_
   movl (%eax), %ebx
 .endm
 
 .macro poptos_ # load tos from stack, same as drop
   mov (%eax), %ebx
-  leal 4(%eax), %eax
+  nip_
 .endm
 
 .macro drop_
@@ -119,14 +127,6 @@
   poptos_
 .endm
 
-.macro nip_
-  leal 4(%eax), %eax
-.endm
-
-.macro dnip_
-  leal 8(%eax), %eax
-.endm
-
 .macro ddrop_
   nip_
   drop_
@@ -150,7 +150,7 @@
 
 .macro popnos_
   mov (%eax), %edx
-  leal 4(%eax), %eax
+  nip_
 .endm
 
 .macro pop2nos_
@@ -175,18 +175,18 @@
 .endm
 
 .macro and_
-  popnos_
-  and %edx, %ebx
+  and (%eax), %ebx
+  nip_
 .endm
 
 .macro or_
-  popnos_
-  or %edx, %ebx
+  or (%eax), %ebx
+  nip_
 .endm
 
 .macro xor_
-  popnos_
-  xor %edx, %ebx
+  xor (%eax), %ebx
+  nip_
 .endm
 
 .macro not_
@@ -336,12 +336,12 @@
 
 .macro niptoa_
   mov (%eax), %esi
-  add $4, %eax
+  nip_
 .endm
 
 .macro niptob_
   mov (%eax), %edi
-  add $4, %eax
+  nip_
 .endm
 
 .macro copytoa_

@@ -233,8 +233,8 @@ Forthword_ NOTEQUAL, INLINE_OPT, "<>"
 # ( n1 n2 -- flag )
 # flag is true if TOS and NOS are equal
 Forthword_ EQUAL, 0, "="
-  popnos_
-  sub %edx, %ebx
+  sub (%eax), %ebx
+  nip_
   sub $1, %ebx
   sbb %ebx, %ebx
   ret
@@ -242,8 +242,8 @@ Forthword_ EQUAL, 0, "="
 # ( n1 n2 -- flag)
 # flag is true if n1 is less than n2
 Forthword_ LESS, 0, "<"
-  popnos_
-  cmp %ebx, %edx
+  cmp %ebx, (%eax)
+  nip_
   jge 1f
   zerotos_
   not_
@@ -255,8 +255,9 @@ Forthword_ LESS, 0, "<"
 # ( n1 n2 -- flag )
 # flag is true if n1 is greater than n2
 Forthword_ GREATER, 0, ">"
-  popnos_         # Get x1 into a register.
-  cmp %ebx, %edx  # Is x2 greater?
+           # Get x1 into a register.
+  cmp %ebx, (%eax)  # Is x2 greater?
+  nip_
 GREATER_CHK:
   jle 1f
   zerotos_
