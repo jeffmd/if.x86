@@ -28,6 +28,17 @@
     $77FF widf
 ; immediate
 
+\ store address of the next free dictionary cell
+: dp#! ( addr -- )
+    dp# !
+;
+
+\ store address of the next free code cell
+: cp#! ( addr -- )
+    cp# !
+;
+
+
 ( -- ) ( C: x "<spaces>name" -- )
 \ create a dictionary entry and register in word list
 : rword

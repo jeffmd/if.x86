@@ -1,10 +1,11 @@
 # macros.S
 
-#breg .equ %edi # B register used for general purpose operations
-#sysvar .equ %ebp # system variables base pointer
-#areg .equ %esi # A register used for memory pointer operations
-#tos .equ %ebx # parameter top of stack [TOS] register
-#dsp .equ %eax # holds the Forth Parameter/Data stack pointer
+# tos -> %ebx # parameter top of stack [TOS] register
+# dsp -> %eax # holds the Forth Parameter/Data stack pointer
+# areg -> %esi # A register used for memory pointer operations
+# breg -> %edi # B register used for general purpose operations
+# sysvar -> %ebp # system variables base pointer
+# temporary registers %ecx, %edx,
 
 # header flags
 .set HFLAGS, 0xFF

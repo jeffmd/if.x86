@@ -48,11 +48,6 @@
     lit
 ; immediate
 
-( addr -- )
-\ save address in cp
-: cp!
-  cp# !
-;
 
 ( -- )
 \ replace the instruction written by CREATE to call
@@ -73,14 +68,14 @@
     \ temp save cp on return stack
     cp >r
     \ set cp to xt
-    dup cp!                   ( retaddr xt )
+    dup cp#!                   ( retaddr xt )
     \ modify the call
     \ calc displacement
     reldst                    ( dst )
     \ compile a call instruction
     call,                       ( )
     \ restore cp
-    r> cp!                    ( )
+    r> cp#!                    ( )
 ;
 
 ( -- )
@@ -265,3 +260,36 @@
 : recurse
   smudge @ nfa>xtf cxt  
 ; :ic
+
+\ allocate or release n bytes of memory in RAM
+: allot ( n -- )
+    here + here# !
+;
+
+( x -- ) ( C: x "<spaces>name" -- )
+\ create a constant in the dictionary
+: con
+    rword
+    lit
+    ret,
+;
+
+
+\ create a dictionary entry for a variable
+\ and allocate 32 bit RAM
+: var ( cchar -- )
+    here
+    con
+    4 \ dcell
+    allot
+;
+
+( cchar -- )
+\ create a dictionary entry for a character variable
+\ and allocate 1 byte RAM
+: cvar
+    here
+    con
+    1
+    allot
+;
