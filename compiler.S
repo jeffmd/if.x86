@@ -153,9 +153,9 @@ Forthword_ COPYSTRING, 0, "copy$"
 	tob_               # ( s-addr len len' ) B: d-addr
 	movw %bx, (%edi)
 	addl $2, %edi
-	poptos_            # ( s-addr len )
+	drop_            # ( s-addr len )
 	mov %ebx, %ecx
-	poptos_            # ( s-addr )
+	drop_            # ( s-addr )
 	copytoa_           # ( s-addr ) A: addr
 	cld
 	rep movsb

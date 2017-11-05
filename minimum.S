@@ -247,7 +247,7 @@ TO_NUMBER_CONV:
   call BASEFETCH       # ( adr len u base)
   #bl STAR             # ( adr len u*base)
   mov %ebx, %edx
-  poptos_
+  drop_
   imul %edx, %ebx
   getb_                # ( adr len u' digit)
   plus_                # ( adr len u')
@@ -386,7 +386,7 @@ Forthword_ USLEEP, 0, "usleep"
   call usleep
   pop %edx
   pop %eax
-  poptos_
+  drop_
   ret
 
 # ( -- )

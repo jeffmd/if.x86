@@ -78,7 +78,7 @@ CPSTART:
 # ( nx* -- ) (R: ny* -- )
 # initialize if further. EXECs turnkey operation and go to quit
 Forthword_ WARM, 0, "warm"
-	pushtos_
+	dup_
 	mov %esp, %ebx
 	call RP0
 	call STORE
@@ -93,7 +93,7 @@ Forthword_ WARM, 0, "warm"
 # ( -- addr)
 # start address of the data stack
 Forthword_ SP0, 0, "sp0"
-  pushtos_
+  dup_
   movl $topdatastack, %ebx
   ret
 

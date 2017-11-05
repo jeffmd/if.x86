@@ -99,7 +99,7 @@ Forthword_ CALLC, 0, "call,"
 # compile top of stack as inlinned immediate 32 bit constant
 # ( n -- )
 Forthword_ LIT, 0, "lit"
-  # compile pushtos_
+  # compile dup_
   dolit_ 0x8904e883
   call DWCOMMA
   dolit_ 0x18

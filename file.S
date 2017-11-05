@@ -24,7 +24,7 @@ Forthword_ CLOSEF, 0, "close"
   call close
   pop %edx
   pop %eax
-  poptos_
+  drop_
   ret
 
 # (  filedes buffer length -- bytesread )

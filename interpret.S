@@ -70,7 +70,7 @@ Forthword_ PUTCHAR, 0, "putchar"
   call putchar
   pop %edx
   pop %eax
-  poptos_
+  drop_
   ret
 
 # ( c -- )
@@ -99,7 +99,7 @@ Forthword_ BL, 0, "bl"
 # fetch key from standard input, should leave a single character on TOS
 # if a key was pressed. If no key pressed then -1 is on TOS.
 Forthword_ STDIN, 0, "stdin"
-  pushtos_
+  dup_
   push %eax
   call getchar
   movl %eax, %ebx
@@ -113,7 +113,7 @@ Forthword_ KEYFILE, 0, "keyfile"
   zero_                    # ( 0 )
   call KEYFILEADDR         # ( 0 keyfile# )
   fetch_                   # ( 0 filedes )
-  pushtos_                 # ( 0 filedes ? )
+  dup_                 # ( 0 filedes ? )
   leal 4(%eax), %ebx       # ( 0 filedes eax+4 
   one_                     # ( 0 filedes eax+4 1 )
   call READF               # ( key count )
@@ -185,7 +185,7 @@ Forthword_ MCMP, 0, "mcmp"
 Forthword_ CMPSB, 0, "cmpsb"
   toa_                     # ( r-addr len ) A: f-addr
   movl %ebx, %ecx          # ( r-addr ) CX: len
-  poptos_
+  drop_
   tob_                     # ( ) B: r-addr
   cld
   repe cmpsb
@@ -412,7 +412,7 @@ FINDW_NEXT:
 Forthword_ DOSLIT, 0, "(slit)"
   # get return address to get string length, calculate string address start,
   # and calculate return address
-  pushtos_
+  dup_
   pop %ebx       # ( raddr )  (R: raddr -- )
   dup_           # ( raddr raddr )
   # get the string length
@@ -427,7 +427,7 @@ Forthword_ DOSLIT, 0, "(slit)"
   # also skip string length
   twoplus_       # ( straddr slength raddr+k+2 )
   push %ebx      
-  poptos_
+  drop_
   ret
 
 # ( addr len -- [n] [addr len] f )

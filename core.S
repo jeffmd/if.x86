@@ -4,7 +4,7 @@
 # execute XT
 Forthword_ EXEC, 0, "exec"
   push %ebx
-  poptos_
+  drop_
   ret
 
 # ( xt -- )
@@ -18,7 +18,7 @@ Forthword_ NOOP, INLINE_OPT, "noop"
 # ( n -- n n )
 # duplicate TOS
 Forthword_ DUP, INLINE_OPT, "dup"
-  pushtos_
+  dup_
   ret
 
 # ( n1 -- [ n1 n1 ] | 0)
@@ -26,7 +26,7 @@ Forthword_ DUP, INLINE_OPT, "dup"
 Forthword_ QDUP, 0, "?dup"
 	dupzerosense_
 	je PFA_QDUP1	
-	pushtos_
+	dup_
 PFA_QDUP1:
 	ret
 
@@ -163,7 +163,7 @@ Forthword_ RP_STORE, INLINE_OPT, "rp!"
 # used if data in program mem and need an address to it
 # must be called
 Forthword_ POPRET, 0, "popret"
-  pushtos_
+  dup_
 	pop %ebx
 	ret
     
@@ -173,7 +173,7 @@ Forthword_ POPRET, 0, "popret"
 # assumes TOR content will be used for 32 bit memory access
 # since this word must be called, skip the top most item on the return stack
 Forthword_ RTORPLUS, 0, "r>r+"
-	pushtos_
+	dup_
 	mov 4(%esp), %ebx
 	addl $4, 4(%esp)
 	ret
@@ -407,14 +407,14 @@ Forthword_ PLUSSTORE, INLINE_OPT, "+!"
   # X is the new TOS after the store completes.
   popnos_
   addl  %edx, (%ebx)   
-  poptos_
+  drop_
   ret
 
 # ( a-addr -- )
 # add 1 to content of cell RAM address a-addr
 Forthword_ ONEPLUSSTORE, INLINE_OPT, "1+!"
   addl  $1, (%ebx)
-  poptos_
+  drop_
   ret
 
 # ( a-addr -- n16 )
@@ -428,14 +428,14 @@ Forthword_ HFETCH, INLINE_OPT, "h@"
 Forthword_ HSTORE, INLINE_OPT, "h!"
   popnos_
   movw %dx, (%ebx)     
-  poptos_
+  drop_
   ret
 
 # ( a-addr -- )
 # store 0 (16 bits) to RAM address
 Forthword_ ZEROHSTORE, INLINE_OPT, "0h!"
   movw $0, (%ebx)
-  poptos_
+  drop_
   ret
 
 # ( n16 a-addr -- )
@@ -443,14 +443,14 @@ Forthword_ ZEROHSTORE, INLINE_OPT, "0h!"
 Forthword_ PLUSHSTORE, INLINE_OPT, "+h!"
   popnos_
   addw %dx, (%ebx)
-  poptos_
+  drop_
   ret
 
 # ( a-addr -- )
 # add 1 to content of half cell RAM address a-addr
 Forthword_ ONEPLUSHSTORE, INLINE_OPT, "1+h!"
   addw  $1, (%ebx)
-  poptos_
+  drop_
   ret
 
 # ( a-addr -- n8 )
@@ -464,14 +464,14 @@ Forthword_ CFETCH, INLINE_OPT, "c@"
 Forthword_ CSTORE, INLINE_OPT, "c!"
   popnos_
   movb %dl, (%ebx)
-  poptos_
+  drop_
   ret
 
 # ( a-addr -- )
 # store 0 (16 bits) to RAM address
 Forthword_ ZEROCSTORE, INLINE_OPT, "0c!"
   movb $0, (%ebx)
-  poptos_
+  drop_
   ret
 
 # ( c a-addr -- )
@@ -479,14 +479,14 @@ Forthword_ ZEROCSTORE, INLINE_OPT, "0c!"
 Forthword_ PLUSCSTORE, INLINE_OPT, "+c!"
   popnos_
   addb %dl, (%ebx)
-  poptos_
+  drop_
   ret
 
 # ( a-addr -- )
 # add 1 to content of byte cell RAM address a-addr
 Forthword_ ONEPLUSCSTORE, INLINE_OPT, "1+c!"
   addb $1, (%ebx)
-  poptos_
+  drop_
   ret
   
 # ( n1 n2 -- n2 ) A: n1
@@ -601,7 +601,7 @@ MCPY_B:
 	dupzerosense_   # ( start count )
 	je MCPY_END
 	mov %ebx, %ecx
-	poptos_         # ( start ) ecx: count
+	drop_         # ( start ) ecx: count
 	toa_            # ( ) esi: start
 	cld
 	rep movsb
