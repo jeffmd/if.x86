@@ -14,26 +14,27 @@
 # enable inlining of word
 # bit 0 : enable inlinning
 .set INLINE_OPT_FB, 0
-.set INLINE_OPT, 0x01
+.set INLINE_OPT, 1 << INLINE_OPT_FB
 
 # bit 3 : disable interpret execution ie compile only
 .set COMPILE_ONLY_FB, 3
 # set immediate word as compile time only execution
 # disable interpret execution : & with word count flag ie: 0xFF04 & COMPILE_ONLY
-.set COMPILE_ONLY, 0x08
+.set COMPILE_ONLY, 1 << COMPILE_ONLY_FB
 
 # bit 7 : immediate execution when in compile state
 # enable immediate execution : & with word count flag ie: 0xFF04 & IMMEDIATE_EN
 .set IMMEDIATE_EN_FB, 7
-.set IMMEDIATE_EN, 0x80
+.set IMMEDIATE_EN, 1 << IMMEDIATE_EN_FB
 
 # forth flags
-# bit 0 : rcall was last instruction
-.set LAST_RCALL_FB, 0
+# bit 0 - Terminate Tasks
+.set TERMINATE_F, 1
 # bit 1 : call was last instruction
-.set LAST_CALL_FB, 1
+.set LAST_IS_CALL_FB, 1
 # if bit 0 and 1 are cleared then last instruction was an inline or tail call optimization was disabled by word
 # bit 2 : disable tail call optimization
+# same bit in header flags
 .set DIS_CALL_OPT_FB, 2
 
 # Inline macros

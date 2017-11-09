@@ -4,8 +4,6 @@
 # flags address
 Forthword_ FFLAGS, 0, "fflags"
     douser_  fflags
-    .set TERMINATE_F, 1
-    # bit 0 - Terminate Tasks
 
 # ( -- addr )
 # terminal input buffer address

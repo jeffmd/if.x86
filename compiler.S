@@ -89,13 +89,31 @@ Forthword_ TAILOPT, 0, ";opt"
 	call SMUDGE
 	call FETCH
   zerosense_
-	jne TAILOPT_OPT
+	jne CHECK_DIS_CALL_OPT
 	ret
 
-TAILOPT_OPT:
-    # don't optimize tail call, just compile a ret.
-    jmp RET_C          # ( )
-
+CHECK_DIS_CALL_OPT:
+	# check fflags to see if tail call optimization can be done
+	testw $(1 << DIS_CALL_OPT_FB), fflags
+	jz CHECK_LAST_IS_CALL
+	# don't optimize tail call, just compile a ret.
+	jmp RET_C          # ( )
+    
+CHECK_LAST_IS_CALL:
+	testw $(1 << LAST_IS_CALL_FB), fflags
+	jnz TAIL_CALL_OPTIMIZE
+  jmp RET_C
+  
+TAIL_CALL_OPTIMIZE:
+  # replace CP - 5 byte instruction with 0xe9
+  dolit_ 0xe9        # ( 0xe9 )
+  call CP            # ( 0xe9 CP )
+  sub $5, %ebx       # ( 0xe9 CP-5 )
+  call CSTORE        # (  )
+  # clear last is call flag in fflags
+  andw $~(1 << LAST_IS_CALL_FB), fflags
+  ret
+   
 # ( -- )
 # update wid from smudge if valid
 Forthword_ UWID, 0, "uwid"

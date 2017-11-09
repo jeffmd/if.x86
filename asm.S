@@ -65,26 +65,33 @@ Forthword_ JMPNZ1_COMPILE, 0, "jne1,"
 # If word flag indicates inlining then the word is inlined.
 # ( xt flags -- )
 Forthword_ COMPILEXT, 0, "cxt"
-	movl $(INLINE_OPT << 8), %edx
-	test %ebx, %edx
+  # default to tail call optimization enabled
+  andw $~(1<<DIS_CALL_OPT_FB), fflags 
+  # check bit 2 of word high byte flags: if set then tail call optimization stays enabled
+  #sbrs tosh, DIS_CALL_OPT_FB
+  # bit 2 of high byte flag is clear so disable tail call optimization
+  #sbr fflags, 1<<DIS_CALL_OPT_FB
+  
+  # should word be inlinned?
+	test $(INLINE_OPT << 8), %ebx
 	# if bit 0 of high byte flag is 0 then word is to be inlinned
   drop_           # ( xt )
-  je COMPILEXT_INLINE
-  jmp DO_COMPILEXT
-
-COMPILEXT_INLINE:
-      jmp INLINE
+  jne DO_COMPILEXT
+    # not a call so disable tail call optimization
+    andw $~(1<<LAST_IS_CALL_FB), fflags
+    jmp INLINE
 
 DO_COMPILEXT:
-    # calculate relative distance in words from start to dest
-    call CP              # ( xt cp )
-    call RELDST          # ( distance )
-    # fall through into CALLC
+  # calculate relative distance in words from start to dest
+  call CP              # ( xt cp )
+  call RELDST          # ( distance )
+  # fall through into CALLC
 
 # compile call at start address
 # ( dist -- )
 # dist: 2's compliment dword offset
 Forthword_ CALLC, 0, "call,"
+  orw $(1<<LAST_IS_CALL_FB), fflags
   # call is an 8 bit instruction with a 32 bit 2's compliment offset
   # bit pattern:
   #

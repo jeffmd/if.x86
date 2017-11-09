@@ -6,7 +6,7 @@ pname header dup $FF00 or $dp!
   1 state h!
       dp >r >r dup $FF00 or $dp! r> @ dp! r>  
   [
-  ret,
+  ;opt
   uwid
 
 pname (create) current @ header
@@ -15,7 +15,7 @@ pname (create) current @ header
   1 state h!
     pname current @ header cp dp!
   [
-  ret,
+  ;opt
   uwid
 
 (create) ] 
@@ -23,7 +23,7 @@ pname (create) current @ header
   1 state h!
     1 state h!
   [
-  ret,
+  ;opt
   uwid
 
 (create) :
@@ -31,7 +31,7 @@ pname (create) current @ header
   ]
     (create) smudge ! ]
   [
-  ret,
+  ;opt
   uwid
 
 : cur@
