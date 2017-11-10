@@ -83,6 +83,20 @@ Forthword_ CPPLUSONE, 0, "cp+1"
   jmp CPPLUS
 
 # ( -- )
+# turn last is call off
+Forthword_ CALLOFF, 0, "calloff"
+  # clear last is call flag
+  andw $~(1<<LAST_IS_CALL_FB), fflags 
+  ret
+
+# ( -- )
+# turn optimization off
+Forthword_ TAILOPTOFF, 0, "optoff"
+  # set disable tail call optimize flag
+  orw $(1<<DIS_CALL_OPT_FB), fflags
+  ret
+
+# ( -- )
 # tail call optimize: change last call into jmp
 Forthword_ TAILOPT, 0, ";opt"
 	# optimize only if smudge is not zero

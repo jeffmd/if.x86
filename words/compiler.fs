@@ -293,3 +293,44 @@
     1
     allot
 ;
+
+\ compiles a string from RAM to program RAM
+: s, ( addr len -- )
+    dup
+    $cp!
+;
+
+( C: addr len -- )
+\ String
+\ compiles a string to program RAM
+: slit
+    compile (slit)     ( -- addr n)
+    s,
+; immediate
+
+
+( -- addr len) ( C: <cchar> -- )
+\ Compiler
+\ compiles a string to ram,
+\ at runtime leaves ( -- ram-addr count) on stack
+: s"
+    $22
+    parse        ( -- addr n)
+    state@
+    if  \ skip if not in compile mode
+      [compile] slit
+    then
+; immediate
+
+( -- ) ( C: "ccc<quote>" -- )
+\ Compiler
+\ compiles string into dictionary to be printed at runtime
+: ."
+     [compile] s"             \ "
+     state@
+     if
+       compile type
+     else
+       type
+     then
+; immediate

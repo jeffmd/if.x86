@@ -34,6 +34,7 @@ Forthword_ JUMPS, 0, "jmps"
 # ( reldist -- )
 # reldist: relative distance as 2's compliment
 Forthword_ JMP_COMMA, 0, "jmp,"
+    call CALLOFF
     call JUMP            # ( rellong jumpinst )
     call COMMA           # ( rellong )
     jmp DWCOMMA          # ( )
@@ -41,6 +42,7 @@ Forthword_ JMP_COMMA, 0, "jmp,"
 # compile jump at start address
 # ( start dest -- )
 Forthword_ JMPC, 0, "jmpc"
+  call TAILOPTOFF   
   over_                # ( start dest start )
   call RELDST          # ( start reldst )
   call JUMP            # ( start rellong jumpinst )
@@ -78,7 +80,7 @@ Forthword_ COMPILEXT, 0, "cxt"
   drop_           # ( xt )
   jne DO_COMPILEXT
     # not a call so disable tail call optimization
-    andw $~(1<<LAST_IS_CALL_FB), fflags
+    call CALLOFF
     jmp INLINE
 
 DO_COMPILEXT:
