@@ -193,6 +193,13 @@ Forthword_ MINUS, INLINE_OPT, "-"
   minus_
   ret
 
+# ( u1|n1 u2|n2 -- u3|n3 )
+# signed multiply 32b x 32b = 32b
+Forthword_ MULU, INLINE_OPT,  "*"
+  popnos_
+  imul %edx, %ebx 
+  ret
+
 # ( n1 -- -n1 )
 # 2-compliment of n1
 Forthword_ NEGATE, INLINE_OPT, "neg"
@@ -411,8 +418,15 @@ Forthword_ PLUSSTORE, INLINE_OPT, "+!"
   ret
 
 # ( a-addr -- )
+# subtract 1 from content of cell RAM address a-addr
+Forthword_ ONEMINUSSTORE, INLINE_OPT, "1-!"
+  subl  $1, (%ebx)
+  drop_
+  ret
+
+# ( a-addr -- )
 # add 1 to content of cell RAM address a-addr
-Forthword_ ONEPLUSSTORE, INLINE_OPT, "1+!"
+Forthword_ ONESTORE, INLINE_OPT, "1+!"
   addl  $1, (%ebx)
   drop_
   ret

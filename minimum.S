@@ -137,6 +137,16 @@ Forthword_ UGREATEREQUAL, 0, "u>="
 	not_
 	ret
 
+# ( n1 -- u1 )
+# get the absolute value
+Forthword_ ABS, 0, "abs"
+  dupzerosense_
+  jns 1f
+  neg_
+1:
+  ret
+  
+
 # ( c -- (number|) flag )
 # tries to convert a character to a number, set flag accordingly
 Forthword_ DIGITQ, 0, "digit?"
