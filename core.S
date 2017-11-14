@@ -103,7 +103,7 @@ Forthword_ RROT, 0, "-rot"
 
 # (  -- addr )
 # current data stack pointer
-Forthword_ SP_FETCH, INLINE_OPT, "sp@"
+Forthword_ SP_FETCH, 0, "sp@"
   spfetch_
   ret
   

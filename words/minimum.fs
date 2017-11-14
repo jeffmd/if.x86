@@ -45,3 +45,78 @@ var hld
 : <# ( -- )
     pad hld !
 ;
+
+\ pictured numeric output: convert one digit
+: # ( u1 -- u2 )
+    base@      ( u1 base )
+    u/mod      ( rem u2 )
+    swap       ( u2 rem )
+    #h hold    ( u2 )
+;
+
+\ pictured numeric output: convert all digits until 0 (zero) is reached
+: #s ( u -- 0 )
+    #
+    begin
+    ?while
+      #
+    repeat
+;
+
+\ Pictured Numeric Output: convert PNO buffer into an string
+: #> ( u1 -- addr count )
+    drop hld @ pad over -
+;
+
+\ place a - in HLD if n is negative
+: sign ( n -- )
+    0< if [char] - hold then
+;
+
+\ singed PNO with cell numbers, right aligned in width w
+: .r ( wantsign n w -- )
+    >r   ( wantsign n ) ( R: w )
+    <#
+    #s   ( wantsign 0 )
+    swap ( 0 wantsign )
+    sign ( 0 )
+    #>   ( addr len )
+    r>   ( addr len w )  ( R: )
+    over ( addr len w len )
+    -    ( addr len spaces )
+    spaces ( addr len )
+    type  ( )
+    space
+;
+
+\ unsigned PNO with single cell numbers
+: u. ( u -- )
+    0      ( n 0 ) \ want unsigned
+    tuck   ( 0 n 0 )
+    .r 
+;
+
+
+\ singed PNO with single cell numbers
+: .  ( n -- )
+    dup      ( n n )
+    abs      ( n n' )
+    0        ( n n' 0 ) \ not right aligned
+    .r
+;
+
+: .s  ( -- )
+    sp@         ( limit ) \ setup limit
+    4 -
+    sp0         ( limit counter )
+    begin
+      4 -    ( limit counter-4 )
+      2over     ( limit counter-4 limit counter-4 )
+      <>        ( limit counter-4 flag )
+      while
+        dup     ( limit counter-4 counter-4 )
+        @       ( limit counter-4 val )
+        u.      ( limit counter-4 )
+    repeat
+    2drop
+;

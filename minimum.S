@@ -311,7 +311,89 @@ PFA_NUMBER5:
   r_from_                 # ( n true base ) (R: )
   jmp BASESTORE           # ( n true )
 
+# Multiply unsigned 32*32 = 64
+# ( u u -- ud )
+Forthword_ UMSTAR, 0, "um*"
+  push %eax
+  movl (%eax), %eax
+  mul %ebx
+  mov %eax, %ebx
+  pop %eax
+  movl %edx, (%eax)
+  ret    
 
+# ( n n -- d)
+# multiply 2 signed cells to a double cell
+# signed 32*32 = 64
+Forthword_ MSTAR, 0, "m*"
+  push %eax
+  movl (%eax), %eax
+  mul %ebx # Signed long multiply 32*32=64
+  mov %eax, %ebx
+  pop %eax
+  movl %edx, (%eax)
+  ret
+
+# ( ud u -- u u ) Dividend Divisor -- mod quotient
+# 64/32 = 32 Rest 32
+Forthword_ UM_DIVMOD, 0, "um/mod"
+  push %eax
+  movl 4(%eax), %edx
+  movl (%eax), %eax    
+  div %ebx            
+  mov %eax, %ebx
+  pop %eax
+  movl %edx, (%eax)
+  ret
+
+# ( u1 u2 -- rem quot )
+# unsigned 32b division with modulus result
+Forthword_ U_DIVMOD, 0, "u/mod"
+  push %eax
+  movl (%eax), %eax    
+  cltd                 
+  div %ebx            
+  mov %eax, %ebx
+  pop %eax
+  movl %edx, (%eax)
+  ret
+
+Forthword_ M_DIVMOD, 0, "m/mod"
+# Signed symmetric divide 64/32 = 32 remainder 32
+# ( d n -- n n )
+  push %eax
+  movl 4(%eax), %edx    
+  movl (%eax), %eax    
+  idiv %ebx            
+  mov %eax, %ebx
+  pop %eax
+  movl %edx, 4(%eax)
+  nip_
+  ret
+
+# ( n1 n2 -- rem quot )
+# signed division with remainder
+Forthword_ DIVMOD, 0, "/mod"
+  push %eax
+  movl (%eax), %eax    
+  cltd                 
+  idiv %ebx            
+  mov %eax, %ebx
+  pop %eax
+  movl %edx, (%eax)
+  ret
+
+# ( n1 n2 -- n1/n2 )
+# 32bit/32bit = 32bit
+Forthword_ DIV, 0, "/"
+  push %eax
+  movl (%eax), %eax    
+  cltd                 
+  idiv %ebx            
+  mov %eax, %ebx
+  pop %eax
+  nip_
+  ret
 
 # ( -- addr)
 # start address of return stack
