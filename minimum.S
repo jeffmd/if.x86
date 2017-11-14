@@ -576,6 +576,25 @@ Forthword_ INCLUDEF, 0, "include"
 	call ZEROCSTORE
 	jmp DOINCLUDE
 
+# ( nx* -- ) (R: ny* -- )
+# initialize rf further. EXECs turnkey operation and go to quit
+Forthword_ DOCMDARG, 0, "docmdarg"
+    call ARGCADDR
+    fetch_
+    one_
+    call GREATER
+    zerosense_
+    je DOCMDARG_EXIT
+
+    call ARGVADDR
+    fetch_
+    fourplus_
+    fetch_
+    jmp DOINCLUDE 
+
+DOCMDARG_EXIT:
+    ret
+       
 # ( -- )
 # must be last word in core
 Forthword_ WIPE, 0, "WIPE"

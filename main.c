@@ -11,15 +11,13 @@
 #include "input.h"
 
 extern void COLD(void);
-
-int argc_l;
-char **argv_l;
-
+extern int USER_ARGC;
+extern char **USER_ARGV;
 
 int main(int argc, char *argv[])
 {
-	argc_l = argc;
-	argv_l = argv;
+	USER_ARGC = argc;
+	USER_ARGV = argv;
 
 	set_input_mode();
 	COLD();

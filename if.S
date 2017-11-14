@@ -17,6 +17,9 @@ topdatastack:
 .balign 2
 sysvar_base:
 
+.globl USER_ARGC
+.globl  USER_ARGV
+
 COLON_SMUDGE: .space 4
 user_g_in: .space 2
 state: .space 2
@@ -87,7 +90,7 @@ Forthword_ WARM, 0, "warm"
   call DECIMAL           # default to decimal base
   type_ "if 0.1\n"
   # check if command line args need to be loaded
-	#call DOCMDARG
+	call DOCMDARG
 	jmp QUIT
 
 # ( -- addr)
