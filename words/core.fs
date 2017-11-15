@@ -47,6 +47,30 @@
     !             ( )
 ;
 
+( -- dcell )
+\ push data stack cell size 
+rword dcell inlined
+    ] 4 [
+    ret,
+
+( n -- n+dcell )
+\ add data stack cell size to n
+rword dcell+ inlined
+    ] 4+ [
+    ret,
+
+( n -- n-dcell )
+\ subtract data stack cell size from n
+rword dcell- inlined
+    ] 4- [
+    ret,
+
+( n -- n*dcell )
+\ multiply n by data stack cell size 
+rword dcell* inlined
+    ] 4* [
+    ret,
+
 \ search dictionary for name, returns XT or 0
 : 'f  ( "<spaces>name" -- XT XTflags )
     pname

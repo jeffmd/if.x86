@@ -287,6 +287,55 @@ Forthword_ ONEMINUS, INLINE_OPT, "1-"
   oneminus_
   ret
 
+# ( n1 -- n1-2 )
+# optimized decrement
+Forthword_ TWOMINUS, INLINE_OPT, "2-"
+  twominus_
+  ret
+
+# ( n1 -- n1+2 )
+# optimized decrement
+Forthword_ TWOPLUS, INLINE_OPT, "2+"
+  twoplus_
+  ret
+
+# ( n1 -- n1-4 )
+# optimized decrement
+Forthword_ FOURMINUS, INLINE_OPT, "4-"
+  fourminus_
+  ret
+
+# ( n1 -- n1+4 )
+# optimized decrement
+Forthword_ FOURPLUS, INLINE_OPT, "4+"
+  fourplus_
+  ret
+
+# ( n1 -- n1/2 )
+# optimized divide by 2
+Forthword_ TWOSLASH, INLINE_OPT, "2/"
+  twoslash_
+  ret
+
+# ( n1 -- n1*2 )
+# optimized 2 multiply
+Forthword_ TWOSTAR, INLINE_OPT, "2*"
+  twostar_
+  ret
+
+# ( n1 -- n1/4 )
+# optimized divide by 4
+Forthword_ FOURSLASH, INLINE_OPT, "4/"
+  fourslash_
+  ret
+
+# ( n1 -- n*4 )
+# optimized four multiply
+Forthword_ FOURSTAR, INLINE_OPT, "4*"
+  fourstar_
+  ret
+
+
 # ( n1 -- flag )
 # flag is true if n1 is 0
 Forthword_ ZEROEQUAL, INLINE_OPT, "0="
