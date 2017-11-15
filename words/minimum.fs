@@ -107,10 +107,10 @@ var hld
 
 : .s  ( -- )
     sp@         ( limit ) \ setup limit
-    4 -
+    dcell-
     sp0         ( limit counter )
     begin
-      4 -    ( limit counter-4 )
+      dcell-    ( limit counter-4 )
       2over     ( limit counter-4 limit counter-4 )
       <>        ( limit counter-4 flag )
       while

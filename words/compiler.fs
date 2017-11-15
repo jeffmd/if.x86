@@ -64,7 +64,7 @@
     cur@ @                    ( retaddr nfa )
     nfa>lfa                   ( retaddr lfa )
     \ skip over lfa to get to xt field and load xt
-    4 +  @                     ( retaddr xt )
+    dcell+  @                     ( retaddr xt )
     \ temp save cp on return stack
     cp >r
     \ set cp to xt
@@ -280,7 +280,7 @@
 : var ( cchar -- )
     here
     con
-    4 \ dcell
+    dcell
     allot
 ;
 
