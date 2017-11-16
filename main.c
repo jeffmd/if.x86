@@ -1,8 +1,5 @@
 /*
- * This file is part of muFORTH: http://muforth.nimblemachines.com/
- *
- * Copyright (c) 2002-2012 David Frech. All rights reserved, and all wrongs
- * reversed. (See the file COPYRIGHT for details.)
+ * main.c - if c stub main entry 
  */
 
 #include <stdlib.h>     /* exit(3) */

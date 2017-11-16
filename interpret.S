@@ -115,7 +115,7 @@ Forthword_ KEYFILE, 0, "keyfile"
   call EQUAL               # ( key flag )
   zerosense_               # ( key )
   jne KEYEND
-  sub $1, %eax
+  dec %eax
   jmp BYE
  KEYEND:
   ret

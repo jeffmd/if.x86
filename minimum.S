@@ -418,26 +418,26 @@ Forthword_ HANDLER, 0, "handler"
 # ( i*x xt -- j*x 0 | i*x n )
 # setup handler to catch exceptions and then EXEC XT.
 Forthword_ CATCH, 0, "catch"
-    # sp@ >r
-    spfetch_            # ( xt SP )
-    to_r_               # ( xt ) (R: ret -- callerret SP )
-    # handler @ >r
-    call HANDLER        # ( xt haddr )
-    fetch_              # ( xt hxt )
-    to_r_               # ( xt ) (R: callerret SP hxt )
-    # rp@ handler !
-    rpfetch_            # ( xt RP ) (R: callerret SP hxt)
-    call HANDLER        # ( xt RP haddr )
-      store_              # ( xt )
-      call EXEC
-    # restore handler
-    # r> handler !
-    r_from_             # ( hxt ) (R: callerret SP )
-    call HANDLER        # ( hxt haddr )
-      store_              # ( )
-      r_drop_             # ( ) (R: callerret)
-      zero_
-      ret
+  # sp@ >r
+  spfetch_            # ( xt SP )
+  to_r_               # ( xt ) (R: ret -- callerret SP )
+  # handler @ >r
+  call HANDLER        # ( xt haddr )
+  fetch_              # ( xt hxt )
+  to_r_               # ( xt ) (R: callerret SP hxt )
+  # rp@ handler !
+  rpfetch_            # ( xt RP ) (R: callerret SP hxt)
+  call HANDLER        # ( xt RP haddr )
+  store_              # ( xt )
+  call EXEC
+  # restore handler
+  # r> handler !
+  r_from_             # ( hxt ) (R: callerret SP )
+  call HANDLER        # ( hxt haddr )
+  store_              # ( )
+  r_drop_             # ( ) (R: callerret)
+  zero_
+  ret
 
 # ( straddr len -- )
 # throw an exception
@@ -492,91 +492,91 @@ Forthword_ SLEEPON, 0, "sleepon"
 # open a file that will be used for key input
 # caddr points to null terminated file name
 Forthword_ DOINCLUDE, 0, "doinclude"
-    # set file open mode to reading
-    zero_
-    call OPENF     # ( filedes )
-    # if file descriptor > 0 then open is success
-    dup_
-    call ZEROGREATER
-    zerosense_
+  # set file open mode to reading
+  zero_
+  call OPENF     # ( filedes )
+  # if file descriptor > 0 then open is success
+  dup_
+  call ZEROGREATER
+  zerosense_
+  je DOINCLUDE_EXIT
 
-    je DOINCLUDE_EXIT
-      call IDLETIMEFETCH
-      to_r_
-      call SLEEPOFF
-        # push FFLAGS on tor
-        call FFLAGS
-        hfetch_
-        to_r_
-        # push on return stack the old defer key
-        call KEYADDR
-        fetch_
-        to_r_
-        # push old keyfile on return stack
-        call KEYFILEADDR
-        fetch_
-        to_r_
-        call KEYFILEADDR
-        store_
-        # defer key to keyfile for input
-      dolit_ KEYFILE
-        call KEYADDR
-        store_
-        # run interpreter
-        call DOTASKS
-        # close keyfile
-        call KEYFILEADDR
-        fetch_
-        call CLOSEF
-        # pop tor into keyfile
-        r_from_
-        call KEYFILEADDR
-        store_
-        # pop top of return into defer key
-        r_from_
-        call KEYADDR
-        store_
-        # restore FFLAGS
-        r_from_
-        call FFLAGS
-        call HSTORE
-        r_from_
-        jmp IDLETIMESTORE
+  call IDLETIMEFETCH
+  to_r_
+  call SLEEPOFF
+  # push FFLAGS on tor
+  call FFLAGS
+  hfetch_
+  to_r_
+  # push on return stack the old defer key
+  call KEYADDR
+  fetch_
+  to_r_
+  # push old keyfile on return stack
+  call KEYFILEADDR
+  fetch_
+  to_r_
+  call KEYFILEADDR
+  store_
+  # defer key to keyfile for input
+  dolit_ KEYFILE
+  call KEYADDR
+  store_
+  # run interpreter
+  call DOTASKS
+  # close keyfile
+  call KEYFILEADDR
+  fetch_
+  call CLOSEF
+  # pop tor into keyfile
+  r_from_
+  call KEYFILEADDR
+  store_
+  # pop top of return into defer key
+  r_from_
+  call KEYADDR
+  store_
+  # restore FFLAGS
+  r_from_
+  call FFLAGS
+  call HSTORE
+  r_from_
+  jmp IDLETIMESTORE
 
 DOINCLUDE_EXIT:
-    drop_
-    type_ "File not found!"
-    ret
+  drop_
+  type_ "File not found!"
+  ret
 
 # ( C:filepath -- ** )
 # open a file that will be used for key input
 Forthword_ INCLUDEF, 0, "include"
-    # parse input for filename to include
-    call PNAME     # ( addr len )
-    # add null to end of string
-    over_
-    plus_
-    call ZEROCSTORE
-    jmp DOINCLUDE
+  # parse input for filename to include
+  call PNAME     # ( addr len )
+  # add null to end of string
+  over_
+  plus_
+  call ZEROCSTORE
+  jmp DOINCLUDE
 
 # ( nx* -- ) (R: ny* -- )
 # initialize rf further. EXECs turnkey operation and go to quit
 Forthword_ DOCMDARG, 0, "docmdarg"
-    call ARGCADDR
-    fetch_
-    one_
-    call GREATER
-    zerosense_
-    je DOCMDARG_EXIT
+  call ARGCADDR
+  fetch_
+  one_
+  call GREATER
+  zerosense_
+  je DOCMDARG_EXIT
 
-    call ARGVADDR
-    fetch_
-    fourplus_
-    fetch_
-    jmp DOINCLUDE
+  call ARGVADDR
+  fetch_
+  fourplus_
+  fetch_
+  jmp DOINCLUDE
 
 DOCMDARG_EXIT:
-    ret
+  ret
 
 # ( -- )
 # must be last word in core
@@ -592,10 +592,10 @@ Forthword_ WIPE, 0, "WIPE"
   dolit_ EE_FORTHWORDLIST
   dup_
   zerostore_
-    fourplus_
-    zerostore_
+  fourplus_
+  zerostore_
 
-     # init pause to noop
+  # init pause to noop
   dolit_ NOOP
   call PAUSEADDR
   store_
