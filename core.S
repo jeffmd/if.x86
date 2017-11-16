@@ -3,7 +3,7 @@
 # ( xt -- )
 # execute XT
 Forthword_ EXEC, 0, "exec"
-  push %ebx
+  push %eax
   drop_
   ret
 
@@ -19,8 +19,8 @@ Forthword_ NOOP, INLINE_OPT, "noop"
 # duplicate TOS
 Forthword_ DUP, INLINE_OPT, "dup"
   dup_
-  ret
-
+  ret  
+  
 # ( n1 -- [ n1 n1 ] | 0)
 # duplicate TOS if non-zero
 Forthword_ QDUP, 0, "?dup"
@@ -78,8 +78,8 @@ Forthword_ DDROP, INLINE_OPT, "2drop"
 Forthword_ TUCK, 0, "tuck"
 	popnos_
 	sub $8, %eax
-	mov %ebx, 4(%eax)
-	mov %edx, (%eax)
+	mov %eax, 4(%ebx)
+	mov %edx, (%ebx)
 	ret
 
 # ( n1 n2 n3 -- n3 n2 n1)
@@ -164,8 +164,8 @@ Forthword_ RP_STORE, INLINE_OPT, "rp!"
 # must be called
 Forthword_ POPRET, 0, "popret"
   dup_
-	pop %ebx
-	ret
+  pop %eax
+  ret
     
 
 # ( -- n) (R: n -- n+1 )
@@ -174,7 +174,7 @@ Forthword_ POPRET, 0, "popret"
 # since this word must be called, skip the top most item on the return stack
 Forthword_ RTORPLUS, 0, "r>r+"
 	dup_
-	mov 4(%esp), %ebx
+	mov 4(%esp), %eax
 	addl $4, 4(%esp)
 	ret
 
@@ -197,7 +197,7 @@ Forthword_ MINUS, INLINE_OPT, "-"
 # signed multiply 32b x 32b = 32b
 Forthword_ MULU, INLINE_OPT,  "*"
   popnos_
-  imul %edx, %ebx 
+  imul %edx, %eax 
   ret
 
 # ( n1 -- -n1 )
@@ -240,30 +240,30 @@ Forthword_ NOTEQUAL, INLINE_OPT, "<>"
 # ( n1 n2 -- flag )
 # flag is true if TOS and NOS are equal
 Forthword_ EQUAL, 0, "="
-  sub (%eax), %ebx
+  sub (%ebx), %eax
   nip_
-  sub $1, %ebx
-  sbb %ebx, %ebx
+  sub $1, %eax
+  sbb %eax, %eax
   ret
 
 # ( n1 n2 -- flag)
 # flag is true if n1 is less than n2
 Forthword_ LESS, 0, "<"
-  cmp %ebx, (%eax)
+  cmp %eax, (%ebx)
   nip_
   jge 1f
   zerotos_
   not_
   ret
 1:
-  mov $0, %ebx
+  zerotos_
   ret
 
 # ( n1 n2 -- flag )
 # flag is true if n1 is greater than n2
 Forthword_ GREATER, 0, ">"
            # Get x1 into a register.
-  cmp %ebx, (%eax)  # Is x2 greater?
+  cmp %eax, (%ebx)  # Is x2 greater?
   nip_
 GREATER_CHK:
   jle 1f
@@ -345,25 +345,25 @@ Forthword_ ZEROEQUAL, INLINE_OPT, "0="
 # ( n1 -- flag )
 # flag is true if n1 is greater than 0
 Forthword_ ZEROGREATER, 0, "0>"
-  sub $0, %ebx
+  sub $0, %eax
   jmp GREATER_CHK
 
 # ( u1 u2 -- flag )
 # flag is true if u1 > u2 (unsigned)
 Forthword_ UGREATER, 0, "u>"
   popnos_
-  sub %edx, %ebx
-  sbb %ebx, %ebx
+  sub %edx, %eax
+  sbb %eax, %eax
   ret
 
 # ( u1 u2 -- flag)
 # flag is true if u1 < u2 (unsigned)
 Forthword_ ULESS, 0, "u<"
   popnos_
-  sub %ebx, %edx
+  sub %eax, %edx
 # TOS = a-b  -- carry set if a is less than b
   sbb %edx, %edx
-  mov %edx, %ebx
+  mov %edx, %eax
   ret
 
 # ( n1 -- flag)
@@ -462,21 +462,21 @@ Forthword_ ZEROSTORE, INLINE_OPT, "0!"
 Forthword_ PLUSSTORE, INLINE_OPT, "+!"
   # X is the new TOS after the store completes.
   popnos_
-  addl  %edx, (%ebx)   
+  addl  %edx, (%eax)   
   drop_
   ret
 
 # ( a-addr -- )
 # subtract 1 from content of cell RAM address a-addr
 Forthword_ ONEMINUSSTORE, INLINE_OPT, "1-!"
-  subl  $1, (%ebx)
+  subl  $1, (%eax)
   drop_
   ret
 
 # ( a-addr -- )
 # add 1 to content of cell RAM address a-addr
 Forthword_ ONESTORE, INLINE_OPT, "1+!"
-  addl  $1, (%ebx)
+  addl  $1, (%eax)
   drop_
   ret
 
@@ -490,14 +490,14 @@ Forthword_ HFETCH, INLINE_OPT, "h@"
 # store a half word (16 bits) to RAM address
 Forthword_ HSTORE, INLINE_OPT, "h!"
   popnos_
-  movw %dx, (%ebx)     
+  movw %dx, (%eax)     
   drop_
   ret
 
 # ( a-addr -- )
 # store 0 (16 bits) to RAM address
 Forthword_ ZEROHSTORE, INLINE_OPT, "0h!"
-  movw $0, (%ebx)
+  movw $0, (%eax)
   drop_
   ret
 
@@ -505,14 +505,14 @@ Forthword_ ZEROHSTORE, INLINE_OPT, "0h!"
 # add n16 to content of half cell RAM address a-addr
 Forthword_ PLUSHSTORE, INLINE_OPT, "+h!"
   popnos_
-  addw %dx, (%ebx)
+  addw %dx, (%eax)
   drop_
   ret
 
 # ( a-addr -- )
 # add 1 to content of half cell RAM address a-addr
 Forthword_ ONEPLUSHSTORE, INLINE_OPT, "1+h!"
-  addw  $1, (%ebx)
+  addw  $1, (%eax)
   drop_
   ret
 
@@ -526,14 +526,14 @@ Forthword_ CFETCH, INLINE_OPT, "c@"
 # store a single byte to RAM address
 Forthword_ CSTORE, INLINE_OPT, "c!"
   popnos_
-  movb %dl, (%ebx)
+  movb %dl, (%eax)
   drop_
   ret
 
 # ( a-addr -- )
 # store 0 (16 bits) to RAM address
 Forthword_ ZEROCSTORE, INLINE_OPT, "0c!"
-  movb $0, (%ebx)
+  movb $0, (%eax)
   drop_
   ret
 
@@ -541,14 +541,14 @@ Forthword_ ZEROCSTORE, INLINE_OPT, "0c!"
 # add c byte to content of byte RAM address a-addr
 Forthword_ PLUSCSTORE, INLINE_OPT, "+c!"
   popnos_
-  addb %dl, (%ebx)
+  addb %dl, (%eax)
   drop_
   ret
 
 # ( a-addr -- )
 # add 1 to content of byte cell RAM address a-addr
 Forthword_ ONEPLUSCSTORE, INLINE_OPT, "1+c!"
-  addb $1, (%ebx)
+  addb $1, (%eax)
   drop_
   ret
   
@@ -663,7 +663,7 @@ Forthword_ MCPY, 0, "mcpy"
 MCPY_B:
 	dupzerosense_   # ( start count )
 	je MCPY_END
-	mov %ebx, %ecx
+	mov %eax, %ecx
 	drop_         # ( start ) ecx: count
 	toa_            # ( ) esi: start
 	cld

@@ -1,7 +1,7 @@
 # macros.S
 
-# tos -> %ebx # parameter top of stack [TOS] register
-# dsp -> %eax # holds the Forth Parameter/Data stack pointer
+# tos -> %eax # parameter top of stack [TOS] register
+# dsp -> %ebx # holds the Forth Parameter/Data stack pointer
 # areg -> %esi # A register used for memory pointer operations
 # breg -> %edi # B register used for general purpose operations
 # sysvar -> %ebp # system variables base pointer
@@ -40,7 +40,7 @@
 # Inline macros
 
 .macro dup_r_ # put copy of tos on return stack
-  pushl %ebx
+  pushl %eax
 .endm
 
 .macro r_drop_ # drop TOR
@@ -48,51 +48,51 @@
 .endm
 
 .macro dup_ # save tos on data stack
-  leal -4(%eax), %eax
-  mov %ebx, (%eax) 
+  leal -4(%ebx), %ebx
+  mov %eax, (%ebx) 
 .endm
 
 .macro nip_
-  leal 4(%eax), %eax
+  leal 4(%ebx), %ebx
 .endm
 
 .macro dnip_
-  leal 8(%eax), %eax
+  leal 8(%ebx), %ebx
 .endm
 
 .macro dropdup_
-  movl (%eax), %ebx
+  movl (%ebx), %eax
 .endm
 
 .macro drop_ # load tos from stack, same as drop
-  mov (%eax), %ebx
+  dropdup_
   nip_
 .endm
 
 # test with bit constant
 .macro bittest_ v
-  test $\v, %ebx
+  test $\v, %eax
   drop_
 .endm
 
 .macro swap_
-  mov (%eax), %edx
-  mov %ebx, (%eax)
-  mov %edx, %ebx
+  mov (%ebx), %edx
+  mov %eax, (%ebx)
+  mov %edx, %eax
 .endm
 
 .macro over_
   dup_
-  movl 4(%eax), %ebx
+  movl 4(%ebx), %eax
 .endm
 
 .macro spfetch_
   dup_
-  movl %eax, %ebx
+  movl %ebx, %eax
 .endm
 
 .macro spstore_
-  movl %ebx, %eax
+  movl %eax, %ebx
   drop_
 .endm
 
@@ -103,21 +103,21 @@
 
 .macro r_from_
   dup_
-  pop %ebx
+  pop %eax
 .endm
 
 .macro r_fetch_
   dup_
-  movl (%esp), %ebx
+  movl (%esp), %eax
 .endm
 
 .macro rpfetch_
   dup_
-  movl %esp, %ebx
+  movl %esp, %eax
 .endm
 
 .macro rpstore_
-  movl %ebx, %esp
+  movl %eax, %esp
   drop_
 .endm
 
@@ -127,121 +127,121 @@
 .endm
 
 .macro flip_
-  mov 4(%eax), %edx
-  mov %ebx, 4(%eax)
-  mov %edx, %ebx
+  mov 4(%ebx), %edx
+  mov %eax, 4(%ebx)
+  mov %edx, %eax
 .endm
 
 .macro rot_
-  xchg %ebx, (%eax)
-  xchg %ebx, 4(%eax)
+  xchg %eax, (%ebx)
+  xchg %eax, 4(%ebx)
 .endm
 
 .macro rrot_
-  xchg %ebx, 4(%eax)
-  xchg %ebx, (%eax)
+  xchg %eax, 4(%ebx)
+  xchg %eax, (%ebx)
 .endm
 
 .macro popnos_
-  mov (%eax), %edx
+  mov (%ebx), %edx
   nip_
 .endm
 
 .macro pop2nos_
-  mov (%eax), %edx
-  mov 4(%eax), %ecx
-  leal 8(%eax), %eax
+  mov (%ebx), %edx
+  mov 4(%ebx), %ecx
+  leal 8(%ebx), %ebx
 .endm
 
 .macro plus_
   popnos_
-  addl %edx, %ebx
+  addl %edx, %eax
 .endm
 
 .macro minus_
-  movl %ebx, %edx
+  movl %eax, %edx
   drop_
-  sub %edx, %ebx
+  sub %edx, %eax
 .endm
 
 .macro neg_
-    neg %ebx
+    neg %eax
 .endm
 
 .macro and_
-  and (%eax), %ebx
+  and (%ebx), %eax
   nip_
 .endm
 
 .macro or_
-  or (%eax), %ebx
+  or (%ebx), %eax
   nip_
 .endm
 
 .macro xor_
-  xor (%eax), %ebx
+  xor (%ebx), %eax
   nip_
 .endm
 
 .macro not_
-  not %ebx
+  not %eax
 .endm
 
 .macro douser_ sym
   dup_
-  leal (\sym-sysvar_base)(%ebp), %ebx
+  leal (\sym-sysvar_base)(%ebp), %eax
   ret
 .endm
 
 # Push constant on datastack
 .macro dolit_ val
   dup_
-  movl $\val, %ebx
+  movl $\val, %eax
 .endm
 
 .macro oneplus_
-  inc %ebx
+  inc %eax
 .endm
 
 .macro oneminus_
-  dec %ebx
+  dec %eax
 .endm
 
 .macro twoplus_
-  add $2, %ebx
+  add $2, %eax
 .endm
 
 .macro fourplus_
-  add $4, %ebx
+  add $4, %eax
 .endm
 
 .macro twominus_
-  sub $2, %ebx
+  sub $2, %eax
 .endm
 
 .macro fourminus_
-  sub $4, %ebx
+  sub $4, %eax
 .endm
 
 .macro twoslash_
-    sar %ebx
+    sar %eax
 .endm
 
 .macro fourslash_
-    sar $2, %ebx
+    sar $2, %eax
 .endm
 
 .macro twostar_
-    sal %ebx
+    sal %eax
 .endm
 
 .macro fourstar_
-    sal $2, %ebx
+    sal $2, %eax
 .endm
 
 
 .macro dupzerosense_
-  or %ebx, %ebx
+  or %eax, %eax
 .endm
 
 .macro zerosense_
@@ -250,11 +250,11 @@
 .endm
 
 .macro zeroless_
-  sar $31, %ebx    # Turn MSB into 0xffffffff or 0x00000000
+  sar $31, %eax    # Turn MSB into 0xffffffff or 0x00000000
 .endm
 
 .macro zerotos_
-    xor %ebx, %ebx
+    xor %eax, %eax
 .endm
 
 .macro zero_
@@ -263,8 +263,8 @@
 .endm
 
 .macro zeroequal_
-  sub $1, %ebx
-  sbb %ebx, %ebx
+  sub $1, %eax
+  sbb %eax, %eax
 .endm
 
 .macro one_
@@ -289,61 +289,61 @@
 
 .macro true_
   dup_
-  or $-1, %ebx
+  or $-1, %eax
 .endm
 
 .macro lshift_
-  mov %ebx, %ecx
+  mov %eax, %ecx
   drop_
-  shl %cl, %ebx
+  shl %cl, %eax
 .endm
 
 .macro rshift_
-  mov %ebx, %ecx
+  mov %eax, %ecx
   drop_
-  shr %cl, %ebx
+  shr %cl, %eax
 .endm
 
 .macro fetch_
-  movl (%ebx), %ebx
+  movl (%eax), %eax
 .endm
 
 .macro store_
   popnos_
-  movl %edx, (%ebx)
+  movl %edx, (%eax)
   drop_
 .endm
 
 .macro zerostore_
   xor %edx, %edx
-  movl %edx, (%ebx)
+  movl %edx, (%eax)
   drop_
 .endm
 
 .macro hfetch_
-  movsxw (%ebx), %ebx
+  movsxw (%eax), %eax
 .endm
 
 .macro cfetch_
-  movsxb (%ebx), %ebx
+  movsxb (%eax), %eax
 .endm
 
 .macro niptoa_
-  mov (%eax), %esi
+  mov (%ebx), %esi
   nip_
 .endm
 
 .macro niptob_
-  mov (%eax), %edi
+  mov (%ebx), %edi
   nip_
 .endm
 
 .macro copytoa_
-    mov %ebx, %esi
+    mov %eax, %esi
 .endm
 
 .macro copytob_
-    mov %ebx, %edi
+    mov %eax, %edi
 .endm
 
 .macro toa_
@@ -358,66 +358,66 @@
 
 .macro geta_
   dup_
-  mov %esi, %ebx
+  mov %esi, %eax
 .endm
 
 .macro getb_
   dup_
-  mov %edi, %ebx
+  mov %edi, %eax
 .endm
 
 .macro afetch_
   dup_
-  movl (%esi), %ebx
+  movl (%esi), %eax
 .endm
 
 .macro astore_
-  mov %ebx, (%esi)
+  mov %eax, (%esi)
   drop_
 .endm
 
 .macro bfetch_
   dup_
-  movl (%edi), %ebx
+  movl (%edi), %eax
 .endm
 
 .macro bstore_
-  mov %ebx, (%edi)
+  mov %eax, (%edi)
   drop_
 .endm
 
 .macro ahfetch_
   dup_
-  movsxw (%esi), %ebx
+  movsxw (%esi), %eax
 .endm
 
 .macro ahstore_
-  movw %bx, (%esi)
+  movw %ax, (%esi)
   drop_
 .endm
 
 .macro bhfetch_
   dup_
-  movsxw (%edi), %ebx
+  movsxw (%edi), %eax
 .endm
 
 .macro acfetch_
   dup_
-  movsxb (%esi), %ebx
+  movsxb (%esi), %eax
 .endm
 
 .macro acstore_
-  movb %bl, (%esi)
+  movb %al, (%esi)
   drop_
 .endm
 
 .macro bcfetch_
   dup_
-  movsxb (%edi), %ebx
+  movsxb (%edi), %eax
 .endm
 
 .macro bcstore_
-  movb %bl, (%edi)
+  movb %al, (%edi)
   drop_
 .endm
 

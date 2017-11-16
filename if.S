@@ -82,9 +82,9 @@ CPSTART:
 # initialize if further. EXECs turnkey operation and go to quit
 Forthword_ WARM, 0, "warm"
 	dup_
-	mov %esp, %ebx
+	mov %esp, %eax
 	call RP0
-	call STORE
+	store_
 	call ONLY
   call RESET
   call DECIMAL           # default to decimal base
@@ -97,7 +97,7 @@ Forthword_ WARM, 0, "warm"
 # start address of the data stack
 Forthword_ SP0, 0, "sp0"
   dup_
-  movl $topdatastack, %ebx
+  movl $topdatastack, %eax
   ret
 
 .globl COLD
@@ -107,10 +107,9 @@ Forthword_ SP0, 0, "sp0"
 # start up asforth.
 Forthword_ COLD, 0, "cold"
   pushl %ebp
-  movl $topdatastack, %eax
+  movl $topdatastack, %ebx
   movl $sysvar_base, %ebp
   call WIPE
   call WARM
-  movl %ebx, %eax
   popl %ebp
   ret

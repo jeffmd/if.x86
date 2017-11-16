@@ -5,13 +5,10 @@
 # path - address of path string null terminated
 # option flags 
 Forthword_ OPENF, 0, "open"
-  push %eax
-  push %ebx     # flags
-  push (%eax)   # path
+  push %eax     # flags
+  push (%ebx)   # path
   call open
-  mov %eax, %ebx
   add $8, %esp
-  pop %eax
   nip_
   ret
 
@@ -19,11 +16,9 @@ Forthword_ OPENF, 0, "open"
 # open a file
 # filedes - file descriptor
 Forthword_ CLOSEF, 0, "close"
-  push %eax
-  push %ebx    # filedes
+  push %eax    # filedes
   call close
   pop %edx
-  pop %eax
   drop_
   ret
 
@@ -31,14 +26,11 @@ Forthword_ CLOSEF, 0, "close"
 # fetch bytes from an open file using filedes
 # number of bytes read left on TOS
 Forthword_ READF, 0, "read"
-  push %eax
-  push %ebx     # length
-  push (%eax)   # buffer
-  push 4(%eax)  # filedes
+  push %eax     # length
+  push (%ebx)   # buffer
+  push 4(%ebx)  # filedes
   call read 
-  mov %eax, %ebx
   add $12, %esp
-  pop %eax
   dnip_
   ret
 
@@ -46,13 +38,10 @@ Forthword_ READF, 0, "read"
 # write bytes to an open file using filedes
 # number of bytes written left on TOS
 Forthword_ WRITEF, 0, "write"
-  push %eax
-  push %ebx # length
-  push (%eax) # buffer
-  push 4(%eax) # filedes
+  push %eax # length
+  push (%ebx) # buffer
+  push 4(%ebx) # filedes
   call write 
-  mov %eax, %ebx
   add $12, %esp
-  pop %eax
   dnip_
   ret
