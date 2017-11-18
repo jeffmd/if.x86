@@ -291,7 +291,7 @@ Forthword_ NUMBER, 0, "num"
 
   # error in string to number conversion
 PFA_NUMBER2:
-  nip_                    # ( addr' )  (R: base flagsign' )
+  dnip_                   # ( addr' )  (R: base flagsign' )
   r_drop_                 # ( addr' ) (R: base )
   zerotos_                # ( 0 ) (R: base )
   jmp PFA_NUMBER5
@@ -334,7 +334,7 @@ Forthword_ UM_DIVMOD, 0, "um/mod"
   mov %eax, %ecx
   movl 4(%ebx), %edx
   movl (%ebx), %eax
-  nip_
+  dnip_
   div %ecx
   movl %edx, (%ebx)
   ret
@@ -355,7 +355,7 @@ Forthword_ M_DIVMOD, 0, "m/mod"
   movl %eax, %ecx
   movl 4(%ebx), %edx
   movl (%ebx), %eax
-  nip_
+  dnip_
   idiv %ecx
   movl %edx, 4(%ebx)
   ret
@@ -376,7 +376,7 @@ Forthword_ DIV, 0, "/"
   movl %eax, %ecx
   movl (%ebx), %eax
   cltd
-  nip_
+  dnip_
   idiv %ecx
   ret
 
@@ -460,7 +460,7 @@ Forthword_ THROW, 0, "throw"
 Forthword_ USLEEP, 0, "usleep"
   push %eax
   call usleep
-  pop %edx
+  rnip_
   drop_
   ret
 

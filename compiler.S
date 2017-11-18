@@ -49,6 +49,7 @@ Forthword_ DP, 0, "dp"
 # ( offset -- )
 # add offset to (dictionary pointer) DP
 Forthword_ DPPLUS, 0, "dp+"
+  dpush_
   call DPSHARP
   jmp PLUSSTORE
 
@@ -70,9 +71,10 @@ Forthword_ CP, 0, "cp"
   fetch_
   ret
 
-# ( offset -- )
+# ( offset -- cp#)
 # add offset to (code pointer) CP
 Forthword_ CPPLUS, 0, "cp+"
+  dpush_
   call CPSHARP
   jmp PLUSSTORE
 
@@ -101,8 +103,8 @@ Forthword_ TAILOPTOFF, 0, "optoff"
 Forthword_ TAILOPT, 0, ";opt"
   # optimize only if smudge is not zero
   call SMUDGE
-  call FETCH
-zerosense_
+  fetch_
+  iszero_
   jne CHECK_DIS_CALL_OPT
   ret
 
@@ -121,9 +123,10 @@ CHECK_LAST_IS_CALL:
 TAIL_CALL_OPTIMIZE:
   # replace CP - 5 byte instruction with 0xe9
   dolit_ 0xe9        # ( 0xe9 )
+  dpush_             # ( 0xe9 0xe9 )
   call CP            # ( 0xe9 CP )
   sub $5, %eax       # ( 0xe9 CP-5 )
-  call CSTORE        # (  )
+  call CSTORE        # ( CP-5 )
   # clear last is call flag in fflags
   andw $~(1 << LAST_IS_CALL_FB), fflags
   ret
@@ -131,23 +134,23 @@ TAIL_CALL_OPTIMIZE:
 # ( -- )
 # update wid from smudge if valid
 Forthword_ UWID, 0, "uwid"
-  call SMUDGE
-  fetch_
-  call QDUP
-  zerosense_
+  call SMUDGE    # ( SMUDGE )
+  fetch_         # ( xt )
+  iszero_        # ( xt )
   je UWID_end
     # wid.word = smudge
-    call CURRENT
-    fetch_
-    store_
+    dpush_       # ( xt xt )
+    call CURRENT # ( xt CURRENT )
+    fetch_       # ( xt wid )
+    store_       # ( wid )
     #call CLRCACHE
     # set smudge to zero indicating no longer compiling a word
-    call SMUDGE
-    zerostore_
-  UWID_end:
+    call SMUDGE  # ( SMUDGE )
+    zerostore_   # ( SMUDGE )
+UWID_end:
   ret
 
-# ( --  )
+# ( -- )
 # enter interpreter mode
 Forthword_ LBRACKET, IMMEDIATE_EN, "["
   call STATE
@@ -157,9 +160,10 @@ Forthword_ LBRACKET, IMMEDIATE_EN, "["
 # ( n -- )
 # store 8 bit value on TOS into code section ram at (code pointer) CP
 Forthword_ COMMA, 0, ","
-  call CP
-  call CSTORE
-  jmp CPPLUSONE
+  dpush_           # ( n n )
+  call CP          # ( n CP )
+  call CSTORE      # ( CP )
+  jmp CPPLUSONE    # 
 
 # ( n -- )
 # store double word 32 bit value on TOS into code section ram at (code pointer) CP
@@ -185,10 +189,10 @@ Forthword_ COPYSTRING, 0, "copy$"
   tob_               # ( s-addr len len' ) B: d-addr
   movw %ax, (%edi)
   addl $2, %edi
-  drop_            # ( s-addr len )
+  dpop_            # ( s-addr len )
   mov %eax, %ecx
-  drop_            # ( s-addr )
-  copytoa_           # ( s-addr ) A: addr
+  dpop_            # ( s-addr )
+  toa_           # ( s-addr ) A: addr
   cld
   rep movsb
   mov %edi, %eax     # ( s-addr+len )
@@ -219,7 +223,7 @@ Forthword_ STRINGDICTSTORE, 0, "$dp!"
 Forthword_ FINDB, 0, "findb"
   # fetch from ram and check if equal to match byte
   tob_             # ( start ) B: match
-  copytoa_         # ( start ) A: start
+  toa_         # ( start ) A: start
   # begin
 FINDI_BEGIN:
       movsxb (%esi), %edx # ( start )
@@ -242,13 +246,15 @@ FINDI_BEGIN:
 Forthword_ INLINE, 0, "inline"
   # find the ret instruction, want count to ret
   # count will be number of bytes to inline
-  dolit_ 0xc3
+  dpush_                   # ( start start )
+  dolit_ 0xc3              # ( start 0xc3 )
   call FINDB               # ( start count )
 
-  # dp swap dup dp+ itoi
+  # cp swap dup dp+ itoi
+  dpush_                   # ( start count count )
   call CP                  # ( start count cp )
   swap_                    # ( start cp count )
-dup_                     # ( start cp count count )
+  dpush_                     # ( start cp count count )
   call CPPLUS              # ( start cp count )
   jmp MCPY                 # ( )
 
@@ -258,22 +264,24 @@ Forthword_ NFA2LFA, 0, "nfa>lfa"
   call STRINGLEN               # ( nfa+2 len+flags )
   # mask out flags in len, allow up to 31 characters
   and $31, %eax                # ( nfa+2 len )
-  plus_
+  plus_                        # ( nfa+2+len )
   ret
 
 # ( nfa -- [ 0 ] | [ xt xtflags] )
 # convert name field address to xt and xtflags
 Forthword_ NFATOXTF, 0, "nfa>xtf"
-  dupzerosense_               # ( n )
+  iszero_                     # ( n )
   je NFATOXTF_EXIT
 
-  dup_                        # ( nfa nfa )
+  dpush_                      # ( nfa nfa )
   hfetch_                     # ( nfa xtflags )
-  to_r_                       # ( nfa ) (R: xtflags)
+  rpush_                      # ( nfa xtflags) (R: xtflags)
+  dpop_
   call NFA2LFA                # ( lfa )
   fourplus_   # lfa>xtlink    # ( xtlink )
   fetch_                      # ( xt )
-  r_from_                     # ( xt xtflags )
+  dpush_                      # ( xt xt )
+  rpop_                       # ( xt xtflags )
 
 NFATOXTF_EXIT:
   ret
@@ -283,19 +291,21 @@ NFATOXTF_EXIT:
 # other vocabularies
 Forthword_ ONLY, IMMEDIATE_EN, "only"
   # forth vocab always takes slot 0
-  dolit_ EE_FORTHWORDLIST
-  dup_
-  call CONTEXT
-  store_
+  one_                        # ( 1 )
+  dpush_                      # ( 1 1 )
+  dolit_ EE_FORTHWORDLIST     # ( 1 FLIST )
+  dpush_                      # ( 1 FLIST FLIST )
+  dpush_                      # ( 1 FLIST FLIST FLIST )
+  call CURRENT                # ( 1 FLIST FLIST CURRENT )
+  store_                      # ( 1 FLIST CURRENT )
   # make current also forth vocab
-  call CURRENT
-  store_
+  call CONTEXT                # ( 1 FLIST CONTEXT )
+  store_                      # ( 1 CONTEXT )
   # move index to next slot
-  one_
-  call CONTEXT
-  twominus_
-  call HSTORE
+  twominus_                   # ( 1 CONTEXT-2 )
+  hstore_                     # ( CONTEXT-2 )
   # make second slot have no vocab
-  call CONTEXT
-  fourplus_
-  jmp ZEROSTORE
+  twoplus_                    # ( CONTEXT )
+  fourplus_                   # ( CONTEXT+4 )
+  zerostore_
+  ret

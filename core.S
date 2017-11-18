@@ -4,36 +4,51 @@
 # execute XT
 Forthword_ EXEC, 0, "exec"
   push %eax
-  drop_
+  dpop_
   ret
 
 # ( xt -- )
 # Don't do anything, just chew up a few cycles
 Forthword_ NOOP, INLINE_OPT, "noop"
-    nop
-    ret
+  nop
+  ret
 
 #@@@@@@@@@@@@@ Parameter Stack  Manipulation @@@@@@@@@@@@@@
 
 # ( n -- n n )
 # duplicate TOS
-Forthword_ DUP, INLINE_OPT, "dup"
-  dup_
+Forthword_ DPUSH, INLINE_OPT, "dpush"
+  dpush_
   ret  
   
 # ( n1 -- [ n1 n1 ] | 0)
 # duplicate TOS if non-zero
-Forthword_ QDUP, 0, "?dup"
-	dupzerosense_
+Forthword_ QDUP, 0, "?dpush"
+	iszero_
 	je PFA_QDUP1	
-	dup_
+	dpush_
 PFA_QDUP1:
 	ret
 
 # ( n2 n1 -- n2 n2 )
-# duplicate NOS: same as drop dup
-Forthword_ DROPDUP, INLINE_OPT, "dropdup"
-  dropdup_
+#   d0 TOS
+# fetch datastack[0] and place in TOS register
+Forthword_ DFETCH, INLINE_OPT, "d0@"
+  d0fetch_
+  ret
+  
+# ( n3 n2 n1 -- n3 n2 n3 )
+#   d1 d0 TOS
+# fetch datastack[1] and place in TOS register
+Forthword_ D1FETCH, INLINE_OPT, "d1@"
+  d1fetch_
+  ret
+  
+# ( n4 n3 n2 n1 -- n4 n3 n2 n4 )
+#   d2 d1 d0 TOS
+# fetch datastack[2] and place in TOS register
+Forthword_ D2FETCH, INLINE_OPT, "d2@"
+  d2fetch_
   ret
   
 # ( n1 n2 -- n2 n1)
@@ -45,8 +60,8 @@ Forthword_ SWAP, INLINE_OPT, "swap"
 # ( n1 n2 -- n2)
 # drop NOS, one before TOS.
 # same as SWAP DROP
-Forthword_ NIP, INLINE_OPT, "nip"
-  nip_ 
+Forthword_ DNIP, INLINE_OPT, "dnip"
+  dnip_ 
   ret
   
 # ( x1 x2 -- x1 x2 x1 )
@@ -61,23 +76,23 @@ Forthword_ TWOOVER, 0, "2over"
   over_
   jmp OVER
 
-# ( n -- )
+# ( n1 n2 -- n1)
 # drop TOS
-Forthword_ DROP, INLINE_OPT, "drop"
-  drop_
+Forthword_ DDOP, INLINE_OPT, "dpop"
+  dpop_
   ret
 
 # ( n n -- )
 # drop TOS twice
-Forthword_ DDROP, INLINE_OPT, "2drop"
-  ddrop_
+Forthword_ DDROP, INLINE_OPT, "d2pop"
+  d2pop_
   ret
 
 # ( n1 n2 -- n2 n1 n2)
 # tuck TOS before NOS, same as SWAP OVER
 Forthword_ TUCK, 0, "tuck"
-	popnos_
-	sub $8, %eax
+	dpopnos_
+	sub $8, %ebx
 	mov %eax, 4(%ebx)
 	mov %edx, (%ebx)
 	ret
@@ -115,34 +130,40 @@ Forthword_ SP_STORE, INLINE_OPT, "sp!"
 
 #@@@@@@@@@@@@@ Return Stack @@@@@@@@@@@@@
 
-# ( -- n ) (R: n --)
+# ( n1 -- n2 ) (R: n2 --)
 # move TOR to TOS
-Forthword_ R_FROM, INLINE_OPT, "r>"
-	r_from_
+Forthword_ RPOP, INLINE_OPT, "rpop"
+	rpop_
 	ret
 
 # ( -- ) (R: n -- )
 # Drop TOR
-Forthword_ R_DROP, INLINE_OPT, "r>drop"
-	r_drop_
+Forthword_ RPOPNOS, INLINE_OPT, "rpopnos"
+	rpopnos_
 	ret
 
 # ( n -- ) (R: -- n)
 # move TOS to TOR
-Forthword_ TO_R, INLINE_OPT, ">r"
-	to_r_
-	ret
-
-# ( n -- n ) (R: -- n )
-# copy TOS to TOR
-Forthword_ DUP_R, INLINE_OPT, "r>r"
-	dup_r_
+Forthword_ RPUSH, INLINE_OPT, "rpush"
+	rpush_
 	ret
 
 # ( -- n) (R: n -- n )
 # put a copy of TOR on TOS
-Forthword_ R_FETCH, INLINE_OPT, "r"
-	r_fetch_
+Forthword_ R0FETCH, INLINE_OPT, "r0"
+	r0fetch_
+	ret
+
+# ( -- n1 ) (R: n1 n2 -- n1 n2 )
+# put a copy of R1 on TOS
+Forthword_ R1FETCH, INLINE_OPT, "r1"
+	r1fetch_
+	ret
+
+# ( -- n1 ) (R: n1 n2 n3 -- n1 n2 n3 )
+# put a copy of R2 on TOS
+Forthword_ R2FETCH, INLINE_OPT, "r2"
+	r2fetch_
 	ret
 
 # (  -- n)
@@ -163,7 +184,6 @@ Forthword_ RP_STORE, INLINE_OPT, "rp!"
 # used if data in program mem and need an address to it
 # must be called
 Forthword_ POPRET, 0, "popret"
-  dup_
   pop %eax
   ret
     
@@ -172,10 +192,9 @@ Forthword_ POPRET, 0, "popret"
 # get TOR and then increment TOR by 1 cell (32 bit)
 # assumes TOR content will be used for 32 bit memory access
 # since this word must be called, skip the top most item on the return stack
-Forthword_ RTORPLUS, 0, "r>r+"
-	dup_
-	mov 4(%esp), %eax
-	addl $4, 4(%esp)
+Forthword_ RTORPLUS, INLINE_OPT, "r>r+"
+	mov (%esp), %eax
+	addl $4, (%esp)
 	ret
 
 
@@ -196,7 +215,7 @@ Forthword_ MINUS, INLINE_OPT, "-"
 # ( u1|n1 u2|n2 -- u3|n3 )
 # signed multiply 32b x 32b = 32b
 Forthword_ MULU, INLINE_OPT,  "*"
-  popnos_
+  dpopnos_
   imul %edx, %eax 
   ret
 
@@ -241,7 +260,7 @@ Forthword_ NOTEQUAL, INLINE_OPT, "<>"
 # flag is true if TOS and NOS are equal
 Forthword_ EQUAL, 0, "="
   sub (%ebx), %eax
-  nip_
+  dnip_
   sub $1, %eax
   sbb %eax, %eax
   ret
@@ -250,13 +269,13 @@ Forthword_ EQUAL, 0, "="
 # flag is true if n1 is less than n2
 Forthword_ LESS, 0, "<"
   cmp %eax, (%ebx)
-  nip_
+  dnip_
   jge 1f
-  zerotos_
+  zero_
   not_
   ret
 1:
-  zerotos_
+  zero_
   ret
 
 # ( n1 n2 -- flag )
@@ -264,14 +283,14 @@ Forthword_ LESS, 0, "<"
 Forthword_ GREATER, 0, ">"
            # Get x1 into a register.
   cmp %eax, (%ebx)  # Is x2 greater?
-  nip_
+  dnip_
 GREATER_CHK:
   jle 1f
-  zerotos_
+  zero_
   not_
   ret
 1:
-  zerotos_
+  zero_
   ret
 
 
@@ -351,7 +370,7 @@ Forthword_ ZEROGREATER, 0, "0>"
 # ( u1 u2 -- flag )
 # flag is true if u1 > u2 (unsigned)
 Forthword_ UGREATER, 0, "u>"
-  popnos_
+  dpopnos_
   sub %edx, %eax
   sbb %eax, %eax
   ret
@@ -359,7 +378,7 @@ Forthword_ UGREATER, 0, "u>"
 # ( u1 u2 -- flag)
 # flag is true if u1 < u2 (unsigned)
 Forthword_ ULESS, 0, "u<"
-  popnos_
+  dpopnos_
   sub %eax, %edx
 # TOS = a-b  -- carry set if a is less than b
   sbb %edx, %edx
@@ -373,27 +392,15 @@ forthword_ ZEROLESS, INLINE_OPT, "0<"
   ret
 
 # ( -- 0 )
-# place a value 0 on TOS
-Forthword_ ZERO, INLINE_OPT, "0"
-  zero_
-  ret
-
-# ( -- 0 )
 # set TOS to 0
-Forthword_ ZEROSET, INLINE_OPT, "0:"
-	zerotos_
-	ret
-
-# ( n -- )
-# test TOS if zero
-Forthword_ ZEROSENSE, INLINE_OPT, "0?"
-	zerosense_
+Forthword_ ZEROSET, INLINE_OPT, "0"
+	zero_
 	ret
 
 # ( n -- n)
 # test TOS if zero, does not consume TOS
-Forthword_ QZEROSENSE, INLINE_OPT, "?0?"
-	dupzerosense_
+Forthword_ ISZERO, INLINE_OPT, "0?"
+	iszero_
 	ret
   
 # ( -- -1 )
@@ -460,24 +467,19 @@ Forthword_ ZEROSTORE, INLINE_OPT, "0!"
 # ( n32 a-addr -- )
 # add n32 to content of cell RAM address a-addr
 Forthword_ PLUSSTORE, INLINE_OPT, "+!"
-  # X is the new TOS after the store completes.
-  popnos_
-  addl  %edx, (%eax)   
-  drop_
+  plusstore_
   ret
 
 # ( a-addr -- )
 # subtract 1 from content of cell RAM address a-addr
 Forthword_ ONEMINUSSTORE, INLINE_OPT, "1-!"
-  subl  $1, (%eax)
-  drop_
+  oneminusstore_
   ret
 
 # ( a-addr -- )
 # add 1 to content of cell RAM address a-addr
 Forthword_ ONESTORE, INLINE_OPT, "1+!"
-  addl  $1, (%eax)
-  drop_
+  oneplusstore_
   ret
 
 # ( a-addr -- n16 )
@@ -489,31 +491,25 @@ Forthword_ HFETCH, INLINE_OPT, "h@"
 # ( n16 a-addr -- )
 # store a half word (16 bits) to RAM address
 Forthword_ HSTORE, INLINE_OPT, "h!"
-  popnos_
-  movw %dx, (%eax)     
-  drop_
+  hstore_
   ret
 
 # ( a-addr -- )
 # store 0 (16 bits) to RAM address
 Forthword_ ZEROHSTORE, INLINE_OPT, "0h!"
-  movw $0, (%eax)
-  drop_
+  zerohstore_
   ret
 
 # ( n16 a-addr -- )
 # add n16 to content of half cell RAM address a-addr
 Forthword_ PLUSHSTORE, INLINE_OPT, "+h!"
-  popnos_
-  addw %dx, (%eax)
-  drop_
+  plushstore_
   ret
 
 # ( a-addr -- )
 # add 1 to content of half cell RAM address a-addr
 Forthword_ ONEPLUSHSTORE, INLINE_OPT, "1+h!"
-  addw  $1, (%eax)
-  drop_
+  oneplushstore_
   ret
 
 # ( a-addr -- n8 )
@@ -525,67 +521,37 @@ Forthword_ CFETCH, INLINE_OPT, "c@"
 # ( c a-addr -- )
 # store a single byte to RAM address
 Forthword_ CSTORE, INLINE_OPT, "c!"
-  popnos_
-  movb %dl, (%eax)
-  drop_
+  cstore_
   ret
 
 # ( a-addr -- )
 # store 0 (16 bits) to RAM address
 Forthword_ ZEROCSTORE, INLINE_OPT, "0c!"
-  movb $0, (%eax)
-  drop_
+  zerocstore_
   ret
 
 # ( c a-addr -- )
 # add c byte to content of byte RAM address a-addr
 Forthword_ PLUSCSTORE, INLINE_OPT, "+c!"
-  popnos_
-  addb %dl, (%eax)
-  drop_
+  pluscstore_
   ret
 
 # ( a-addr -- )
 # add 1 to content of byte cell RAM address a-addr
 Forthword_ ONEPLUSCSTORE, INLINE_OPT, "1+c!"
-  addb $1, (%eax)
-  drop_
+  onepluscstore_
   ret
   
-# ( n1 n2 -- n2 ) A: n1
-# Remove next on stack and write to A register (Extended VM)
-Forthword_ NIPTOA, INLINE_OPT, "nip>a"
-  niptoa_
-  ret
-
-# ( n1 n2 -- n2 ) B: n1
-# Remove next on stack and write to B register (Extended VM)
-Forthword_ NIPTOB, INLINE_OPT, "nip>b"
-  niptob_
-  ret
-
-# ( n -- ) A: n
-# Move TOS to A register (Extended VM)
-Forthword_ TO_A, INLINE_OPT, ">a"
-  toa_
-  ret
-
-# ( n -- ) B: n
-# Move TOS to B register (Extended VM)
-Forthword_ TO_B, INLINE_OPT, ">b"
-  tob_
-  ret
-
 # ( n -- n ) A: n
 # copy TOS to A register (Extended VM)
-Forthword_ _A, INLINE_OPT, ":a"
-  copytoa_
+Forthword_ _A, INLINE_OPT, ">a"
+  toa_
   ret
 
 # ( n -- n ) B: n
 # copy TOS to B register (Extended VM)
-Forthword_ _B, INLINE_OPT, ":b"
-  copytob_
+Forthword_ _B, INLINE_OPT, ">b"
+  tob_
   ret
 
 # ( -- n )
@@ -659,16 +625,15 @@ Forthword_ ACPLUS, INLINE_OPT, "ac+"
 # count is the number of bytes to copy
 # copy ram using bytes.  Assumes no overlap.
 Forthword_ MCPY, 0, "mcpy"
-	niptob_         # ( start count ) B: dest
-MCPY_B:
-	dupzerosense_   # ( start count )
+	iszero_         # ( start dest count )
 	je MCPY_END
+
+	d0tob_          # ( start dest count ) B: dest
 	mov %eax, %ecx
-	drop_         # ( start ) ecx: count
-	toa_            # ( ) esi: start
+	d1toa_          # (  start dest count ) A: start
 	cld
 	rep movsb
-	ret
 	
 MCPY_END:
-	jmp DDROP
+  d2nip_
+  ret

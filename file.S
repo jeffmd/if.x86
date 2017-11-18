@@ -9,7 +9,7 @@ Forthword_ OPENF, 0, "open"
   push (%ebx)   # path
   call open
   add $8, %esp
-  nip_
+  dnip_
   ret
 
 # ( filedes -- )
@@ -18,8 +18,7 @@ Forthword_ OPENF, 0, "open"
 Forthword_ CLOSEF, 0, "close"
   push %eax    # filedes
   call close
-  pop %edx
-  drop_
+  rnip_
   ret
 
 # (  filedes buffer length -- bytesread )
@@ -31,7 +30,7 @@ Forthword_ READF, 0, "read"
   push 4(%ebx)  # filedes
   call read 
   add $12, %esp
-  dnip_
+  d2nip_
   ret
 
 # (  filedes buffer length -- bytesread )
@@ -43,5 +42,5 @@ Forthword_ WRITEF, 0, "write"
   push 4(%ebx) # filedes
   call write 
   add $12, %esp
-  dnip_
+  d2nip_
   ret
