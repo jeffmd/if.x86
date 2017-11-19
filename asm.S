@@ -49,11 +49,12 @@ Forthword_ JMPC, 0, "jmpc"
   over_                # ( start dest start )
   call RELDST          # ( start reldst )
   call JUMP            # ( start rellong jumpinst )
-  rot_                 # ( rellong jumpinst start )
-  toa_                 # ( rellong jumpinst ) A: start
-  acstore_             # ( rellong )
-  acplus_
-  astore_              # ( )
+  dpush_               # ( start rellong jumpinst jumpinst )
+  d2fetch_             # ( start rellong jumpinst start )
+  cstore_              # ( start rellong start )
+  oneplus_             # ( start rellong start+1 )
+  store_               # ( start start+1 )
+  dpop_                # ( start )
   ret
 
 # conditional jump over a jmp if not zero
@@ -80,7 +81,7 @@ Forthword_ COMPILEXT, 0, "cxt"
   # should word be inlinned?
 	test $(INLINE_OPT << 8), %eax
 	# if bit 0 of high byte flag is 0 then word is to be inlinned
-  drop_           # ( xt )
+  dpop_           # ( xt )
   jne DO_COMPILEXT
     # not a call so disable tail call optimization
     call CALLOFF
@@ -88,6 +89,7 @@ Forthword_ COMPILEXT, 0, "cxt"
 
 DO_COMPILEXT:
   # calculate relative distance in words from start to dest
+  dpush_
   call CP              # ( xt cp )
   call RELDST          # ( distance )
   # fall through into CALLC
@@ -100,8 +102,10 @@ Forthword_ CALLC, 0, "call,"
   # call is an 8 bit instruction with a 32 bit 2's compliment offset
   # bit pattern:
   #
+  dpush_
   dolit_ 0xe8
   call COMMA           # ( dist )
+  dpop_
   # adjust rel distance to account for instruction length of call
   dolit_ 5
   minus_
