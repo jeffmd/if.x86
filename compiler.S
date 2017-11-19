@@ -126,7 +126,7 @@ TAIL_CALL_OPTIMIZE:
   dpush_             # ( 0xe9 0xe9 )
   call CP            # ( 0xe9 CP )
   sub $5, %eax       # ( 0xe9 CP-5 )
-  call CSTORE        # ( CP-5 )
+  cstore_            # ( CP-5 )
   # clear last is call flag in fflags
   andw $~(1 << LAST_IS_CALL_FB), fflags
   ret
@@ -138,15 +138,16 @@ Forthword_ UWID, 0, "uwid"
   fetch_         # ( xt )
   iszero_        # ( xt )
   je UWID_end
-    # wid.word = smudge
-    dpush_       # ( xt xt )
-    call CURRENT # ( xt CURRENT )
-    fetch_       # ( xt wid )
-    store_       # ( wid )
-    #call CLRCACHE
-    # set smudge to zero indicating no longer compiling a word
-    call SMUDGE  # ( SMUDGE )
-    zerostore_   # ( SMUDGE )
+
+  # wid.word = smudge
+  dpush_       # ( xt xt )
+  call CURRENT # ( xt CURRENT )
+  fetch_       # ( xt wid )
+  store_       # ( wid )
+  #call CLRCACHE
+  # set smudge to zero indicating no longer compiling a word
+  call SMUDGE  # ( SMUDGE )
+  zerostore_   # ( SMUDGE )
 UWID_end:
   ret
 
@@ -162,12 +163,13 @@ Forthword_ LBRACKET, IMMEDIATE_EN, "["
 Forthword_ COMMA, 0, ","
   dpush_           # ( n n )
   call CP          # ( n CP )
-  call CSTORE      # ( CP )
+  cstore_          # ( CP )
   jmp CPPLUSONE    # 
 
 # ( n -- )
 # store double word 32 bit value on TOS into code section ram at (code pointer) CP
 Forthword_ DWCOMMA, 0, "dw,"
+  dpush_
   call CP
   store_
   four_
@@ -177,6 +179,7 @@ Forthword_ DWCOMMA, 0, "dw,"
 # store 32 bit value on TOS into dictionary section ram at (dictionary pointer) DP
 # automaticaly increment dp position by 4 bytes
 Forthword_ DPSTORE, 0, "dp!"
+  dpush_
   call DP
   store_
   four_
@@ -186,13 +189,14 @@ Forthword_ DPSTORE, 0, "dp!"
 # copies a counted string with flags from s-addr to d-addr
 # returns destination address + len
 Forthword_ COPYSTRING, 0, "copy$"
-  tob_               # ( s-addr len len' ) B: d-addr
+  tob_               # ( s-addr len len' d-addr ) B: d-addr
+  dpop_              # ( s-addr len len' )
   movw %ax, (%edi)
   addl $2, %edi
-  dpop_            # ( s-addr len )
+  dpop_              # ( s-addr len )
   mov %eax, %ecx
-  dpop_            # ( s-addr )
-  toa_           # ( s-addr ) A: addr
+  dpop_              # ( s-addr )
+  toa_               # ( s-addr ) A: addr
   cld
   rep movsb
   mov %edi, %eax     # ( s-addr+len )
@@ -201,18 +205,24 @@ Forthword_ COPYSTRING, 0, "copy$"
 # ( addr len len' -- )
 # copies a counted string with flags to program ram
 Forthword_ STRINGPROGSTORE, 0, "$cp!"
+  dpush_
   call CP
   call COPYSTRING
+  dpush_
   call CPSHARP
-  jmp STORE
+  store_
+  ret
 
 # ( addr len len' -- )
 # copies a counted string with flags to dictionary ram
 Forthword_ STRINGDICTSTORE, 0, "$dp!"
+  dpush_
   call DP
   call COPYSTRING
+  dpush_
   call DPSHARP
-  jmp STORE
+  store_
+  ret
 
 # ( start match -- start count )
 # match is the 8 bit value to search for in ram
@@ -222,24 +232,22 @@ Forthword_ STRINGDICTSTORE, 0, "$dp!"
 # or get word index of match
 Forthword_ FINDB, 0, "findb"
   # fetch from ram and check if equal to match byte
-  tob_             # ( start ) B: match
-  toa_         # ( start ) A: start
+  tob_             # ( start match ) B: match
+  d0toa_           # ( start match ) A: start
   # begin
 FINDI_BEGIN:
-      movsxb (%esi), %edx # ( start )
-      acplus_
-      and $0xFF, %edx
-      cmp %edx, %edi    # ( start )
-  # until
-  jne FINDI_BEGIN
+    movsxb (%esi), %edx # ( start )
+    acplus_
+    and $0xFF, %edx
+    cmp %edx, %edi    # ( start )
+    # until
+    jne FINDI_BEGIN
 
   geta_            # ( start end )
   oneminus_        # ( start end-1 )
   over_            # ( start end-1 start )
   minus_           # ( start count )
   ret
-
-
 
 # ( start -- )
 # copy code to current dictionary entry
@@ -254,7 +262,7 @@ Forthword_ INLINE, 0, "inline"
   dpush_                   # ( start count count )
   call CP                  # ( start count cp )
   swap_                    # ( start cp count )
-  dpush_                     # ( start cp count count )
+  dpush_                   # ( start cp count count )
   call CPPLUS              # ( start cp count )
   jmp MCPY                 # ( )
 
@@ -276,7 +284,7 @@ Forthword_ NFATOXTF, 0, "nfa>xtf"
   dpush_                      # ( nfa nfa )
   hfetch_                     # ( nfa xtflags )
   rpush_                      # ( nfa xtflags) (R: xtflags)
-  dpop_
+  dpop_                       # ( nfa )
   call NFA2LFA                # ( lfa )
   fourplus_   # lfa>xtlink    # ( xtlink )
   fetch_                      # ( xt )

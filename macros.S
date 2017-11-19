@@ -120,9 +120,21 @@
   movl 8(%ebx), %eax
 .endm
 
+.macro dtop1_ # move stack pointer down one cell
+  leal -4(%ebx), %ebx
+.endm
+
+.macro dtop2_ # move stack pointer down two cells
+  leal -8(%ebx), %ebx
+.endm
+
+.macro dtop3_ # move stack pointer down three cells
+  leal -12(%ebx), %ebx
+.endm
+
 
 .macro dpush_ # save tos on data stack
-  leal -4(%ebx), %ebx
+  dtop1_
   d0store_
 .endm
 

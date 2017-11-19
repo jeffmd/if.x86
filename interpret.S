@@ -82,9 +82,8 @@ Forthword_ EMIT, 0, "emit"
 # cause subsequent output appear at the beginning of the next line
 Forthword_ CR, 0, "cr"
   ten_
-  dpush_
-  dolit_ 13
   call EMIT
+  dolit_ 13
   jmp EMIT
 
 # ( -- 32 )
@@ -120,8 +119,9 @@ Forthword_ KEYFILE, 0, "keyfile"
   iszero_                  # ( key flag )
   dpop_
   jne KEYEND
-  dec %eax
-  jmp BYE
+    dec %eax
+    jmp BYE
+    
  KEYEND:
   ret
 
@@ -129,6 +129,7 @@ Forthword_ KEYFILE, 0, "keyfile"
 # fetch key from deffered routine, should leave a single character
 # on TOS if a key was pressed. If no key pressed then -1 is on TOS.
 Forthword_ KEY, 0, "key"
+  dpush_
   call KEYADDR
   fetch_
   jmp EXEC
@@ -212,7 +213,8 @@ Forthword_ SLASHSTRING, 0, "/$"
   d2fetch_      # ( addr1 u1 n addr1 )
   over_         # ( addr1 u1 n addr1 n )
   plus_         # ( addr1 u1 n addr2 )
-  d2store       # ( addr2 u1 n )
+  d2store_      # ( addr2 u1 n addr2 )
+  dpop_         # ( addr2 u1 n )
   minus_        # ( addr2 u2 )
   ret
 
@@ -234,10 +236,9 @@ Forthword_ CSKIP, 0, "cskip"
   d1toa_               # ( addr1 n1 c ) A: addr1
   d0fetch_             # ( addr1 n1 n1 )
   d1store_             # ( n1 n1 n1 )
+  jmp PFA_CSKIP2
   
 PFA_CSKIP1:
-  iszero_              # ( n1 n' n' )
-  je PFA_CSKIP2
   acfetch_             # ( n1 n' c' )
   acplus_
   cmp %edi, %eax       # ( n1 n' c' )
@@ -245,9 +246,10 @@ PFA_CSKIP1:
   jne PFA_CSKIP2
   oneminus_
   d0store_
-  jmp PFA_CSKIP1
-
 PFA_CSKIP2:
+  iszero_              # ( n1 n' n' )
+  jne PFA_CSKIP1
+
   dpop_                # ( n1 n' )
   minus_               # ( n1-n' )
   ret
@@ -259,21 +261,21 @@ PFA_CSKIP2:
 Forthword_ CSCAN, 0, "cscan"
   tob_                 # ( addr1 n1 c ) B: c
   d1fetch_             # ( addr1 n1 addr1 )
-  over_                # ( addr1 n1 addr1 )
-  toa_                 # ( addr1 n1 ) A: addr1
-  dup_                 # ( addr1 n1 n1 )
+  toa_                 # ( addr1 n1 addr1 ) A: addr1
+  d0fetch_             # ( addr1 n1 n1 )
+  jmp PFA_CSCAN2
+  
 PFA_CSCAN1:
-  iszero_              # ( addr1 n1 n')
-  je PFA_CSCAN2
-  acfetch_             # ( addr1 n1 n' c' )
+  acfetch_             # ( addr1 n1 c' )
   acplus_
-  cmp %edi, %eax       # ( addr1 n1 n' c' )
-  drop_                # ( addr1 n1 n' )
+  cmp %edi, %eax       # ( addr1 n1 c' )
+  d0fetch_             # ( addr1 n1 n' )
   je PFA_CSCAN2
-  oneminus_
-  jmp PFA_CSCAN1
-
+  oneminus_            # ( addr1 n1 n'-1 )
 PFA_CSCAN2:
+  iszero_              # ( addr1 n1 n')
+  jne PFA_CSCAN1
+
   minus_               # ( addr1 n1-n' )
   ret
 
@@ -297,7 +299,8 @@ Forthword_ SKIPBL, 0, "skipbl"
   # adjust >IN
   dpush_
   call G_IN           # ( n2 ginaddr )
-  jmp PLUSHSTORE      # (  )
+  plushstore_         # ( n2 )
+  ret
 
 # ( char "ccc<char>" -- c-addr u )
 # in input buffer parse ccc delimited string by the delimiter char.
@@ -312,6 +315,7 @@ Forthword_ PARSE, 0, "parse"
   call G_IN          # ( addr' len'' len''+1 >in )
   plushstore_        # ( addr' len'' >in )
   dpop_              # ( addr' len'' )
+  ret
 
 # ( "<name>" -- c-addr len )
 # In the SOURCE buffer parse whitespace delimited string. Returns string address within SOURCE.
@@ -325,95 +329,102 @@ Forthword_ PNAME, 0, "pname"
 # 0 if word not found in dictionary
 # nfa if word is found
 Forthword_ FINDNFA, 0, "findnfa"
-  dupzerosense_
-  jne FINDNFA_
+  iszero_
+  jne FINDNFA_BEGIN
     # terminating, wid is empty
     d2nip_
     ret
 
-FINDNFA_:
-  fetch_                      # ( c-addr len nfa )
-
   # <begin>
 FINDNFA_BEGIN:
+  fetch_                      # ( c-addr len nfa )
   # <while>
-  dupzerosense_               # ( c-addr len nfa )
+  iszero_                     # ( c-addr len nfa )
   jne FINDNFA_CHECK
     # terminating, 0 found
-    d2nip_                     # ( 0 )
+    d2nip_                    # ( 0 )
     ret
 
 FINDNFA_CHECK:
-  to_r_                       # ( c-addr len ) (R: nfa )
-  call TWOOVER                # ( c-addr len c-addr len )
-  r_fetch_                    # ( c-addr len c-addr len nfa )
+  rpush_                      # ( c-addr len nfa) (R: nfa )
+  d1fetch_                    # ( c-addr len c-addr )
+  dpush_                      # ( c-addr len c-addr c-addr )
+  d1fetch_                    # ( c-addr len c-addr len )
+  dpush_                      # ( c-addr len c-addr len len )
+  r0fetch_                    # ( c-addr len c-addr len nfa )
   call STRINGLEN              # ( c-addr len c-addr len f-addr len )
   and $31, %eax               # ( c-addr len c-addr len f-addr 0:len )
   call MCMP                   # ( c-addr len flag )
   # <if>
-  zerosense_
+  iszero_
   je FINDNFA_NEXT
     # we found the string
-    ddrop_                    # ( )
-    r_from_                   # ( nfa )
+    d2pop_                    # ( c-addr )
+    rpop_                     # ( nfa )
     ret
   # <then>
 FINDNFA_NEXT:
     # next try
-    r_from_
-    call NFA2LFA
-    fetch_
+    rpop_                     # ( c-addr len nfa )
+    call NFA2LFA              # ( c-addr len lfa )
     # <repeat>
     jmp FINDNFA_BEGIN
+
+
+# ( addr len idx * )
+FINDLAST:
+  d2pop_        # ( addr len )
 
 # ( addr len --  0 | nfa )
 # search root wordlists for the name from string addr/len
 Forthword_ FINDROOT, 0, "froot"
   # put root wid on stack
+  dpush_
   dolit_ VE_COLD
   jmp FINDNFA_BEGIN
 
 # ( addr len idx -- 0 | nfa )
 FINDWI:
-  fourstar_          # ( addr len idx*4)
+  fourstar_          # ( addr len idx*4 )
+  dpush_             # ( addr len idx*4 idx*4 )
   call CONTEXT       # ( addr len idx*4 context )
   plus_              # ( addr len context' )
   fetch_             # ( addr len wid )
-  jmp FINDNFA        # ( nfa)
-
-FINDLAST:
-  drop_
-  jmp FINDROOT
+  jmp FINDNFA        # ( nfa )
 
 # ( addr len --  0 | nfa )
 # search wordlists for the name from string addr/len
 Forthword_ FINDW, 0, "findw"
   # loop through context slots to find a word
   # start with last slot
+  dpush_
   call CONTEXT        # ( addr len context )
   # get context index and use as counter
   twominus_           # ( addr len context-2 )
   hfetch_             # ( addr len idx )
+  dpush_              # ( addr len idx idx )
+  
 FINDW_BEGIN:
-  dupzerosense_
-  js FINDLAST         # ( addr len idx )
-    to_r_             # ( addr len ) ( R: idx )
-    call TWOOVER      # ( addr len addr len ) ( R: idx )
+  iszero_
+  js FINDLAST         # ( addr len idx * )
+    d2fetch_          # ( addr len idx addr )
+    dpush_            # ( addr len idx addr addr )
+    d2fetch_          # ( addr len idx addr len )
     # get next wordlist in array
-    r_fetch_          # ( addr len addr len idx ) ( R: idx)
-    call FINDWI
-    r_from_           # ( addr len nfa idx ) ( R: )
-    swap_             # ( addr len idx nfa )
-    dupzerosense_
+    dpush_            # ( addr len idx addr len len )
+    d2fetch_          # ( addr len idx addr len idx )
+    call FINDWI       # ( addr len idx nfa )
+    iszero_
     # end loop if word found
     je FINDW_NEXT
-      d3nip_           # ( nfa )
+      d3nip_          # ( nfa )
       ret
 
 FINDW_NEXT:
-  drop_             # ( addr len idx )
+  d0fetch_            # ( addr len idx idx )
   # decrement index
-  oneminus_         # ( addr len idx-1 )
+  oneminus_           # ( addr len idx idx-1 )
+  d0store_            # ( addr len idx idx-1 )
   jmp FINDW_BEGIN
 
 # ( -- addr len )
@@ -424,28 +435,27 @@ FINDW_NEXT:
 Forthword_ DOSLIT, 0, "(slit)"
   # get return address to get string length, calculate string address start,
   # and calculate return address
-  dup_
-  pop %eax       # ( raddr )  (R: raddr -- )
-  dup_           # ( raddr raddr )
+  rpop_          # ( raddr )  (R: raddr -- )
+  dpush_         # ( raddr raddr )
+  dtop1_         # ( raddr ? raddr )
   # get the string length
-  hfetch_        # ( raddr slength )
-  over_          # ( raddr slength raddr )
+  hfetch_        # ( raddr ? slength )
+  d0store_       # ( raddr slength raddr )
   # calculate string address
   twoplus_       # ( raddr slength straddr )
   # calculate the number of words to skip over for return address
-  flip_          # ( straddr slength raddr )
-  over_          # ( straddr slength raddr slength)
-  plus_          # ( straddr slength raddr+slength )
+  d1store_       # ( straddr slength straddr )
+  over_          # ( straddr slength straddr slength)
+  plus_          # ( straddr slength straddr+slength )
   # also skip string length
-  twoplus_       # ( straddr slength raddr+k+2 )
-  push %eax
-  drop_
+  rpush_         # ( straddr slength straddr+k ) (R: -- straddr+k )
+  dpop_          # ( straddr slength )
   ret
 
-# ( addr len -- [n] [addr len] f )
+# ( addr len -- [n] | [addr len] f )
 # recognizer for integer numbers
 Forthword_ REC_NUM, 0, "rec#"
-  calll TWOOVER
+  call TWOOVER             # ( addr len addr len )
   to_r_
   to_r_
   # try converting to a number
@@ -697,6 +707,7 @@ DOTASKS_N1:
   bittest_ TERMINATE_F
   # <again>
   je DOTASKS1
+  
   ret
 
 # ( -- )
@@ -748,7 +759,7 @@ Forthword_ ACCEPT, 0, "accept"
   call KEY        # ( k )
   iszero_
   jg ACCEPT_checkeol
-  addl $1, %eax
+  oneplus_
   ret
 
 ACCEPT_checkeol:
@@ -759,71 +770,74 @@ ACCEPT_checkeol:
   ret
 
 ACCEPT_checkreturn:
-  cmp $13, %eax     # ( k k 13 )
+  cmp $13, %eax     # ( k )
   # <if>
   jne ACCEPT_checkdelete
   ret
 
 ACCEPT_checkdelete:
   # check delete
-  cmp $127, %eax     # ( k k 8 )
+  cmp $127, %eax     # ( k )
   # <if>
   jne ACCEPT_checkcontrol
   # delete previous character
   # check beginning of line
   # if cursor is 0 then at begining of input
-  dpush_
-  call SHARPTIB
-  hfetch_           # ( k #tib )
+  dpush_            # ( k k )
+  call SHARPTIB     # ( k #tib )
+  hfetch_           # ( k tib )
   # <if>
-  iszero_           # ( k )
-  dpop_
+  iszero_           # ( k tib )
+  dpop_             # ( k )
   jne ACCEPT_dodelete
   # at the beginning of the line, ignore this character
-  jmp ZERO
+  zero_             # ( 0 )
+  ret
 
 ACCEPT_dodelete:
   andl $8, %eax
-  dup_                # ( k k )
-  call EMIT           # ( k )
+  dpush_              # ( k k )
+  call EMIT           # ( k ? )
   bl_                 # ( k bl )
-  call EMIT           # ( k )
-  call EMIT           # ( )
+  call EMIT           # ( k ? )
+  dpop_               # ( k )
+  call EMIT           # ( ? )
   # decrease cursor position by one
-  call TRUE           # ( -1 )
-  call SHARPTIB       # ( -1 #tibaddr )
-  plushstore          # ( )
+  call TRUE           # ( true )
+  dpush_              # ( true true )
+  call SHARPTIB       # ( true #tibaddr )
+  plushstore          # ( #tibaddr )
   jmp ACCEPT_checkmaxinput
 
 
 ACCEPT_checkcontrol:
   # check for remaining control characters, replace them with blank
-  cmp $32, %eax          # ( k k bl )
+  cmp $32, %eax          # ( k )
   jge ACCEPT_echo
-  drop_
   # replace control key with a space
-  bl_
+  bl_                    # ( bl )
 
 ACCEPT_echo:
     # emit the key
-  dup_                   # ( k k)
-  call EMIT              # ( k)
+  dpush_                 # ( k k )
+  call EMIT              # ( k ? )
   # now store the key in the input buffer
   call STIB              # ( k tibaddr #tib)
   plus_                  # ( k tibaddr+#tib )
-  cstore_                # ( )
+  cstore_                # ( tibaddr+#tib )
 
-  call SHARPTIB          # ( 1 #tibaddr )
-  oneplushstore_         # ( )
+  call SHARPTIB          # ( #tib )
+  oneplushstore_         # ( ? )
 
 ACCEPT_checkmaxinput:
   # check if max number of char input
   dolit_ TIBSIZE       # ( tibsize )
+  dpush_
   call SHARPTIB        # ( tibsize #tibaddr )
-  hfetch_              # ( tibsize #tib)
-  minus_               # ( tibsize-#tib)
+  hfetch_              # ( tibsize #tib )
+  minus_               # ( tibsize-#tib )
   # <if>
-  zerosense_           # ( )
+  iszero_              # ( tibsize-#tib )
   je ACCEPT_atmaxinput
   jmp ZERO
 
@@ -835,9 +849,11 @@ ACCEPT_atmaxinput:
 # refills the input buffer - flag is true if buffer has something
 Forthword_ REFILLTIB, 0, "reftib"
   call ACCEPT                # ( f )
-  dupzerosense_              # ( f )
+  iszero_                    # ( f )
   je REFILLTIB_exit
+  dpush_
   call CR
+  dpop_
 
 REFILLTIB_exit:
   ret

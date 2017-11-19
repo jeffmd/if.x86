@@ -20,6 +20,7 @@ Forthword_ RELDST, 0, "reldst"
 Forthword_ JUMP, 0, "jmpl"
   # 0xe9 XXXX XXXX XXXX
   sub $5, %eax
+  dpush_
   dolit_ 0xe9
   ret
 
@@ -34,15 +35,17 @@ Forthword_ JUMPS, 0, "jmps"
 # ( reldist -- )
 # reldist: relative distance as 2's compliment
 Forthword_ JMP_COMMA, 0, "jmp,"
-    call CALLOFF
-    call JUMP            # ( rellong jumpinst )
-    call COMMA           # ( rellong )
-    jmp DWCOMMA          # ( )
+  dpush_
+	call CALLOFF
+	call JUMP            # ( rellong jumpinst )
+	call COMMA           # ( rellong ? )
+  dpop_                # ( rellong )
+	jmp DWCOMMA          # ( ? )
 
 # compile jump at start address
 # ( start dest -- )
 Forthword_ JMPC, 0, "jmpc"
-  call TAILOPTOFF   
+  call TAILOPTOFF
   over_                # ( start dest start )
   call RELDST          # ( start reldst )
   call JUMP            # ( start rellong jumpinst )
