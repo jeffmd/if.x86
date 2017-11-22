@@ -1,2 +1,2 @@
 # if
-A forth like programming environment.  Code generation is either inline or call.
+A forth like programming language.  Code generation is either inline or call.

@@ -51,7 +51,7 @@ Forthword_ DP, 0, "dp"
 Forthword_ DPPLUS, 0, "dp+"
   dpush_
   call DPSHARP
-  jmp PLUSSTORE
+  jmp PLUS_STR
 
 # ( -- )
 # increment 32 bit (dictionary pointer) DP by one cell
@@ -76,7 +76,7 @@ Forthword_ CP, 0, "cp"
 Forthword_ CPPLUS, 0, "cp+"
   dpush_
   call CPSHARP
-  jmp PLUSSTORE
+  jmp PLUS_STR
 
 # ( -- )
 # increment 32 bit (code pointer) CP by one cell
@@ -126,7 +126,7 @@ TAIL_CALL_OPTIMIZE:
   dpush_             # ( 0xe9 0xe9 )
   call CP            # ( 0xe9 CP )
   sub $5, %eax       # ( 0xe9 CP-5 )
-  cstore_            # ( CP-5 )
+  cstr_            # ( CP-5 )
   # clear last is call flag in fflags
   andw $~(1 << LAST_IS_CALL_FB), fflags
   ret
@@ -147,7 +147,7 @@ Forthword_ UWID, 0, "uwid"
   #call CLRCACHE
   # set smudge to zero indicating no longer compiling a word
   call SMUDGE  # ( SMUDGE )
-  zerostore_   # ( SMUDGE )
+  zero_str_   # ( SMUDGE )
 UWID_end:
   ret
 
@@ -155,7 +155,7 @@ UWID_end:
 # enter interpreter mode
 Forthword_ LBRACKET, IMMEDIATE_EN, "["
   call STATE
-  jmp ZEROHSTORE
+  jmp ZERO_HSTR
 
 
 # ( n -- )
@@ -163,7 +163,7 @@ Forthword_ LBRACKET, IMMEDIATE_EN, "["
 Forthword_ COMMA, 0, ","
   dpush_           # ( n n )
   call CP          # ( n CP )
-  cstore_          # ( CP )
+  cstr_          # ( CP )
   jmp CPPLUSONE    # 
 
 # ( n -- )
@@ -189,17 +189,16 @@ Forthword_ DPSTORE, 0, "dp!"
 # copies a counted string with flags from s-addr to d-addr
 # returns destination address + len
 Forthword_ COPYSTRING, 0, "copy$"
-  tob_               # ( s-addr len len' d-addr ) B: d-addr
-  dpop_              # ( s-addr len len' )
-  movw %ax, (%edi)
-  addl $2, %edi
-  dpop_              # ( s-addr len )
-  mov %eax, %ecx
-  dpop_              # ( s-addr )
-  toa_               # ( s-addr ) A: addr
+  str_b_             # ( s-addr len len' d-addr ) B: d-addr
+  d0_                # ( s-addr len len' len')
+  b_hstr_
+  bhplus_
+  d1_str_c_
+  d2_str_a_          # ( s-addr ) A: addr
   cld
   rep movsb
-  mov %edi, %eax     # ( s-addr+len )
+  b_                 # ( s-addr+len )
+  dnip3_
   ret
 
 # ( addr len len' -- )
@@ -232,8 +231,8 @@ Forthword_ STRINGDICTSTORE, 0, "$dp!"
 # or get word index of match
 Forthword_ FINDB, 0, "findb"
   # fetch from ram and check if equal to match byte
-  tob_             # ( start match ) B: match
-  d0toa_           # ( start match ) A: start
+  str_b_           # ( start match ) B: match
+  d0_str_a_        # ( start match ) A: start
   # begin
 FINDI_BEGIN:
     movsxb (%esi), %edx # ( start )
@@ -243,7 +242,7 @@ FINDI_BEGIN:
     # until
     jne FINDI_BEGIN
 
-  geta_            # ( start end )
+  a_               # ( start end )
   oneminus_        # ( start end-1 )
   over_            # ( start end-1 start )
   minus_           # ( start count )
@@ -315,5 +314,5 @@ Forthword_ ONLY, IMMEDIATE_EN, "only"
   # make second slot have no vocab
   twoplus_                    # ( CONTEXT )
   fourplus_                   # ( CONTEXT+4 )
-  zerostore_
+  zero_str_
   ret

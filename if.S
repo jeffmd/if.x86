@@ -81,7 +81,7 @@ CPSTART:
 # ( nx* -- ) (R: ny* -- )
 # initialize if further. EXECs turnkey operation and go to quit
 Forthword_ WARM, 0, "warm"
-	mov %esp, %eax
+	rp_
 	dpush_
 	call RP0
 	store_

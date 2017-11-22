@@ -458,7 +458,7 @@ Forthword_ THROW, 0, "throw"
 # ( n -- )
 # sleep for n micro seconds
 Forthword_ USLEEP, 0, "usleep"
-  push %eax
+  rpush_
   call usleep
   rnip_
   drop_
