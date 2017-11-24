@@ -395,12 +395,6 @@
   dpop_
 .endm
 
-.macro flip_
-  d1_str_d_
-  str_d1_
-  d_
-.endm
-
 .macro plus_
   d0popd_
   addl %edx, %eax

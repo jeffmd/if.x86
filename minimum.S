@@ -70,20 +70,22 @@ Forthword_ HEX, 0, "hex"
 # ( n1 n2 -- n1|n2 )
 # compare two values leave the smaller one
 Forthword_ MIN, 0, "min"
-  popnos_
+  str_d_
+  dpop_
   cmp %eax, %edx
   jge 1f
-  mov %edx, %eax
+  d_
 1:
   ret
 
 # ( n1 n2 -- n1|n2 )
 # compare two values, leave the bigger one
 Forthword_ MAX, 0, "max"
-  popnos_
+  str_d_
+  dpop_
   cmp %eax, %edx
   jl 1f
-  mov %edx, %eax
+  d_
 1:
   ret
 
@@ -108,19 +110,21 @@ Forthword_ PNIB, 0, ".h"
 # ( n -- )
 # simple 32 bit hex print
 Forthword_ PHEX, 0, ".$"
-     dolit_ 28
-     dolit_ '$
-     call EMIT
+  dpush_       # ( n n )
+  dolit_ '$    # ( n $ )
+  call EMIT    # ( n ? )
+  dolit_ 28    # ( n 28 )
 PHEX_BEGIN:
-     call TWOOVER
-     rshift_
-     call PNIB
-     sub $4, %eax
-     jne PHEX_BEGIN
-
-  dropdup_
+  call TWOOVER # ( n x n x )
+  rshift_      # ( n x n' )
   call PNIB
-  movl $32, %eax
+  dpop_        # ( n x )
+  fourminus_   # ( n x-4 )
+  jne PHEX_BEGIN
+
+  dpop_        # ( n )
+  call PNIB
+  dolit_ 32    # ( 32 )
   jmp EMIT
 
 # ( u1 u2 -- flag )
@@ -140,7 +144,7 @@ Forthword_ UGREATEREQUAL, 0, "u>="
 # ( n1 -- u1 )
 # get the absolute value
 Forthword_ ABS, 0, "abs"
-  dupzerosense_
+  iszero_
   jns 1f
   neg_
 1:
@@ -150,36 +154,35 @@ Forthword_ ABS, 0, "abs"
 # ( c -- (number|) flag )
 # tries to convert a character to a number, set flag accordingly
 Forthword_ DIGITQ, 0, "digit?"
-    sub $0x30, %eax
+    sub $0x30, %eax      # ( c' )
     cmp $10, %eax
     jb DIGITQ0
-    sub $7, %eax
-    cmp $10, %eax
+    sub $7, %eax         # ( c )
+    cmp $10, %eax        # ( c )
     jge DIGITQ0
 
-    zerotos_
+    zero_                # ( 0 )
     ret
 
 DIGITQ0:
-    dup_
-    call BASEFETCH
-    call UGREATEREQUAL
-    zerosense_
+    dpush_               # ( n n )
+    call BASEFETCH       # ( n base )
+    call UGREATEREQUAL   # ( n flag )
+    iszero_
     je PFA_DIGITQ2
-    zerotos_
+    zero_                # ( n 0 )
+    dnip_                # ( 0 )
     ret
 
 PFA_DIGITQ2:
-    true_
+    true_                # ( n true )
     ret
 
-# (c -- ) Numeric IO
-# R( -- )
+# ( c -- ) Numeric IO
 # set the BASE value depending on the character
 #forthword_ SETBASE, 0, "setbase"
-SETBASE:        # ( c -- )
-    mov %eax, %edx
-    drop_
+SETBASE:        
+    str_d_            # ( c ) D: c
     cmp $'$, %edx
     jne PFA_SETBASE0
     jmp HEX
@@ -195,8 +198,7 @@ PFA_SETBASE1:
     jmp DECIMAL
 
 PFA_SETBASE2:        # ( error)
-    dup_
-    mov %edx, %eax
+    d_
     call EMIT
     $lit_ " Bad Base!"
     call THROW
@@ -204,19 +206,19 @@ PFA_SETBASE2:        # ( error)
 # ( addr len -- addr' len' )
 # skip a numeric prefix character
 #forthword_ PRAEFIX, 0, "praefix"
-PRAEFIX:        # ( adr1 len1 -- adr2 len2 )
-    over_
-    cfetch_
+PRAEFIX:             # ( adr1 len1 -- adr2 len2 )
+    over_            # ( adr1 len1 adr1 )
+    cfetch_          # ( adr1 len1 c )
     cmp $0x30, %eax
     jb PFA_PRAEFIX0
     # no praefix
-    drop_
+    dpop_            # ( adr1 len )
     ret
 
 PFA_PRAEFIX0:
-    call SETBASE
-    one_
-    call SLASHSTRING
+    call SETBASE     # ( adr1 len1 c )
+    one_             # ( adr1 len1 1 )
+    call SLASHSTRING # ( adr1 len1 )
     ret
 
 # (addr len -- addr len flag) Numeric IO
@@ -227,43 +229,44 @@ NUMBERSIGN:        # ( addr len -- )
     cfetch_        # ( addr len char )
     cmp $'-, %eax
     je NUMBERSIGN_HASSIGN
-        zerotos_
+        zero_      # ( addr len 0 )
         ret
 
 NUMBERSIGN_HASSIGN:
-    to_r_
-    one_
-    call SLASHSTRING
-    r_from_
+    rpush_           # ( addr len char ) (R: char )
+    one_             # ( addr len 1 )
+    call SLASHSTRING # ( addr len )
+    dpush_           # ( addr len len )
+    rpop_            # ( addr len char ) (R: )
     ret
 
 # ( u1 c-addr1 len1 -- u2 c-addr2 len2 )
 # convert a string to a number  c-addr2/u2 is the unconverted string
 Forthword_ TO_NUMBER, 0, ">num"
 TO_NUMBER_AGAIN:
-  dupzerosense_
+  iszero_
   je TO_NUMBER_END
-        over_                # ( u adr len adr)
-        cfetch_              # ( u adr len char)
-        call DIGITQ          # ( u adr len digit flag)
-      zerosense_
-        jne TO_NUMBER_CONV
-            # character is not a recognized number
-            ret
+    over_                # ( u adr len adr )
+    cfetch_              # ( u adr len char )
+    call DIGITQ          # ( u adr len [digit] flag )
+    iszero_
+    dpop_                # ( u adr len [digit] )
+    jne TO_NUMBER_CONV
+        # character is not a recognized number
+        ret              # ( u adr len )
 
 TO_NUMBER_CONV:
-  tob_                 # ( u adr len) B: digit
-  rot_                 # ( adr len u)
-  call BASEFETCH       # ( adr len u base)
-  #bl STAR             # ( adr len u*base)
-  mov %eax, %edx
-  drop_
-  imul %edx, %eax
-  getb_                # ( adr len u' digit)
-  plus_                # ( adr len u')
-  rrot_                # ( u' adr len )
-  one_
-  call SLASHSTRING
+  str_b_               # ( u adr len digit ) B: digit
+  d2_                  # ( u adr len u )
+  dpush_               # ( u adr len u u )
+  call BASEFETCH       # ( u adr len u base )
+  d0_str_d_            # ( u adr len u base ) D: u
+  imul %edx, %eax      # ( u adr len u u*base )
+  b_str_d0_            # ( u adr len digit u*base )
+  plus_                # ( u adr len u'' )
+  str_d2_              # ( u'' adr len u'' )
+  one_                 # ( u'' adr len 1 )
+  call SLASHSTRING     # ( u'' adr' len' ) 
   jmp TO_NUMBER_AGAIN
 
 TO_NUMBER_END:
@@ -272,7 +275,8 @@ TO_NUMBER_END:
 # (addr len -- [n] f)
 # convert a string at addr to a number
 Forthword_ NUMBER, 0, "num"
-  call BASEFETCH
+  dpush_                  # ( addr len len )
+  call BASEFETCH          # ( addr len base )
   to_r_                   # ( addr len ) (R: base)
   call NUMBERSIGN
   to_r_                   # ( addr len ) (R: base flagsign)
@@ -461,18 +465,16 @@ Forthword_ USLEEP, 0, "usleep"
   rpush_
   call usleep
   rnip_
-  drop_
   ret
 
 # ( -- )
 # sleep for n micro seconds
 Forthword_ SLEEP, 0, "sleep"
   call IDLETIMEFETCH
-  dupzerosense_
+  iszero_
   je NO_IDLESLEEP
   jmp USLEEP
 NO_IDLESLEEP:
-  drop_
   ret
 
 # ( -- )
@@ -554,25 +556,27 @@ Forthword_ INCLUDEF, 0, "include"
   # parse input for filename to include
   call PNAME     # ( addr len )
   # add null to end of string
-  over_
-  plus_
-  call ZEROCSTORE
+  over_          # ( addr len addr )
+  plus_          # ( addr addr' )
+  zero_cstr_     # ( addr addr' )
+  dpop_          # ( addr )
   jmp DOINCLUDE
 
 # ( nx* -- ) (R: ny* -- )
 # initialize rf further. EXECs turnkey operation and go to quit
 Forthword_ DOCMDARG, 0, "docmdarg"
-  call ARGCADDR
-  fetch_
-  one_
-  call GREATER
-  zerosense_
+  call ARGCADDR      # ( ARGCADDR )
+  fetch_             # ( ARGC )
+  dpush_             
+  one_               # ( ARGC 1 )
+  call GREATER       # ( flag )
+  iszero_
   je DOCMDARG_EXIT
 
-  call ARGVADDR
-  fetch_
-  fourplus_
-  fetch_
+  call ARGVADDR      # ( ARGVADDR )
+  fetch_             # ( ARGV )
+  fourplus_          # ( ARGV+4 )
+  fetch_             # ( ptr )
   jmp DOINCLUDE
 
 DOCMDARG_EXIT:
@@ -582,25 +586,28 @@ DOCMDARG_EXIT:
 # must be last word in core
 Forthword_ WIPE, 0, "WIPE"
   dolit_ DPSTART
+  dpush_
   call DPSHARP
   store_
 
   dolit_ CPSTART
+  dpush_
   call CPSHARP
   store_
 
   dolit_ EE_FORTHWORDLIST
-  dup_
-  zerostore_
+  zero_str_
   fourplus_
-  zerostore_
+  zero_str_
 
   # init pause to noop
   dolit_ NOOP
+  dpush_
   call PAUSEADDR
   store_
 
   dolit_ HERESTART
+  dpush_
   call HEREADDR
   store_
   jmp ONLY
