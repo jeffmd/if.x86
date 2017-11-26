@@ -175,7 +175,7 @@ Forthword_ MCMP, 0, "mcmp"
   je CMPSB
 
   # strings are not the same length
-  dnip2_                   # ( flag )
+  dnip2_                   # ( f-addr )
   zero_                    # ( 0 )
   ret
   # then
@@ -242,13 +242,14 @@ PFA_CSKIP1:
   acplus_
   cmp %edi, %eax       # ( n1 n' c' )
   d0_                  # ( n1 n' n' )
-  jne PFA_CSKIP2
-  oneminus_
-  str_d0_
+  jne PFA_CSKIP3
+  oneminus_            # ( n1 n' n'-1 )
+  str_d0_              # ( n1 n'-1 n'-1 )
 PFA_CSKIP2:
   iszero_              # ( n1 n' n' )
   jne PFA_CSKIP1
 
+PFA_CSKIP3:
   dpop_                # ( n1 n' )
   minus_               # ( n1-n' )
   ret
@@ -261,20 +262,23 @@ Forthword_ CSCAN, 0, "cscan"
   str_b_               # ( addr1 n1 c ) B: c
   d1_str_a_            # ( addr1 n1 c ) A: addr1
   d0_                  # ( addr1 n1 n1 )
+  dpush_               # ( addr1 n1 n1 n1 )
   jmp PFA_CSCAN2
   
 PFA_CSCAN1:
-  a_cfetch_            # ( addr1 n1 c' )
+  a_cfetch_            # ( addr1 n1 n1 c' )
   acplus_
-  cmp %edi, %eax       # ( addr1 n1 c' )
-  d0_                  # ( addr1 n1 n' )
-  je PFA_CSCAN2
-  oneminus_            # ( addr1 n1 n'-1 )
-  str_d0_
+  cmp %edi, %eax       # ( addr1 n1 n1 c' )
+  d0_                  # ( addr1 n1 n1 n' )
+  je PFA_CSCAN3
+  oneminus_            # ( addr1 n1 n1 n'-1 )
+  str_d0_              # ( addr1 n1 n'-1 n'-1)
 PFA_CSCAN2:
-  iszero_              # ( addr1 n1 n')
+  iszero_              # ( addr1 n1 n' n' )
   jne PFA_CSCAN1
 
+PFA_CSCAN3:
+  dpop_
   minus_               # ( addr1 n1-n' )
   ret
 
@@ -292,13 +296,13 @@ Forthword_ SRCIN, 0, "srcin"
 Forthword_ SKIPBL, 0, "skipbl"
   call SRCIN          # ( srcaddr len )
   dpush_              # ( srcaddr len len )
-  bl_                 # ( srcaddr' len' c )
+  bl_                 # ( srcaddr len bl )
   call CSKIP          # ( n2 )
 
   # adjust >IN
   dpush_
   call G_IN           # ( n2 ginaddr )
-  plus_hstr_        # ( n2 )
+  plus_hstr_          # ( n2 )
   ret
 
 # ( char "ccc<char>" -- c-addr u )
@@ -307,9 +311,10 @@ Forthword_ PARSE, 0, "parse"
   rpush_             # ( c ) (R: c )
   call SRCIN         # ( addr len )
   dpush_             # ( addr len len )
-  rpop_              # ( addr len c )
+  rpop_              # ( addr len c ) (R: )
   call CSCAN         # ( addr' len'')
   dpush_             # ( addr' len'' len'')
+  # skip terminating delimeter
   oneplus_           # ( addr' len'' len''+1 )
   dpush_             # ( addr' len'' len''+1 len''+1 )
   call G_IN          # ( addr' len'' len''+1 >in )
@@ -323,6 +328,14 @@ Forthword_ PNAME, 0, "pname"
   call SKIPBL
   bl_
   jmp PARSE
+
+# ( addr len idx -- 0 | nfa )
+FINDWI:
+  fourstar_          # ( addr len idx*4 )
+  dpush_             # ( addr len idx*4 idx*4 )
+  call CONTEXT       # ( addr len idx*4 context )
+  plus_              # ( addr len context' )
+  fetch_             # ( addr len wid )
 
 # ( c-addr len wid -- [ 0 | nfa ] )
 # find a word in the dictionary
@@ -339,6 +352,7 @@ Forthword_ FINDNFA, 0, "findnfa"
 FINDNFA_BEGIN:
   fetch_                      # ( c-addr len nfa )
   # <while>
+FINDNFA_BEGIN1:
   iszero_                     # ( c-addr len nfa )
   jne FINDNFA_CHECK
     # terminating, 0 found
@@ -346,6 +360,7 @@ FINDNFA_BEGIN:
     ret
 
 FINDNFA_CHECK:
+  
   rpush_                      # ( c-addr len nfa) (R: nfa )
   d1_                         # ( c-addr len c-addr )
   dpush_                      # ( c-addr len c-addr c-addr )
@@ -362,6 +377,7 @@ FINDNFA_CHECK:
     dpop2_                    # ( c-addr )
     rpop_                     # ( nfa )
     ret
+    
   # <then>
 FINDNFA_NEXT:
     # next try
@@ -373,31 +389,22 @@ FINDNFA_NEXT:
 
 # ( addr len idx * )
 FINDLAST:
-  dpop2_        # ( addr len )
+  dpop2_             # ( addr len )
 
 # ( addr len --  0 | nfa )
 # search root wordlists for the name from string addr/len
 Forthword_ FINDROOT, 0, "froot"
   # put root wid on stack
-  dpush_
-  dolit_ VE_COLD
-  jmp FINDNFA_BEGIN
-
-# ( addr len idx -- 0 | nfa )
-FINDWI:
-  fourstar_          # ( addr len idx*4 )
-  dpush_             # ( addr len idx*4 idx*4 )
-  call CONTEXT       # ( addr len idx*4 context )
-  plus_              # ( addr len context' )
-  fetch_             # ( addr len wid )
-  jmp FINDNFA        # ( nfa )
+  dpush_             # ( addr len len )
+  dolit_ VE_COLD     # ( addr len VE_COLD )
+  jmp FINDNFA_BEGIN1
 
 # ( addr len --  0 | nfa )
 # search wordlists for the name from string addr/len
 Forthword_ FINDW, 0, "findw"
   # loop through context slots to find a word
   # start with last slot
-  dpush_
+  dpush_              # ( addr len len )
   call CONTEXT        # ( addr len context )
   # get context index and use as counter
   twominus_           # ( addr len context-2 )
@@ -424,7 +431,7 @@ FINDW_NEXT:
   d0_                 # ( addr len idx idx )
   # decrement index
   oneminus_           # ( addr len idx idx-1 )
-  d0_                 # ( addr len idx idx-1 )
+  str_d0_             # ( addr len idx-1 idx-1 )
   jmp FINDW_BEGIN
 
 # ( -- addr len )
@@ -440,8 +447,9 @@ Forthword_ DOSLIT, 0, "(slit)"
   dtop1_         # ( raddr ? raddr )
   # get the string length
   hfetch_        # ( raddr ? slength )
-  str_d0_        # ( raddr slength raddr )
+  str_d0_        # ( raddr slength slength )
   # calculate string address
+  d1_            # ( raddr slength raddr )
   twoplus_       # ( raddr slength straddr )
   # calculate the number of words to skip over for return address
   str_d1_        # ( straddr slength straddr )
@@ -455,54 +463,48 @@ Forthword_ DOSLIT, 0, "(slit)"
 # ( addr len -- [n] | [addr len] f )
 # recognizer for integer numbers
 Forthword_ REC_NUM, 0, "rec#"
-  call TWOOVER             # ( addr len addr len )
-  rpush_
-  dpop_
-  rpush_
-  dpop_
+  rpush_            # ( addr len ) (R: len )
+  rpushd0_          # ( addr len ) (R: len addr )
   # try converting to a number
   call NUMBER              # ( [n] f )
   iszero_
   je REC_NONUMBER
 
     call STATEFETCH        # ( n state )
-      iszero_
-      je REC_NUMBER_OK
+    iszero_
+    je REC_NUMBER_OK
       call LIT
 
 REC_NUMBER_OK:
-      rnip2_
-      dpush_
-      true_                # ( n true )
+      rnip2_               # ( n f ) (R: )
       ret
 
 REC_NONUMBER:
-  rpop_
-  dpush_
-  rpop_
-  dpush_
+  rpop_                    # ( addr ) (R: len )
+  dpush_                   # ( addr addr ) (R: len )
+  rpop_                    # ( addr len ) (R: )
+  dpush_                   # ( addr len len )
   zero_                    # ( addr len 0 )
   ret
 
 # ( addr len -- ** [addr len] f )
 # recognize a word in the dictionary
 Forthword_ REC_WORD, 0, "recw"
-  rpushd0_
-  rpush_
-  call FINDW
+  rpush_            # ( addr len ) (R: len )
+  rpushd0_          # ( addr len ) (R: len addr )
+  call FINDW        # ( 0 | nfa )
   iszero_
   jne REC_WORD_FOUND
-    str_a_
-    rpop_
-    dpush_
-    rpop_
-    dpush_
-    a_
+    rpop_           # ( addr ) (R: len ) 
+    dpush_          # ( addr addr ) (R: len ) 
+    rpop_           # ( addr len ) (R: ) 
+    dpush_          # ( addr len len )
+    zero_           # ( addr len 0 )
     ret
 
 REC_WORD_FOUND:
-  rnip2_
-  call NFATOXTF
+  rnip2_            # ( nfa ) (R: )
+  call NFATOXTF     # ( xt flag )
   # check if compile only word
   #sbrc tosh, COMPILE_ONLY_FB
   #    rjmp CHECK_IMMEDIATE
@@ -536,26 +538,32 @@ REC_WORD_CHECKSTATE:
       ret
 
 REC_WORD_EXECUTE:
-  dpop_
+  dpop_              # ( xt )
+  dpush_             # ( xt xt )
+  movl TOS, %edx
+  d_str_d0_          # ( TOS xt )
   # state is zero, EXEC xt
-  call EXEC
-  true_
+  call EXEC          # ( ?? )
+  movl %eax, TOS
+  true_              # ( true )
   ret
 
 # ( addr len -- )
 # recognize and execute name of word in ram using recognizer list.
 Forthword_ RECX, 0, "recx"
   # test if its a word
-  call REC_WORD         # ( addr len flag )
+  call REC_WORD         # ( [addr len] flag )
   #zero_# <if>
-  iszero_               # ( addr len )
+  iszero_               # ( [addr len] flag )
   jne RECX_DONE
+  #dpop_                 # ( addr len )
   # test if its a number
-  call REC_NUM          # ( addr len flag )
-  iszero_               # ( addr len )
-  jne RECX_DONE
+  #call REC_NUM          # ( [addr len] flag )
+  #iszero_               # ( [addr len] flag )
+  #jne RECX_DONE
   # not recognized so throw
-  call CR
+  call CR               # ( addr len ? )
+  dpop_                 # ( addr len )
   # print unrecognized word
   call TYPE
 
@@ -568,10 +576,8 @@ RECX_DONE:
 # ( -- ) (R: i*x - j*x )
 # interpret input word by word.
 Forthword_ INTERPRET, 0, "interp"
-INTERPRET_DO:
   # begin
   call PNAME            # ( addr len )
-
   # ?while
   iszero_               # ( addr len )
   je INTERPRET_END
@@ -580,7 +586,7 @@ INTERPRET_DO:
   call QSTACK           # ( ? )
 
   # repeat
-  jmp INTERPRET_DO
+  jmp INTERPRET
 
 INTERPRET_END:
   dpop_
@@ -655,10 +661,10 @@ DOREFILL_do:
 Forthword_ DOINTERPRET, 0, "(interp)"
   # input buffer has something so try to interpret it
   # setup exception handling in case of error
+  dpush_
   dolit_ INTERPRET
   call CATCH
   # check to make sure no throws
-  call QDUP
   # <if>
   iszero_
   je DOINTERPRET_ok
@@ -668,7 +674,7 @@ Forthword_ DOINTERPRET, 0, "(interp)"
   # <then>
 DOINTERPRET_ok:
   # make sure in buf pointer is not at zero
-  call G_IN               # ( >inaddr )
+  call G_IN          # ( >inaddr )
   oneplus_hstr_      # (  )
   jmp PROMPTOK
 
@@ -689,6 +695,7 @@ Forthword_ BYE, 0, "bye"
 # ( -- )
 # Fetch pause vector and EXEC it. may make a context/task switch
 Forthword_ DOPAUSE, 0, "(pause)"
+    dpush_
     call SLEEP ## temp fix for cpu hogging
     call PAUSEADDR
     fetch_
@@ -698,7 +705,6 @@ Forthword_ DOPAUSE, 0, "(pause)"
 # main loop - iterate through scheduled tasks
 Forthword_ DOTASKS, 0, "(tasks)"
   # <begin>
-DOTASKS1:
   call DOREFILL     # ( flag )
   iszero_
   je DOTASKS_N1
@@ -712,7 +718,7 @@ DOTASKS_N1:
   hfetch_
   bittest_ TERMINATE_F
   # <again>
-  je DOTASKS1
+  je DOTASKS
   
   ret
 

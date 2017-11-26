@@ -38,6 +38,7 @@ Forthword_ BASE, 0, "base"
 # ( n -- )
 # save base
 Forthword_ BASESTORE, 0, "base!"
+    dpush_
     call BASE
     jmp HSTORE
 
@@ -149,7 +150,6 @@ Forthword_ ABS, 0, "abs"
   neg_
 1:
   ret
-
 
 # ( c -- (number|) flag )
 # tries to convert a character to a number, set flag accordingly
@@ -277,108 +277,119 @@ TO_NUMBER_END:
 Forthword_ NUMBER, 0, "num"
   dpush_                  # ( addr len len )
   call BASEFETCH          # ( addr len base )
-  to_r_                   # ( addr len ) (R: base)
-  call NUMBERSIGN
-  to_r_                   # ( addr len ) (R: base flagsign)
-  call PRAEFIX
+  rpush_                  # ( addr len base ) (R: base)
+  dpop_                   # ( addr len )
+  call NUMBERSIGN         # ( addr len flag )
+  rpush_                  # ( addr len flag ) (R: base flagsign)
+  dpop_                   # ( addr len )
+  call PRAEFIX            # ( addr' len' )
   call NUMBERSIGN         # ( addr len flagsign2 )
-  r_from_                 # ( addr len flagsign2 flagsign ) (R: base )
+  dpush_                  # ( addr len flagsign2 flagsign2 )
+  rpop_                   # ( addr len flagsign2 flagsign ) (R: base )
   or_                     # ( addr len flagsign' )
-  to_r_                   # ( addr len ) (R: base flagsign')
+  rpush_                  # ( addr len flagsign' ) (R: base flagsign')
+  d0_str_c_               # ( addr len flagsign' ) C: len
+  d1_str_d_               # ( addr len flagsign' ) D: addr
   zero_                   # ( addr len 0 ) starting value
-  rrot_                   # ( 0 addr len )
+  str_d1_                 # ( 0 len 0 )
+  d_str_d0_               # ( 0 addr 0 )
+  c_                      # ( 0 addr len )
   call TO_NUMBER          # ( n addr' len' )
   # check length of the remaining string.
   # if zero: a single cell number is entered
-  zerosense_
+  iszero_
+  dpop_                   # ( n addr' )
   je PFA_NUMBER1
 
   # error in string to number conversion
-PFA_NUMBER2:
-  dnip_                   # ( addr' )  (R: base flagsign' )
-  r_drop_                 # ( addr' ) (R: base )
-  zerotos_                # ( 0 ) (R: base )
-  jmp PFA_NUMBER5
+  dnip_                   # ( addr' ) (R: base flagsign' )
+  rnip_                   # ( addr' ) (R: base )
+  zero_                   # ( 0 ) (R: base )
+  jmp PFA_NUMBER3
 
 PFA_NUMBER1:
-  drop_                   # ( n )  (R: base flagsign' )
   # incorporate sign into number
-  r_from_                 # ( n flagsign' ) (R: base )
-  zerosense_
-  je PFA_NUMBER4
-  neg_
+  rpop_                   # ( n flagsign' ) (R: base )
+  iszero_
+  je PFA_NUMBER2
+  dpop_                   # ( n )
+  neg_                    # ( -n )
+  dpush_                  # ( -n -n )
 
-PFA_NUMBER4:
+PFA_NUMBER2:
   true_                   # ( n true ) (R: base )
 
-PFA_NUMBER5:
-  r_from_                 # ( n true base ) (R: )
-  jmp BASESTORE           # ( n true )
+PFA_NUMBER3:
+  dpush_                  # ( n flag flag )
+  rpop_                   # ( n flag base ) (R: )
+  call BASESTORE          # ( n flag ? )
+  dpop_                   # ( n flag )
+  ret
 
 # Multiply unsigned 32*32 = 64
 # ( u u -- ud )
 Forthword_ UMSTAR, 0, "um*"
-  mov (%ebx), %ecx
+  d0_str_c_
   mul %ecx
-  movl %edx, (%ebx)
+  d_str_d0_
   ret
 
 # ( n n -- d)
 # multiply 2 signed cells to a double cell
 # signed 32*32 = 64
 Forthword_ MSTAR, 0, "m*"
-  mov (%ebx), %ecx
+  d0_str_c_
   imul %ecx
-  movl %edx, (%ebx)
+  d_str_d0_
   ret
 
 # ( ud u -- u u ) Dividend Divisor -- mod quotient
 # 64/32 = 32 Rest 32
 Forthword_ UM_DIVMOD, 0, "um/mod"
-  mov %eax, %ecx
-  movl 4(%ebx), %edx
-  movl (%ebx), %eax
+  str_c_
+  d1_str_d_
+  d0_
   dnip_
   div %ecx
-  movl %edx, (%ebx)
+  d_str_d0_
   ret
 
 # ( u1 u2 -- rem quot )
 # unsigned 32b division with modulus result
 Forthword_ U_DIVMOD, 0, "u/mod"
-  movl %eax, %ecx
-  movl (%eax), %eax
+  str_c_
+  d0_
   cltd
   div %ecx
-  movl %edx, (%ebx)
+  d_str_d0_
   ret
 
 Forthword_ M_DIVMOD, 0, "m/mod"
 # Signed symmetric divide 64/32 = 32 remainder 32
 # ( d n -- n n )
-  movl %eax, %ecx
-  movl 4(%ebx), %edx
-  movl (%ebx), %eax
+  str_c_
+  d1_str_d_
+  d0_
   dnip_
   idiv %ecx
-  movl %edx, 4(%ebx)
+  d_str_d1_
   ret
 
 # ( n1 n2 -- rem quot )
 # signed division with remainder
 Forthword_ DIVMOD, 0, "/mod"
-  movl %eax, %ecx
-  movl (%ebx), %eax
+  str_c_
+  d0_
   cltd
   idiv %ecx
-  movl %edx, (%ebx)
+  d_str_d0_
   ret
 
 # ( n1 n2 -- n1/n2 )
 # 32bit/32bit = 32bit
 Forthword_ DIV, 0, "/"
-  movl %eax, %ecx
-  movl (%ebx), %eax
+  str_c_
+  d0_
   cltd
   dnip_
   idiv %ecx
@@ -392,20 +403,21 @@ Forthword_ RP0, 0, "rp0"
 # ( -- n )
 # number of single-cell (4 byte) values contained in the data stack before n was placed on the stack.
 Forthword_ DEPTH, 0, "depth"
-  call SP0
-  spfetch_
-  minus_
-  fourslash_
+  call SP0      # ( sp0 )
+  dpush_        # ( sp0 sp0 )
+  sp_           # ( sp0 sp )
+  minus_        # ( cnt )
+  fourslash_    # ( cnt/4 )
   # acount for value push on data stack
-  oneminus_
+  oneminus_     # ( cnt/4-1 )
   ret
 
-# ( --  )
+# ( -- )
 # check stack underflow, throw exception -4
 Forthword_ QSTACK, 0, "?sp"
-  call DEPTH
-  zeroless_
-  zerosense_
+  call DEPTH       # ( depth )
+  zeroless_        # ( flag )
+  iszero_
   je QSTACKFIN
     $lit_ " Stack Underflow!"
     call THROW
@@ -423,39 +435,43 @@ Forthword_ HANDLER, 0, "handler"
 # setup handler to catch exceptions and then EXEC XT.
 Forthword_ CATCH, 0, "catch"
   # sp@ >r
-  spfetch_            # ( xt SP )
-  to_r_               # ( xt ) (R: ret -- callerret SP )
+  rpushsp_            # ( xt sp ) (R: ret -- callerret SP )
   # handler @ >r
+  dpush_              # ( xt xt )
   call HANDLER        # ( xt haddr )
   fetch_              # ( xt hxt )
-  to_r_               # ( xt ) (R: callerret SP hxt )
+  rpush_              # ( xt hxt ) (R: callerret SP hxt )
   # rp@ handler !
-  rpfetch_            # ( xt RP ) (R: callerret SP hxt)
+  rp_                 # ( xt RP ) (R: callerret SP hxt)
+  dpush_              # ( xt RP RP )
   call HANDLER        # ( xt RP haddr )
-  store_              # ( xt )
+  store_              # ( xt haddr )
+  dpop_               # ( xt )
   call EXEC
   # restore handler
   # r> handler !
-  r_from_             # ( hxt ) (R: callerret SP )
+  rpop_               # ( hxt ) (R: callerret SP )
+  dpush_              # ( hxt hxt )
   call HANDLER        # ( hxt haddr )
-  store_              # ( )
-  r_drop_             # ( ) (R: callerret)
-  zero_
+  store_              # ( haddr )
+  rnip_               # ( haddr ) (R: callerret)
+  zero_               # ( 0 )
   ret
 
 # ( straddr len -- )
 # throw an exception
 # will type the string passed in
 Forthword_ THROW, 0, "throw"
-  call TYPE
+  call TYPE          # ( ? )
   call HANDLER       # ( haddr )
   fetch_             # ( RP_handler )
-  rpstore_           # ( ) (R: callerret SP hxt)
-  r_from_            # ( hxt ) (R: callerret SP )
+  str_rp_            # ( RP_handler ) (R: callerret SP hxt)
+  rpop_              # ( hxt ) (R: callerret SP )
+  dpush_
   call HANDLER       # ( hxt haddr )
-  store_             # ( )
-  r_from_            # ( SP ) (R: callerret )
-  spstore_           # ( ... )
+  store_             # ( haddr )
+  rpop_              # ( SP ) (R: callerret )
+  str_sp_            # ( ... )
   one_               # ( ... 1 )
   ret
 
@@ -495,58 +511,60 @@ Forthword_ SLEEPON, 0, "sleepon"
 # caddr points to null terminated file name
 Forthword_ DOINCLUDE, 0, "doinclude"
   # set file open mode to reading
-  zero_
-  call OPENF     # ( filedes )
+  dpush_                # ( caddr caddr )
+  zero_                 # ( caddr 0 )
+  call OPENF            # ( filedes )
   # if file descriptor > 0 then open is success
-  dup_
-  call ZEROGREATER
-  zerosense_
+  dpush_                # ( filedes filedes )
+  call ZEROGREATER      # ( filedes flag )
+  iszero_
   je DOINCLUDE_EXIT
 
-  call IDLETIMEFETCH
-  to_r_
-  call SLEEPOFF
+  call IDLETIMEFETCH    # ( filedes itime )
+  rpush_                # ( filedes itime ) (R: itime )
+  call SLEEPOFF         # ( filedes ? )
   # push FFLAGS on tor
-  call FFLAGS
-  hfetch_
-  to_r_
+  call FFLAGS           # ( filedes fflags# )
+  hfetch_               # ( filedes fflags )
+  rpush_                # ( filedes fflags ) (R: itime fflags )
   # push on return stack the old defer key
-  call KEYADDR
-  fetch_
-  to_r_
+  call KEYADDR          # ( filedes KEYADDR )
+  fetch_                # ( filedes KEY )
+  rpush_                # ( filedes KEY ) (R: itime fflags KEY)
   # push old keyfile on return stack
-  call KEYFILEADDR
-  fetch_
-  to_r_
-  call KEYFILEADDR
-  store_
+  call KEYFILEADDR      # ( filedes KEYFILEADDR ) (R: itime fflags KEY)
+  fetch_                # ( filedes KEYFILE ) (R: itime fflags KEY)
+  rpush_                # ( filedes KEYFILE ) (R: itime fflags KEY KEYFILE)
+  call KEYFILEADDR      # ( filedes KEYFILEADDR )
+  store_                # ( KEYFILEADDR )
   # defer key to keyfile for input
-  dolit_ KEYFILE
-  call KEYADDR
-  store_
+  dolit_ KEYFILE        # ( KEYFILE )
+  dpush_                # ( KEYFILE KEYFILE )
+  call KEYADDR          # ( KEYFILE KEYFILEADDR )
+  store_                # ( KEYFILEADDR )
   # run interpreter
-  call DOTASKS
+  call DOTASKS          # ( ? )
   # close keyfile
-  call KEYFILEADDR
-  fetch_
-  call CLOSEF
+  call KEYFILEADDR      # ( KEYFILEADDR )
+  fetch_                # ( KEYFILE )
+  call CLOSEF           # ( ? )
   # pop tor into keyfile
-  r_from_
-  call KEYFILEADDR
-  store_
+  rpop_                 # ( KEYFILE ) ( R: itime fflags KEY )
+  call KEYFILEADDR      # ( KEYFILE KEYFILEADDR )
+  store_                # ( KEYFILEADDR )
   # pop top of return into defer key
-  r_from_
-  call KEYADDR
-  store_
+  rpop_                 # ( KEY ) ( R: itime fflags )
+  call KEYADDR          # ( KEY KEYADDR )
+  store_                # ( KEYADDR )
   # restore FFLAGS
-  r_from_
-  call FFLAGS
-  call HSTORE
-  r_from_
+  rpop_                 # ( fflags ) ( R: itime )
+  call FFLAGS           # ( fflags FFLAGS )
+  call HSTORE           # ( FFLAGS )
+  rpop_                 # ( itime ) ( R: )
   jmp IDLETIMESTORE
 
 DOINCLUDE_EXIT:
-  drop_
+  dpop_                 # ( filedes )
   type_ "File not found!"
   ret
 

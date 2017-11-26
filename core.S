@@ -366,7 +366,7 @@ forthword_ ZEROLESS, INLINE_OPT, "0<"
 
 # ( -- 0 )
 # set TOS to 0
-Forthword_ ZEROSET, INLINE_OPT, "0"
+Forthword_ ZERO, INLINE_OPT, "0"
 	zero_
 	ret
 

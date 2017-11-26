@@ -62,6 +62,14 @@
   pushl %ecx
 .endm
 
+.macro rpushd_
+  pushl %edx
+.endm
+
+.macro rpushsp_
+  pushl %ebx
+.endm
+
 .macro rpushd0_
   pushl (%ebx)
 .endm
@@ -72,10 +80,6 @@
 
 .macro rpushd2_
   pushl 8(%ebx)
-.endm
-
-.macro rpushd_
-  pushl %edx
 .endm
 
 .macro rpop_
@@ -483,12 +487,44 @@
   or %eax, %eax
 .endm
 
+.macro a_iszero_
+  or %esi, %esi
+.endm
+
+.macro b_iszero_
+  or %edi, %edi
+.endm
+
+.macro c_iszero_
+  or %ecx, %ecx
+.endm
+
+.macro d_iszero_
+  or %edx, %edx
+.endm
+
 .macro zeroless_
   sar $31, %eax    # Turn MSB into 0xffffffff or 0x00000000
 .endm
 
 .macro zero_
   xor %eax, %eax
+.endm
+
+.macro zero_a_
+  xor %esi, %esi 
+.endm
+
+.macro zero_b_
+  xor %edi, %edi 
+.endm
+
+.macro zero_c_
+  xor %ecx, %ecx
+.endm
+
+.macro zero_d_
+  xor %edx, %edx
 .endm
 
 .macro zeroequal_
