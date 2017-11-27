@@ -82,10 +82,6 @@ CPSTART:
 # ( nx* -- ) (R: ny* -- )
 # initialize if further. EXECs turnkey operation and go to quit
 Forthword_ WARM, 0, "warm"
-	rp_
-	dpush_
-	call RP0
-	store_
 	call ONLY
   call RESET
   call DECIMAL           # default to decimal base
@@ -109,8 +105,11 @@ Forthword_ COLD, 0, "cold"
   pushl %ebp
   movl $topdatastack, %ebx
   movl $sysvar_base, %ebp
-  dpush_
   call WIPE
+	rp_
+	dpush_
+	call RP0
+	store_
   call WARM
   popl %ebp
   ret

@@ -20,6 +20,7 @@ Forthword_ IDLETIMEADDR, 0, "idletime#"
 # ( n -- )
 # set idletime
 Forthword_ IDLETIMESTORE, 0, "idletime!"
+  dpush_
   call IDLETIMEADDR
   jmp STORE
 
@@ -166,15 +167,16 @@ Forthword_ DIGITQ, 0, "digit?"
 
 DIGITQ0:
     dpush_               # ( n n )
-    call BASEFETCH       # ( n base )
+    dpush_               # ( n n n )
+    call BASEFETCH       # ( n n base )
     call UGREATEREQUAL   # ( n flag )
     iszero_
-    je PFA_DIGITQ2
+    je PFA_DIGITQ_DONE
     zero_                # ( n 0 )
     dnip_                # ( 0 )
     ret
 
-PFA_DIGITQ2:
+PFA_DIGITQ_DONE:
     true_                # ( n true )
     ret
 
@@ -182,78 +184,75 @@ PFA_DIGITQ2:
 # set the BASE value depending on the character
 #forthword_ SETBASE, 0, "setbase"
 SETBASE:        
-    str_d_            # ( c ) D: c
-    cmp $'$, %edx
-    jne PFA_SETBASE0
-    jmp HEX
+  cmp $'$, %eax
+  jne PFA_SETBASE0
+  jmp HEX
 
 PFA_SETBASE0:
-    cmp $'%, %edx
-    jne PFA_SETBASE1
-    jmp BIN
+  cmp $'%, %eax
+  jne PFA_SETBASE1
+  jmp BIN
 
 PFA_SETBASE1:
-    cmp $'&, %edx
-    jne PFA_SETBASE2
-    jmp DECIMAL
+  cmp $'&, %eax
+  jne PFA_SETBASE2
+  jmp DECIMAL
 
 PFA_SETBASE2:        # ( error)
-    d_
-    call EMIT
-    $lit_ " Bad Base!"
-    call THROW
+  call EMIT
+  $lit_ " Bad Base!"
+  call THROW
 
 # ( addr len -- addr' len' )
 # skip a numeric prefix character
 #forthword_ PRAEFIX, 0, "praefix"
-PRAEFIX:             # ( adr1 len1 -- adr2 len2 )
-    over_            # ( adr1 len1 adr1 )
-    cfetch_          # ( adr1 len1 c )
-    cmp $0x30, %eax
-    jb PFA_PRAEFIX0
-    # no praefix
-    dpop_            # ( adr1 len )
-    ret
+PRAEFIX:             # ( addr len -- addr' len' )
+  over_            # ( addr len addr )
+  cfetch_          # ( addr len c )
+  cmp $0x30, %eax
+  jb PFA_PRAEFIX0
+  # no praefix
+  dpop_            # ( addr len )
+  ret
 
 PFA_PRAEFIX0:
-    call SETBASE     # ( adr1 len1 c )
-    one_             # ( adr1 len1 1 )
-    call SLASHSTRING # ( adr1 len1 )
-    ret
+  call SETBASE     # ( addr len c )
+  one_             # ( addr len 1 )
+  call SLASHSTRING # ( addr' len' )
+  ret
 
 # (addr len -- addr len flag) Numeric IO
 # check for - sign
 # forthword_ NUMBERSIGN, 0, "#-"
 NUMBERSIGN:        # ( addr len -- )
-    over_          # ( addr len addr )
-    cfetch_        # ( addr len char )
-    cmp $'-, %eax
-    je NUMBERSIGN_HASSIGN
-        zero_      # ( addr len 0 )
-        ret
-
-NUMBERSIGN_HASSIGN:
-    rpush_           # ( addr len char ) (R: char )
-    one_             # ( addr len 1 )
-    call SLASHSTRING # ( addr len )
-    dpush_           # ( addr len len )
-    rpop_            # ( addr len char ) (R: )
+  over_          # ( addr len addr )
+  cfetch_        # ( addr len char )
+  cmp $'-, %eax
+  je NUMBERSIGN_HASSIGN
+    zero_      # ( addr len 0 )
     ret
 
-# ( u1 c-addr1 len1 -- u2 c-addr2 len2 )
+NUMBERSIGN_HASSIGN:
+  rpush_           # ( addr len char ) (R: char )
+  one_             # ( addr len 1 )
+  call SLASHSTRING # ( addr len )
+  dpush_           # ( addr len len )
+  rpop_            # ( addr len char ) (R: )
+  ret
+
+# ( u1 addr len -- u2 addr2 len2 )
 # convert a string to a number  c-addr2/u2 is the unconverted string
 Forthword_ TO_NUMBER, 0, ">num"
-TO_NUMBER_AGAIN:
   iszero_
   je TO_NUMBER_END
-    over_                # ( u adr len adr )
-    cfetch_              # ( u adr len char )
-    call DIGITQ          # ( u adr len [digit] flag )
+    over_                # ( u addr len addr )
+    cfetch_              # ( u addr len char )
+    call DIGITQ          # ( u addr len [digit] flag )
     iszero_
     dpop_                # ( u adr len [digit] )
     jne TO_NUMBER_CONV
-        # character is not a recognized number
-        ret              # ( u adr len )
+      # character is not a recognized number
+      ret              # ( u adr len )
 
 TO_NUMBER_CONV:
   str_b_               # ( u adr len digit ) B: digit
@@ -266,8 +265,8 @@ TO_NUMBER_CONV:
   plus_                # ( u adr len u'' )
   str_d2_              # ( u'' adr len u'' )
   one_                 # ( u'' adr len 1 )
-  call SLASHSTRING     # ( u'' adr' len' ) 
-  jmp TO_NUMBER_AGAIN
+  call SLASHSTRING     # ( u'' adr' len' )
+  jmp TO_NUMBER
 
 TO_NUMBER_END:
   ret
@@ -290,7 +289,7 @@ Forthword_ NUMBER, 0, "num"
   rpush_                  # ( addr len flagsign' ) (R: base flagsign')
   d0_str_c_               # ( addr len flagsign' ) C: len
   d1_str_d_               # ( addr len flagsign' ) D: addr
-  zero_                   # ( addr len 0 ) starting value
+  zero_                   # ( addr len 0 )
   str_d1_                 # ( 0 len 0 )
   d_str_d0_               # ( 0 addr 0 )
   c_                      # ( 0 addr len )
@@ -299,27 +298,27 @@ Forthword_ NUMBER, 0, "num"
   # if zero: a single cell number is entered
   iszero_
   dpop_                   # ( n addr' )
-  je PFA_NUMBER1
+  je PFA_NUMBER_SIGN
 
   # error in string to number conversion
   dnip_                   # ( addr' ) (R: base flagsign' )
   rnip_                   # ( addr' ) (R: base )
   zero_                   # ( 0 ) (R: base )
-  jmp PFA_NUMBER3
+  jmp PFA_NUMBER_DONE
 
-PFA_NUMBER1:
+PFA_NUMBER_SIGN:
   # incorporate sign into number
   rpop_                   # ( n flagsign' ) (R: base )
   iszero_
-  je PFA_NUMBER2
+  je PFA_NUMBER_TRUE
   dpop_                   # ( n )
   neg_                    # ( -n )
   dpush_                  # ( -n -n )
 
-PFA_NUMBER2:
+PFA_NUMBER_TRUE:
   true_                   # ( n true ) (R: base )
 
-PFA_NUMBER3:
+PFA_NUMBER_DONE:
   dpush_                  # ( n flag flag )
   rpop_                   # ( n flag base ) (R: )
   call BASESTORE          # ( n flag ? )

@@ -469,14 +469,17 @@ Forthword_ REC_NUM, 0, "rec#"
   call NUMBER              # ( [n] f )
   iszero_
   je REC_NONUMBER
-
+    rnip2_                 # ( n f )
     call STATEFETCH        # ( n state )
     iszero_
     je REC_NUMBER_OK
-      call LIT
+      dpop_
+      jmp LIT
 
 REC_NUMBER_OK:
-      rnip2_               # ( n f ) (R: )
+      d0_str_d_           # ( n 0 ) D: n
+      movl %edx, TOS
+      true_               # ( n true ) (R: )
       ret
 
 REC_NONUMBER:
@@ -538,11 +541,10 @@ REC_WORD_CHECKSTATE:
       ret
 
 REC_WORD_EXECUTE:
-  dpop_              # ( xt )
-  dpush_             # ( xt xt )
+  # state is zero, EXEC xt
+  d0_                # ( xt xt )
   movl TOS, %edx
   d_str_d0_          # ( TOS xt )
-  # state is zero, EXEC xt
   call EXEC          # ( ?? )
   movl %eax, TOS
   true_              # ( true )
@@ -553,14 +555,13 @@ REC_WORD_EXECUTE:
 Forthword_ RECX, 0, "recx"
   # test if its a word
   call REC_WORD         # ( [addr len] flag )
-  #zero_# <if>
   iszero_               # ( [addr len] flag )
   jne RECX_DONE
-  #dpop_                 # ( addr len )
+  dpop_                 # ( addr len )
   # test if its a number
-  #call REC_NUM          # ( [addr len] flag )
-  #iszero_               # ( [addr len] flag )
-  #jne RECX_DONE
+  call REC_NUM          # ( [addr len] flag )
+  iszero_               # ( [addr len] flag )
+  jne RECX_DONE
   # not recognized so throw
   call CR               # ( addr len ? )
   dpop_                 # ( addr len )
@@ -669,7 +670,7 @@ Forthword_ DOINTERPRET, 0, "(interp)"
   iszero_
   je DOINTERPRET_ok
     call PROMPTERROR
-    call QUIT
+    jmp QUIT
 
   # <then>
 DOINTERPRET_ok:
@@ -754,10 +755,10 @@ Forthword_ QUIT, 0, "quit"
   # reset data stack
   call SP0
   str_sp_
-  # reset return stack pointers
-  call RP0
-  fetch_
-  str_rp_
+  # reset return stack pointer
+  #call RP0
+  #fetch_
+  #str_rp_
   call RESET
   jmp DOTASKS
 
@@ -818,7 +819,7 @@ ACCEPT_dodelete:
   call TRUE           # ( true )
   dpush_              # ( true true )
   call SHARPTIB       # ( true #tibaddr )
-  plus_hstr_         # ( #tibaddr )
+  plus_hstr_          # ( #tibaddr )
   jmp ACCEPT_checkmaxinput
 
 
@@ -836,20 +837,20 @@ ACCEPT_echo:
   # now store the key in the input buffer
   call STIB              # ( k tibaddr #tib)
   plus_                  # ( k tibaddr+#tib )
-  cstr_                # ( tibaddr+#tib )
+  cstr_                  # ( tibaddr+#tib )
 
   call SHARPTIB          # ( #tib )
-  oneplus_hstr_         # ( ? )
+  oneplus_hstr_          # ( ? )
 
 ACCEPT_checkmaxinput:
   # check if max number of char input
-  dolit_ TIBSIZE       # ( tibsize )
+  dolit_ TIBSIZE         # ( tibsize )
   dpush_
-  call SHARPTIB        # ( tibsize #tibaddr )
-  hfetch_              # ( tibsize #tib )
-  minus_               # ( tibsize-#tib )
+  call SHARPTIB          # ( tibsize #tibaddr )
+  hfetch_                # ( tibsize #tib )
+  minus_                 # ( tibsize-#tib )
   # <if>
-  iszero_              # ( tibsize-#tib )
+  iszero_                # ( tibsize-#tib )
   je ACCEPT_atmaxinput
   jmp ZERO
 
