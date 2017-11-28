@@ -108,7 +108,8 @@ Forthword_ Y_STR_D0, INLINE_OPT, "y!d0"
   ret
   
 # ( n1 n2 -- n2 n1 ) Y: d0
-# swaps the two top level stack cells
+#   d0 WR
+# swaps D0 with WR
 Forthword_ SWAP, INLINE_OPT, "swap"
   swap_
   ret
@@ -121,7 +122,8 @@ Forthword_ DNIP, INLINE_OPT, "nip"
   ret
   
 # ( x1 x2 -- x1 x2 x1 )
-# Place a copy of x1 on top of the stack
+#   do WR
+# push WR on data stack and place D1 in WR
 Forthword_ OVER, INLINE_OPT, "over"
   over_
   ret
@@ -160,9 +162,33 @@ Forthword_ SP_STORE, INLINE_OPT, "!sp"
 #@@@@@@@@@@@@@ Return Stack @@@@@@@@@@@@@
 
 # ( n1 -- n2 ) (R: n2 --)
-# move TOR to WR
+# pop top of return stack into WR
 Forthword_ RPOP, INLINE_OPT, "rpop"
 	rpop_
+	ret
+
+# ( -- ) (R: n2 --) A: n2
+# pop top of return stack into A
+Forthword_ RPOPA, INLINE_OPT, "rpopa"
+	rpopa_
+	ret
+
+# ( -- ) (R: n2 --) B: n2
+# pop top of return stack into B
+Forthword_ RPOPB, INLINE_OPT, "rpopb"
+	rpopb_
+	ret
+
+# ( -- ) (R: n2 --) X: n2
+# pop top of return stack into X
+Forthword_ RPOPX, INLINE_OPT, "rpopx"
+	rpopx_
+	ret
+
+# ( -- ) (R: n2 --) Y: n2
+# pop top of return stack into Y
+Forthword_ RPOPY, INLINE_OPT, "rpopy"
+	rpopy_
 	ret
 
 # ( -- ) (R: n -- )
@@ -172,9 +198,33 @@ Forthword_ RPOPNOS, INLINE_OPT, "rnip"
 	ret
 
 # ( n -- ) (R: -- n)
-# copy WR to TOR
+# push WR on top of return stack
 Forthword_ RPUSH, INLINE_OPT, "rpush"
 	rpush_
+	ret
+
+# ( -- ) (R: -- a)
+# push A on top of return stack
+Forthword_ RPUSHA, INLINE_OPT, "rpusha"
+	rpusha_
+	ret
+
+# ( -- ) (R: -- b)
+# push B on top of return stack
+Forthword_ RPUSHB, INLINE_OPT, "rpushb"
+	rpushb_
+	ret
+
+# ( -- ) (R: -- x)
+# push X on top of return stack
+Forthword_ RPUSHX, INLINE_OPT, "rpushx"
+	rpushx_
+	ret
+
+# ( -- ) (R: -- y)
+# push Y on top of return stack
+Forthword_ RPUSHY, INLINE_OPT, "rpushy"
+	rpushy_
 	ret
 
 # ( -- n) (R: n -- n )
@@ -235,7 +285,7 @@ Forthword_ PLUS, INLINE_OPT, "+"
   plus_
   ret
 
-# ( n1|u1 n2|u2 -- n3|u3 )
+# ( n1|u1 n2|u2 -- n1-n2|u1-u2 )
 # subtract n2 from n1
 Forthword_ MINUS, INLINE_OPT, "-"
   minus_
