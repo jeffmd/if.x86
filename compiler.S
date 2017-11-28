@@ -189,6 +189,8 @@ Forthword_ DPSTORE, 0, "dp!"
 # copies a counted string with flags from s-addr to d-addr
 # returns destination address + len
 Forthword_ COPYSTRING, 0, "copy$"
+  rpusha_
+  rpushb_
   str_b_             # ( s-addr len len' d-addr ) B: d-addr
   d0_                # ( s-addr len len' len')
   b_hstr_
@@ -199,6 +201,8 @@ Forthword_ COPYSTRING, 0, "copy$"
   rep movsb
   b_                 # ( s-addr+len )
   nip3_
+  rpopb_
+  rpopa_
   ret
 
 # ( addr len len' -- )
@@ -231,6 +235,8 @@ Forthword_ STRINGDICTSTORE, 0, "$dp!"
 # or get word index of match
 Forthword_ FINDB, 0, "findb"
   # fetch from ram and check if equal to match byte
+  rpusha_
+  rpushb_
   str_b_           # ( start match ) B: match
   d0_str_a_        # ( start match ) A: start
   # begin
@@ -246,6 +252,8 @@ FINDI_BEGIN:
   oneminus_        # ( start end-1 )
   over_            # ( start end-1 start )
   minus_           # ( start count )
+  rpopb_
+  rpopa_
   ret
 
 # ( start -- )
@@ -254,7 +262,7 @@ Forthword_ INLINE, 0, "inline"
   # find the ret instruction, want count to ret
   # count will be number of bytes to inline
   push_                    # ( start start )
-  lit_ 0xc3              # ( start 0xc3 )
+  lit_ 0xc3                # ( start 0xc3 )
   call FINDB               # ( start count )
 
   # cp swap dup dp+ itoi

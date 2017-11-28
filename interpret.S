@@ -142,6 +142,7 @@ Forthword_ REFILL, 0, "refill"
 # ( addr n -- )
 # print a counted string
 Forthword_ TYPE, 0, "type"
+  rpusha_
   iszero_
   jz TYPE_END
 
@@ -158,6 +159,7 @@ TYPE1:
   jnz TYPE1
 TYPE_END:
   pop_
+  rpopa_
   ret
 
 
@@ -165,10 +167,10 @@ TYPE_END:
 # compares two counted strings in RAM
 # flag is true if strings match
 Forthword_ MCMP, 0, "mcmp"
-  str_b_                   # ( r-addr r-len f-addr f-len)  B: f-len
+  str_y_                   # ( r-addr r-len f-addr f-len)  Y: f-len
   d1_                      # ( r-addr r-len f-addr r-len)
   # check if strings are same length
-  xor %edi, %eax           # ( r-addr r-len f-addr flag )
+  xor %edx, %eax           # ( r-addr r-len f-addr flag )
   # if
   iszero_                  # ( r-addr r-len f-addr flag )
   pop_                     # ( r-addr r-len f-addr )
@@ -184,6 +186,8 @@ Forthword_ MCMP, 0, "mcmp"
 # compare two strings of same length
 # flag is true if strings match
 Forthword_ CMPSB, 0, "cmpsb"
+  rpusha_
+  rpushb_
   str_a_                   # ( r-addr len f-addr ) A: f-addr
   d0_str_x_                # ( r-addr len f-addr ) C: len
   d1_str_b_                # ( r-addr len f-addr ) B: r-addr
@@ -191,6 +195,8 @@ Forthword_ CMPSB, 0, "cmpsb"
   cld
   repe cmpsb
   # while
+  rpopb_
+  rpopa_
   je MCMP_DONE
 
   # strings don't match
@@ -220,10 +226,10 @@ Forthword_ SLASHSTRING, 0, "/$"
 # ( addr -- addr+2 len )
 # get string address and length information out of a counted string
 Forthword_ STRINGLEN, 0, "$l"
-  str_a_        # ( addr ) A: addr
+  str_x_        # ( addr ) X: addr
   twoplus_      # ( addr+2 )
   push_         # ( addr+2 addr+2 )
-  a_hfetch_     # ( addr+2 len )
+  x_hfetch_     # ( addr+2 len )
   ret
 
 # ( addr1 n1 c -- n2 )
@@ -231,6 +237,8 @@ Forthword_ STRINGLEN, 0, "$l"
 # pointing to the 1st non-c character
 # n1 is max number of characters to search
 Forthword_ CSKIP, 0, "cskip"
+  rpusha_
+  rpushb_
   str_b_               # ( addr1 n1 c ) B: c
   d1_str_a_            # ( addr1 n1 c ) A: addr1
   d0_                  # ( addr1 n1 n1 )
@@ -250,6 +258,8 @@ PFA_CSKIP2:
   jne PFA_CSKIP1
 
 PFA_CSKIP3:
+  rpopb_
+  rpopa_
   pop_                 # ( n1 n' )
   minus_               # ( n1-n' )
   ret
@@ -259,6 +269,8 @@ PFA_CSKIP3:
 # n1 is max number of characters to search
 # char at n2 is first c character
 Forthword_ CSCAN, 0, "cscan"
+  rpusha_
+  rpushb_
   str_b_               # ( addr1 n1 c ) B: c
   d1_str_a_            # ( addr1 n1 c ) A: addr1
   d0_                  # ( addr1 n1 n1 )
@@ -278,6 +290,8 @@ PFA_CSCAN2:
   jne PFA_CSCAN1
 
 PFA_CSCAN3:
+  rpopb_
+  rpopa_
   pop_
   minus_               # ( addr1 n1-n' )
   ret

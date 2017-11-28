@@ -16,14 +16,42 @@ Forthword_ NOOP, INLINE_OPT, "noop"
 #@@@@@@@@@@@@@ Parameter Stack  Manipulation @@@@@@@@@@@@@@
 
 # ( n -- n n )
-# duplicate WR
+# push WR onto top of data stack
 Forthword_ DPUSH, INLINE_OPT, "push"
   push_
   ret  
   
+# ( n1 n2 -- n1 a  n2 )
+#   d0 WR    d1 d0 WR
+# push register A onto top of data stack
+Forthword_ DPUSHA, INLINE_OPT, "pusha"
+  pusha_
+  ret  
+  
+# ( n1 n2 -- n1 b  n2 )
+#   d0 WR    d1 d0 WR
+# push register B onto top of data stack
+Forthword_ DPUSHB, INLINE_OPT, "pushb"
+  pushb_
+  ret  
+  
+# ( n1 n2 -- n1 x  n2 )
+#   d0 WR    d1 d0 WR
+# push register X onto top of data stack
+Forthword_ DPUSHX, INLINE_OPT, "pushx"
+  pushx_
+  ret  
+  
+# ( n1 n2 -- n1 y  n2 )
+#   d0 WR    d1 d0 WR
+# push register Y onto top of data stack
+Forthword_ DPUSHY, INLINE_OPT, "pushy"
+  pushy_
+  ret  
+  
 # ( n1 -- [ n1 n1 ] | 0)
 # duplicate WR if non-zero
-Forthword_ QDUP, 0, "?push"
+Forthword_ QPUSH, 0, "?push"
 	iszero_
 	je PFA_QDUP1	
 	push_
@@ -135,9 +163,38 @@ Forthword_ TWOOVER, 0, "2over"
   jmp OVER
 
 # ( n1 n2 -- n1)
-# drop WR
-Forthword_ DDOP, INLINE_OPT, "pop"
+#   d0 WR    WR
+# pop top of data stack into WR
+Forthword_ DPOP, INLINE_OPT, "pop"
   pop_
+  ret
+
+# ( n1 n2 n3 -- n1 n3 ) A: n2
+#   d1 d0 WR    d0 WR
+# pop top of data stack into register A
+Forthword_ DPOPA, INLINE_OPT, "popa"
+  popa_
+  ret
+
+# ( n1 n2 n3 -- n1 n3 ) B: n2
+#   d1 d0 WR    d0 WR
+# pop top of data stack into register B
+Forthword_ DPOPB, INLINE_OPT, "popb"
+  popb_
+  ret
+
+# ( n1 n2 n3 -- n1 n3 ) X: n2
+#   d1 d0 WR    d0 WR
+# pop top of data stack into register X
+Forthword_ DPOPX, INLINE_OPT, "popx"
+  popx_
+  ret
+
+# ( n1 n2 n3 -- n1 n3 ) Y: n2
+#   d1 d0 WR    d0 WR
+# pop top of data stack into register Y
+Forthword_ DPOPY, INLINE_OPT, "popy"
+  popy_
   ret
 
 # ( n n -- )
@@ -758,12 +815,15 @@ Forthword_ MCPY, 0, "mcpy"
 	iszero_         # ( start dest count )
 	je MCPY_END
 
+  rpusha_
+  rpushb_
 	d0_str_b_          # ( start dest count ) B: dest
 	mov %eax, %ecx
 	d1_str_a_          # (  start dest count ) A: start
 	cld
 	rep movsb
-	
+  rpopb_
+  rpopa_
 MCPY_END:
   nip2_
   ret

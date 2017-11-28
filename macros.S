@@ -2,9 +2,9 @@
 
 # tos -> %eax # parameter top of stack [TOS] register
 # dsp -> %ebx # holds the Forth Parameter/Data stack pointer
-# areg -> %esi # A register used for memory pointer operations
-# breg -> %edi # B register used for general purpose operations
-# creg -> %ecx # C register used for general purpose operations
+# areg -> %esi # A register used for memory pointer operations - non-volatile: user must preserve
+# breg -> %edi # B register used for general purpose operations - non-volatile: user must preserve
+# creg -> %ecx # C register used for general purpose operations 
 # dreg -> %edx # D register used as a temp register
 # sysvar -> %ebp # system variables base pointer
 # temporary registers %ecx, %edx,
@@ -721,6 +721,14 @@
   mov %eax, (%edi)
 .endm
 
+.macro x_fetch_
+  movl (%ecx), %eax
+.endm
+
+.macro x_str_
+  mov %eax, (%ecx)
+.endm
+
 .macro a_hfetch_
   movsxw (%esi), %eax
 .endm
@@ -735,6 +743,14 @@
 
 .macro b_hstr_
   movw %ax, (%edi)
+.endm
+
+.macro x_hfetch_
+  movsxw (%ecx), %eax
+.endm
+
+.macro x_hstr_
+  movw %ax, (%ecx)
 .endm
 
 .macro a_cfetch_
@@ -753,12 +769,24 @@
   movb %al, (%edi)
 .endm
 
+.macro x_cfetch_
+  movsxb (%ecx), %eax
+.endm
+
+.macro x_cstr_
+  movb %al, (%ecx)
+.endm
+
 .macro aplus_
   add $4, %esi
 .endm
 
 .macro bplus_
   add $4, %edi
+.endm
+
+.macro xplus_
+  add $4, %ecx
 .endm
 
 .macro ahplus_
@@ -769,12 +797,20 @@
   add $2, %edi
 .endm
 
+.macro xhplus_
+  add $2, %ecx
+.endm
+
 .macro acplus_
   inc %esi
 .endm
 
 .macro bcplus_
   inc %edi
+.endm
+
+.macro xcplus_
+  inc %ecx
 .endm
 
 .macro ascii_ str, flg=0

@@ -255,13 +255,10 @@ Forthword_ TO_NUMBER, 0, ">num"
       ret              # ( u adr len )
 
 TO_NUMBER_CONV:
-  str_b_               # ( u adr len digit ) B: digit
-  d2_                  # ( u adr len u )
-  push_                # ( u adr len u u )
-  call BASEFETCH       # ( u adr len u base )
-  d0_str_y_            # ( u adr len u base ) Y: u
-  imul %edx, %eax      # ( u adr len u u*base )
-  b_str_d0_            # ( u adr len digit u*base )
+  d2_str_y_            # ( u adr len digit ) Y: u
+  push_                # ( u adr len digit digit )
+  call BASEFETCH       # ( u adr len digit base )
+  imul %edx, %eax      # ( u adr len digit u*base )
   plus_                # ( u adr len u'' )
   str_d2_              # ( u'' adr len u'' )
   one_                 # ( u'' adr len 1 )
