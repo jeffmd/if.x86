@@ -6,38 +6,73 @@
 # previouse word: 32 bit pointer to previousely defined word
 # code: 32 bit pointer to executable code
 
-# ( -- addr )
+# ( -- state )
 # system state variable. 0 is interpret mode. Not 0 is compile mode
-# is half word
-Forthword_ STATE, 0, "state"
-  douser_ state
-
-Forthword_ STATEFETCH, 0, "state@"
-  call STATE
+Forthword_ STATEFETCH, 0, "state"
+  user_ state
   hfetch_
   ret
+
+# ( val -- )
+Forthword_ STATESTORE, 0, "state!"
+  push_
+  user_ state
+  hstore_
+  ret
+
+# ( -- )
+# enter interpreter mode
+Forthword_ LBRACKET, IMMEDIATE_EN, "["
+  user_ state
+  jmp ZERO_HSTR
+
+# ( -- )
+# enter compile mode
+Forthword_ RBRACKET, 0, "]"
+  one_
+  jmp STATESTORE
+
 
 # ( -- addr )
 # current vocabulary for new words
 Forthword_ CURRENT, 0, "current"
-  douser_ ram_CURRENT
+  user_ ram_CURRENT
+  ret
 
 # ( -- addr )
 # context vocabulary for searching
 # array of wordlists
 Forthword_ CONTEXT, 0, "context"
-  douser_ ram_CONTEXT
-
+  user_ ram_CONTEXT
+  ret
 
 # ( -- addr )
 # system SMUDGE. Get flash program address of latest word being compiled.
 Forthword_ SMUDGE, 0, "smudge"
-  douser_ COLON_SMUDGE
+  user_ COLON_SMUDGE
+  fetch_
+  ret
+  
+# ( addr -- )
+# system SMUDGE. Get program address of latest word being compiled.
+Forthword_ SMUDGE_STR, 0, "smudge!"
+  push_
+  user_ COLON_SMUDGE
+  store_
+  ret
+
+# ( -- )
+# system SMUDGE. Get program address of latest word being compiled.
+Forthword_ ZERO_SMUDGE_STR, 0, "0smudge!"
+  user_ COLON_SMUDGE
+  zero_str_
+  ret
 
 # ( -- f-addr )
 # get address of the dictionary cell
 Forthword_ DPSHARP, 0, "dp#"
-  douser_ ram_dp
+  user_ ram_dp
+  ret
 
 # ( -- f-addr )
 # address of the next free dictionary cell
@@ -62,7 +97,8 @@ Forthword_ DPPLUSONE, 0, "dp+1"
 # ( -- f-addr )
 # get address of the code cell
 Forthword_ CPSHARP, 0, "cp#"
-  douser_ ram_cp
+  user_ ram_cp
+  ret
 
 # ( -- f-addr )
 # address of the next free code cell
@@ -103,7 +139,6 @@ Forthword_ TAILOPTOFF, 0, "optoff"
 Forthword_ TAILOPT, 0, ";opt"
   # optimize only if smudge is not zero
   call SMUDGE
-  fetch_
   iszero_
   jne CHECK_DIS_CALL_OPT
   ret
@@ -134,8 +169,7 @@ TAIL_CALL_OPTIMIZE:
 # ( -- )
 # update wid from smudge if valid
 Forthword_ UWID, 0, "uwid"
-  call SMUDGE    # ( SMUDGE )
-  fetch_         # ( xt )
+  call SMUDGE    # ( xt )
   iszero_        # ( xt )
   je UWID_end
 
@@ -146,17 +180,10 @@ Forthword_ UWID, 0, "uwid"
   store_       # ( wid )
   #call CLRCACHE
   # set smudge to zero indicating no longer compiling a word
-  call SMUDGE  # ( SMUDGE )
-  zero_str_    # ( SMUDGE )
+  zero_        # ( 0 )
+  call SMUDGE_STR # ( SMUDGE )
 UWID_end:
   ret
-
-# ( -- )
-# enter interpreter mode
-Forthword_ LBRACKET, IMMEDIATE_EN, "["
-  call STATE
-  jmp ZERO_HSTR
-
 
 # ( n -- )
 # store 8 bit value in WR into code section ram at (code pointer) CP
