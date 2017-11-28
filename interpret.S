@@ -477,7 +477,7 @@ Forthword_ REC_NUM, 0, "rec#"
       jmp LIT
 
 REC_NUMBER_OK:
-      d0_str_y_           # ( n 0 ) D: n
+      popy_               # ( 0 ) Y: n
       movl %edx, WR
       true_               # ( n true ) (R: )
       ret
