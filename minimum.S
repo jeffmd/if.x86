@@ -3,7 +3,8 @@
 # ( -- a-addr )
 # location of the cell containing the address of the next free ram location
 Forthword_ HEREADDR, 0, "here#"
-  douser_ USER_HERE
+  user_ USER_HERE
+  ret
 
 # ( -- a-addr )
 # the address of the next free ram location
@@ -15,38 +16,40 @@ Forthword_ HERE, 0, "here"
 # ( -- a-addr )
 # address of idletime
 Forthword_ IDLETIMEADDR, 0, "idletime#"
-  douser_ USER_IDLETIME
+  user_ USER_IDLETIME
+  ret
 
 # ( n -- )
 # set idletime
 Forthword_ IDLETIMESTORE, 0, "idletime!"
   push_
-  call IDLETIMEADDR
+  user_ USER_IDLETIME
   jmp STORE
 
 # ( -- n )
 # get idletime
 Forthword_ IDLETIMEFETCH, 0, "idletime@"
-  call IDLETIMEADDR
+  user_ USER_IDLETIME
   fetch_
   ret
 
 # ( -- a-addr )
 # location of the cell containing the number conversion radix
 Forthword_ BASE, 0, "base"
-  douser_ USER_BASE
+  user_ USER_BASE
+  ret
 
 # ( n -- )
 # save base
 Forthword_ BASESTORE, 0, "base!"
   push_
-  call BASE
+  user_ USER_BASE
   jmp HSTORE
 
 # ( n -- )
 # load base
 Forthword_ BASEFETCH, 0, "base@"
-  call BASE
+  user_ USER_BASE
   hfetch_
   ret
 
@@ -394,7 +397,8 @@ Forthword_ DIV, 0, "/"
 # ( -- addr)
 # start address of return stack
 Forthword_ RP0, 0, "rp0"
-  douser_ rstack0
+  user_ rstack0
+  ret
 
 # ( -- n )
 # number of single-cell (4 byte) values contained in the data stack before n was placed on the stack.
@@ -422,7 +426,8 @@ QSTACKFIN:
 
 # USER variable used by catch/throw
 Forthword_ HANDLER, 0, "handler"
-  douser_ ram_handler
+  user_ ram_handler
+  ret
 
 # ( i*x xt -- j*x 0 | i*x n )
 # setup handler to catch exceptions and then EXEC XT.

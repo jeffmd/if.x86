@@ -3,25 +3,28 @@
 # ( -- addr )
 # flags address
 Forthword_ FFLAGS, 0, "fflags"
-  douser_  fflags
+  user_ fflags
+  ret
 
 # ( -- addr )
 # terminal input buffer address
 Forthword_ TIB, 0, "tib"
-  douser_  ram_tib
+  user_ ram_tib
+  ret
 
 # ( -- addr-half )
 # variable holding the number of characters in TIB
 # is half cell size
 Forthword_ SHARPTIB, 0, "#tib"
-  douser_ ram_sharptib
+  user_ ram_sharptib
+  ret
 
 # ( -- addr len )
 # address and current length of the input buffer
 Forthword_ STIB, 0, "stib"
-  call TIB
+  user_ ram_tib
   push_
-  call SHARPTIB
+  user_ ram_sharptib
   hfetch_
   ret
 
@@ -29,38 +32,45 @@ Forthword_ STIB, 0, "stib"
 # index to current read position in input buffer
 # is half cell size
 Forthword_ G_IN, 0, ">in"
-  douser_ user_g_in
+  user_ user_g_in
+  ret
 
 # ( -- pauseaddr )
 # get ram address of pause defer
 Forthword_ PAUSEADDR, 0, "pause#"
-  douser_ USER_PAUSE
-
+  user_ USER_PAUSE
+  ret
+  
 # ( -- keyaddr )
 # get ram address of key defer
 Forthword_ KEYADDR, 0, "key#"
-  douser_ USER_KEY
-
+  user_ USER_KEY
+  ret
+  
 # ( -- emitaddr )
 # get ram address of emit defer
 Forthword_ EMITADDR, 0, "emit#"
-  douser_ USER_EMIT
-
+  user_ USER_EMIT
+  ret
+  
 # ( -- keyfileaddr )
 # get ram address of key file descriptor
 Forthword_ KEYFILEADDR, 0, "keyf#"
-  douser_ USER_KEYFILE
-
+  user_ USER_KEYFILE
+  ret
+  
 # ( -- argcaddr )
 # get ram address of command line argument count
 Forthword_ ARGCADDR, 0, "argc#"
-  douser_ USER_ARGC
-
+  user_ USER_ARGC
+  ret
+  
 # ( -- cmd[]addr )
 # get ram address of command line argument vector
 Forthword_ ARGVADDR, 0, "argv#"
-  douser_ USER_ARGV
-
+  user_ USER_ARGV
+  ret
+  
 # ( c -- )
 # fetch the emit vector and EXEC it. Will emit a character from WR
 Forthword_ PUTCHAR, 0, "putchar"
@@ -90,6 +100,13 @@ Forthword_ CR, 0, "cr"
 # put ascii code of the blank/space character to the stack
 Forthword_ BL, INLINE_OPT, "bl"
   bl_
+  ret
+
+Forthword_ COMMENt, IMMEDIATE_EN, "\\"
+  call STIB
+  str_d0_
+  call G_IN
+  hstore_
   ret
 
 # ( -- key )
@@ -458,10 +475,9 @@ Forthword_ DOSLIT, 0, "(slit)"
   # and calculate return address
   r0_            # ( raddr )  (R: raddr)
   push_          # ( raddr raddr )
-  top1_          # ( raddr ? raddr )
   # get the string length
-  hfetch_        # ( raddr ? slength )
-  str_d0_        # ( raddr slength slength )
+  hfetch_        # ( raddr slength )
+  push_          # ( raddr slength slength )
   # calculate string address
   d1_            # ( raddr slength raddr )
   twoplus_       # ( raddr slength straddr )
@@ -748,8 +764,7 @@ DOTASKS_N1:
 # ( -- )
 # reset input source
 Forthword_ RESET, 0, "reset"
-  call SMUDGE
-  zero_str_
+  call ZERO_SMUDGE_STR
 
   # reset input source for key
   lit_ STDIN

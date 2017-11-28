@@ -467,9 +467,8 @@
   not %eax
 .endm
 
-.macro douser_ sym
+.macro user_ sym
   leal (\sym-sysvar_base)(%ebp), %eax
-  ret
 .endm
 
 # Push constant on datastack
