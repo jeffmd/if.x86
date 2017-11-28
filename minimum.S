@@ -324,7 +324,7 @@ PFA_NUMBER_DONE:
 
 # Multiply unsigned 32*32 = 64
 # ( u u -- ud )
-Forthword_ UMSTAR, 0, "um*"
+Forthword_ UMSTAR, INLINE_OPT, "um*"
   d0_str_x_
   mul %ecx
   y_str_d0_
@@ -333,7 +333,7 @@ Forthword_ UMSTAR, 0, "um*"
 # ( n n -- d)
 # multiply 2 signed cells to a double cell
 # signed 32*32 = 64
-Forthword_ MSTAR, 0, "m*"
+Forthword_ MSTAR, INLINE_OPT, "m*"
   d0_str_x_
   imul %ecx
   y_str_d0_

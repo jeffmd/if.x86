@@ -709,11 +709,10 @@ Forthword_ BYE, 0, "bye"
   one_
   push_
   call FFLAGS
-  hfetch_
+  str_x_
+  x_hfetch_
   or_
-  push_
-  call FFLAGS
-  hstore_
+  x_hstr_
   ret
 
 # ( -- )
