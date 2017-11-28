@@ -3,7 +3,7 @@
 # ( -- )
 # compile assembler pop {pc}
 Forthword_ RET_C, 0, "ret,"
-  dolit_ 0xc3
+  lit_ 0xc3
   jmp COMMA
 
 # calc relative distance
@@ -20,26 +20,26 @@ Forthword_ RELDST, 0, "reldst"
 Forthword_ JUMP, 0, "jmpl"
   # 0xe9 XXXX XXXX XXXX
   sub $5, %eax
-  dpush_
-  dolit_ 0xe9
+  push_
+  lit_ 0xe9
   ret
 
 # build assembler instruction jmp - unconditional short jump
 # ( reldist -- jumprellong )
 # reldist: relative distance as 2's compliment 32 bit
 Forthword_ JUMPS, 0, "jmps"
-    # 0xe9 XXXX XXXX XXXX 
-    ret
+  # 0xe9 XXXX XXXX XXXX 
+  ret
 
 # compile assembler instruction jmp - unconditional jump
 # ( reldist -- )
 # reldist: relative distance as 2's compliment
 Forthword_ JMP_COMMA, 0, "jmp,"
-  dpush_
+  push_
 	call CALLOFF
 	call JUMP            # ( rellong jumpinst )
 	call COMMA           # ( rellong ? )
-  dpop_                # ( rellong )
+  pop_                 # ( rellong )
 	jmp DWCOMMA          # ( ? )
 
 # compile jump at start address
@@ -49,21 +49,21 @@ Forthword_ JMPC, 0, "jmpc"
   over_                # ( start dest start )
   call RELDST          # ( start reldst )
   call JUMP            # ( start rellong jumpinst )
-  dpush_               # ( start rellong jumpinst jumpinst )
-  d2_             # ( start rellong jumpinst start )
-  cstr_              # ( start rellong start )
+  push_                # ( start rellong jumpinst jumpinst )
+  d2_                  # ( start rellong jumpinst start )
+  cstr_                # ( start rellong start )
   oneplus_             # ( start rellong start+1 )
   store_               # ( start start+1 )
-  dpop_                # ( start )
+  pop_                 # ( start )
   ret
 
 # conditional jump over a jmp if not zero
 # ( -- )
 Forthword_ JMPNZ1_COMPILE, 0, "jne1,"
     # compile jne $06 : 0x7505
-  dolit_ 0x75
+  lit_ 0x75
   call COMMA
-  dolit_ 5
+  lit_ 5
   jmp COMMA
 
 
@@ -81,7 +81,7 @@ Forthword_ COMPILEXT, 0, "cxt"
   # should word be inlinned?
 	test $(INLINE_OPT << 8), %eax
 	# if bit 0 of high byte flag is 0 then word is to be inlinned
-  dpop_           # ( xt )
+  pop_                 # ( xt )
   jne DO_COMPILEXT
     # not a call so disable tail call optimization
     call CALLOFF
@@ -89,7 +89,7 @@ Forthword_ COMPILEXT, 0, "cxt"
 
 DO_COMPILEXT:
   # calculate relative distance in words from start to dest
-  dpush_
+  push_
   call CP              # ( xt cp )
   call RELDST          # ( distance )
   # fall through into CALLC
@@ -102,12 +102,12 @@ Forthword_ CALLC, 0, "call,"
   # call is an 8 bit instruction with a 32 bit 2's compliment offset
   # bit pattern:
   #
-  dpush_
-  dolit_ 0xe8
+  push_
+  lit_ 0xe8
   call COMMA           # ( dist )
-  dpop_
+  pop_
   # adjust rel distance to account for instruction length of call
-  dolit_ 5
+  lit_ 5
   minus_
   # store offset
   jmp DWCOMMA
@@ -116,11 +116,11 @@ Forthword_ CALLC, 0, "call,"
 # ( n -- )
 Forthword_ LIT, 0, "lit"
   # compile dup_
-  dolit_ 0x89fc5b8d
+  lit_ 0x89fc5b8d
   call DWCOMMA
-  dolit_ 0x03
+  lit_ 0x03
   call COMMA
-  dolit_ 0xb8
+  lit_ 0xb8
   call COMMA
   # store 32 bit val from tos
   jmp DWCOMMA

@@ -4,7 +4,7 @@
 # execute XT
 Forthword_ EXEC, 0, "exec"
   rpush_
-  dpop_
+  pop_
   ret
 
 # ( xt -- )
@@ -16,52 +16,108 @@ Forthword_ NOOP, INLINE_OPT, "noop"
 #@@@@@@@@@@@@@ Parameter Stack  Manipulation @@@@@@@@@@@@@@
 
 # ( n -- n n )
-# duplicate TOS
-Forthword_ DPUSH, INLINE_OPT, "dpush"
-  dpush_
+# duplicate WR
+Forthword_ DPUSH, INLINE_OPT, "push"
+  push_
   ret  
   
 # ( n1 -- [ n1 n1 ] | 0)
-# duplicate TOS if non-zero
-Forthword_ QDUP, 0, "?dpush"
+# duplicate WR if non-zero
+Forthword_ QDUP, 0, "?push"
 	iszero_
 	je PFA_QDUP1	
-	dpush_
+	push_
 PFA_QDUP1:
 	ret
 
 # ( n2 n1 -- n2 n2 )
-#   d0 TOS
-# fetch datastack[0] and place in TOS register
+#   d0 WR
+# fetch datastack[0] and place in WR register
 Forthword_ D0, INLINE_OPT, "d0"
   d0_
   ret
   
 # ( n3 n2 n1 -- n3 n2 n3 )
-#   d1 d0 TOS
-# fetch datastack[1] and place in TOS register
+#   d1 d0 WR
+# fetch datastack[1] and place in WR register
 Forthword_ D1, INLINE_OPT, "d1"
   d1_
   ret
   
 # ( n4 n3 n2 n1 -- n4 n3 n2 n4 )
-#   d2 d1 d0 TOS
-# fetch datastack[2] and place in TOS register
+#   d2 d1 d0 WR
+# fetch datastack[2] and place in WR register
 Forthword_ D2, INLINE_OPT, "d2"
   d2_
   ret
   
-# ( n1 n2 -- n2 n1)
+# ( n2 n1 -- n2 n1 ) A: n2
+#   d0 WR
+# fetch datastack[0] and store in A register
+Forthword_ D0_STR_A, INLINE_OPT, "d0!a"
+  d0_str_a_
+  ret
+  
+# ( n2 n1 -- n2 n1 ) B: n2
+#   d0 WR
+# fetch datastack[0] and store in B register
+Forthword_ D0_STR_B, INLINE_OPT, "d0!b"
+  d0_str_b_
+  ret
+  
+# ( n2 n1 -- n2 n1 ) X: n2
+#   d0 WR
+# fetch datastack[0] and store in X register
+Forthword_ D0_STR_X, INLINE_OPT, "d0!x"
+  d0_str_x_
+  ret
+  
+# ( n2 n1 -- n2 n1 ) Y: n2
+#   d0 WR
+# fetch datastack[0] and store in Y register
+Forthword_ D0_STR_Y, INLINE_OPT, "d0!y"
+  d0_str_y_
+  ret
+  
+# ( ?  n1 -- n1 n2 ) A: n1
+#   d0 WR
+# fetch A register and store in d0 stack position
+Forthword_ A_STR_D0, INLINE_OPT, "a!d0"
+  a_str_d0_
+  ret
+  
+# ( ?  n1 -- n1 n2 ) B: n1
+#   d0 WR
+# fetch B register and store in d0 stack position
+Forthword_ B_STR_D0, INLINE_OPT, "b!d0"
+  b_str_d0_
+  ret
+  
+# ( ?  n1 -- n1 n2 ) X: n1
+#   d0 WR
+# fetch X register and store in d0 stack position
+Forthword_ X_STR_D0, INLINE_OPT, "x!d0"
+  x_str_d0_
+  ret
+  
+# ( ?  n1 -- n1 n2 ) Y: n1
+#   d0 WR
+# fetch y register and store in d0 stack position
+Forthword_ Y_STR_D0, INLINE_OPT, "y!d0"
+  y_str_d0_
+  ret
+  
+# ( n1 n2 -- n2 n1 ) Y: d0
 # swaps the two top level stack cells
 Forthword_ SWAP, INLINE_OPT, "swap"
   swap_
   ret
 
 # ( n1 n2 -- n2)
-# drop NOS, one before TOS.
+# drop NOS, one before WR.
 # same as SWAP DROP
-Forthword_ DNIP, INLINE_OPT, "dnip"
-  dnip_ 
+Forthword_ DNIP, INLINE_OPT, "nip"
+  nip_ 
   ret
   
 # ( x1 x2 -- x1 x2 x1 )
@@ -77,15 +133,15 @@ Forthword_ TWOOVER, 0, "2over"
   jmp OVER
 
 # ( n1 n2 -- n1)
-# drop TOS
-Forthword_ DDOP, INLINE_OPT, "dpop"
-  dpop_
+# drop WR
+Forthword_ DDOP, INLINE_OPT, "pop"
+  pop_
   ret
 
 # ( n n -- )
-# drop TOS twice
-Forthword_ DPOP2, INLINE_OPT, "dpop2"
-  dpop2_
+# drop WR twice
+Forthword_ DPOP2, INLINE_OPT, "pop2"
+  pop2_
   ret
 
 
@@ -104,7 +160,7 @@ Forthword_ SP_STORE, INLINE_OPT, "!sp"
 #@@@@@@@@@@@@@ Return Stack @@@@@@@@@@@@@
 
 # ( n1 -- n2 ) (R: n2 --)
-# move TOR to TOS
+# move TOR to WR
 Forthword_ RPOP, INLINE_OPT, "rpop"
 	rpop_
 	ret
@@ -116,32 +172,32 @@ Forthword_ RPOPNOS, INLINE_OPT, "rnip"
 	ret
 
 # ( n -- ) (R: -- n)
-# move TOS to TOR
+# copy WR to TOR
 Forthword_ RPUSH, INLINE_OPT, "rpush"
 	rpush_
 	ret
 
 # ( -- n) (R: n -- n )
-# put a copy of TOR on TOS
-Forthword_ R0FETCH, INLINE_OPT, "r0"
+# put a copy of TOR in WR
+Forthword_ R0, INLINE_OPT, "r0"
 	r0_
 	ret
 
 # ( -- n1 ) (R: n1 n2 -- n1 n2 )
-# put a copy of R1 on TOS
-Forthword_ R1FETCH, INLINE_OPT, "r1"
+# put a copy of R1 in WR
+Forthword_ R1, INLINE_OPT, "r1"
 	r1_
 	ret
 
 # ( -- n1 ) (R: n1 n2 n3 -- n1 n2 n3 )
-# put a copy of R2 on TOS
-Forthword_ R2FETCH, INLINE_OPT, "r2"
+# put a copy of R2 in WR
+Forthword_ R2, INLINE_OPT, "r2"
 	r2_
 	ret
 
 # (  -- n)
 # current return stack pointer address
-Forthword_ RP_FETCH, INLINE_OPT, "rp"
+Forthword_ RP, INLINE_OPT, "rp"
 	rp_
 	ret
 
@@ -188,7 +244,7 @@ Forthword_ MINUS, INLINE_OPT, "-"
 # ( u1|n1 u2|n2 -- u3|n3 )
 # signed multiply 32b x 32b = 32b
 Forthword_ MULU, INLINE_OPT,  "*"
-  d0popd_
+  popy_
   imul %edx, %eax 
   ret
 
@@ -218,7 +274,7 @@ Forthword_ XOR, INLINE_OPT, "xor"
   ret
 
 # ( n1 -- n2)
-# 1-complement of TOS
+# 1-complement of WR
 Forthword_ NOT, INLINE_OPT, "not"
   not_
   ret
@@ -230,10 +286,10 @@ Forthword_ NOTEQUAL, INLINE_OPT, "<>"
   ret
 
 # ( n1 n2 -- flag )
-# flag is true if TOS and NOS are equal
+# flag is true if WR and NOS are equal
 Forthword_ EQUAL, 0, "="
   sub (%ebx), %eax
-  dnip_
+  nip_
   sub $1, %eax
   sbb %eax, %eax
   ret
@@ -242,7 +298,7 @@ Forthword_ EQUAL, 0, "="
 # flag is true if n1 is less than n2
 Forthword_ LESS, 0, "<"
   cmp %eax, (%ebx)
-  dnip_
+  nip_
   jge 1f
   zero_
   not_
@@ -256,7 +312,7 @@ Forthword_ LESS, 0, "<"
 Forthword_ GREATER, 0, ">"
            # Get x1 into a register.
   cmp %eax, (%ebx)  # Is x2 greater?
-  dnip_
+  nip_
 GREATER_CHK:
   jle 1f
   zero_
@@ -343,7 +399,7 @@ Forthword_ ZEROGREATER, 0, "0>"
 # ( u1 u2 -- flag )
 # flag is true if u1 > u2 (unsigned)
 Forthword_ UGREATER, 0, "u>"
-  d0popd_
+  popy_
   sub %edx, %eax
   sbb %eax, %eax
   ret
@@ -351,57 +407,81 @@ Forthword_ UGREATER, 0, "u>"
 # ( u1 u2 -- flag)
 # flag is true if u1 < u2 (unsigned)
 Forthword_ ULESS, 0, "u<"
-  d0popd_
+  popy_
   sub %eax, %edx
-# TOS = a-b  -- carry set if a is less than b
+# WR = a-b  -- carry set if a is less than b
   sbb %edx, %edx
   mov %edx, %eax
   ret
 
 # ( n1 -- flag)
-# flag is true if TOS is less than zero
+# flag is true if WR is less than zero
 forthword_ ZEROLESS, INLINE_OPT, "0<"
   zeroless_
   ret
 
 # ( -- 0 )
-# set TOS to 0
+# set WR to 0
 Forthword_ ZERO, INLINE_OPT, "0"
 	zero_
 	ret
 
+# ( -- ) A: 0
+# set A to 0
+Forthword_ ZEROA, INLINE_OPT, "0!a"
+	zero_a_
+	ret
+
+# ( -- ) B: 0
+# set B to 0
+Forthword_ ZEROB, INLINE_OPT, "0!b"
+	zero_b_
+	ret
+
+# ( -- ) X: 0
+# set X to 0
+Forthword_ ZEROX, INLINE_OPT, "0!x"
+	zero_x_
+	ret
+
+# ( -- ) Y: 0
+# set Y to 0
+Forthword_ ZEROY, INLINE_OPT, "0!y"
+	zero_y_
+	ret
+
 # ( n -- n)
-# test TOS if zero, does not consume TOS
+# test WR if zero, does not consume WR
 Forthword_ ISZERO, INLINE_OPT, "0?"
 	iszero_
 	ret
   
 # ( -- -1 )
-# leaves the value -1 (true) on TOS
+# leaves the value -1 (true) in WR
 Forthword_ TRUE, INLINE_OPT, "true"
   true_
   ret
 
 # ( -- 1 )
-# place a value 1 on TOS
+# place a value 1 in WR
 Forthword_ ONE, INLINE_OPT, "1"
   one_
   ret
 
 # ( -- 2 )
-# place a value 2 on TOS
+# place a value 2 in WR
 Forthword_ TWO, INLINE_OPT, "2"
   two_
   ret
 
 # ( -- 4 )
-# place a value 4 on TOS
+# place a value 4 in WR
 Forthword_ FOUR, INLINE_OPT, "4"
   four_
   ret
 
 # ( -- 10 )
-# place a value 10 on TOS
+# place a value 10 in WR
 Forthword_ TEN, INLINE_OPT, "10"
   ten_
   ret
@@ -516,39 +596,54 @@ Forthword_ ONEPLUS_CSTR, INLINE_OPT, "1+c!"
   ret
   
 # ( n -- n ) A: n
-# copy TOS to A register
+# copy WR to A register
 Forthword_ STR_A, INLINE_OPT, "!a"
   str_a_
   ret
 
 # ( n -- n ) B: n
-# copy TOS to B register
+# copy WR to B register
 Forthword_ STR_B, INLINE_OPT, "!b"
   str_b_
   ret
 
+# ( n1 -- n1 ) X: n1
+#   WR
+# copy WR register to X register
+Forthword_ STR_X, INLINE_OPT, "!x"
+  str_x_
+  ret
+  
+# ( n1 -- n1 ) Y: n1
+#   WR
+# copy WR register to Y register
+Forthword_ STR_Y, INLINE_OPT, "!y"
+  str_y_
+  ret
+  
+
 # ( -- n )
-# read the A register
+# copy A register to WR
 Forthword_ A_, INLINE_OPT, "a"
   a_
   ret
 
 # ( -- n )
-# read the B register
+# copy B register to WR
 Forthword_ B_, INLINE_OPT, "b"
   b_
   ret
 
 # ( -- n )
-# read the C register (Extended VM)
-Forthword_ C_, INLINE_OPT, "c"
-  c_
+# copy X register to WR
+Forthword_ X_, INLINE_OPT, "x"
+  x_
   ret
 
 # ( -- n )
-# read the D register (Extended VM)
-Forthword_ d_, INLINE_OPT, "d"
-  d_
+# copy the Y register to WR
+Forthword_ Y_, INLINE_OPT, "y"
+  y_
   ret
 
 # ( -- n )
@@ -620,5 +715,5 @@ Forthword_ MCPY, 0, "mcpy"
 	rep movsb
 	
 MCPY_END:
-  dnip2_
+  nip2_
   ret

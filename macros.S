@@ -58,11 +58,11 @@
   pushl %edi
 .endm
 
-.macro rpushc_
+.macro rpushx_
   pushl %ecx
 .endm
 
-.macro rpushd_
+.macro rpushy_
   pushl %edx
 .endm
 
@@ -94,11 +94,11 @@
   popl %edi
 .endm
 
-.macro rpopc_ 
+.macro rpopx_ 
   popl %ecx
 .endm
 
-.macro rpopd_ 
+.macro rpopy_ 
   popl %edx
 .endm
 
@@ -122,11 +122,11 @@
   movl (%esp), %edi
 .endm
 
-.macro r0_str_c_
+.macro r0_str_x_
   movl (%esp), %ecx
 .endm
 
-.macro r0_str_d_
+.macro r0_str_y_
   movl (%esp), %edx
 .endm
 
@@ -142,11 +142,11 @@
   movl %edi, (%esp)
 .endm
 
-.macro c_str_r0_
+.macro x_str_r0_
   movl %ecx, (%esp)
 .endm
 
-.macro d_str_r0_
+.macro y_str_r0_
   movl %edx, (%esp)
 .endm
 
@@ -162,11 +162,11 @@
   movl %edi, 4(%esp)
 .endm
 
-.macro c_str_r1_
+.macro x_str_r1_
   movl %ecx, 4(%esp)
 .endm
 
-.macro d_str_r1_
+.macro y_str_r1_
   movl %edx, 4(%esp)
 .endm
 
@@ -182,11 +182,11 @@
   movl %edi, 8(%esp)
 .endm
 
-.macro c_str_r2_
+.macro x_str_r2_
   movl %ecx, 8(%esp)
 .endm
 
-.macro d_str_r2_
+.macro y_str_r2_
   movl %edx, 8(%esp)
 .endm
 
@@ -242,11 +242,11 @@
   mov %edi, (%ebx)
 .endm
 
-.macro c_str_d0_
+.macro x_str_d0_
   mov %ecx, (%ebx)
 .endm
 
-.macro d_str_d0_
+.macro y_str_d0_
   mov %edx, (%ebx)
 .endm
 
@@ -258,11 +258,11 @@
   mov %edi, 4(%ebx)
 .endm
 
-.macro c_str_d1_
+.macro x_str_d1_
   mov %ecx, 4(%ebx)
 .endm
 
-.macro d_str_d1_
+.macro y_str_d1_
   mov %edx, 4(%ebx)
 .endm
 
@@ -274,11 +274,11 @@
   mov %edi, 8(%ebx)
 .endm
 
-.macro c_str_d2_
+.macro x_str_d2_
   mov %ecx, 8(%ebx)
 .endm
 
-.macro d_str_d2_
+.macro y_str_d2_
   mov %edx, 8(%ebx)
 .endm
 
@@ -306,68 +306,102 @@
   movl 8(%ebx), %edi
 .endm
 
-.macro d0_str_c_ 
+.macro d0_str_x_ 
   movl (%ebx), %ecx
 .endm
 
-.macro d1_str_c_ 
+.macro d1_str_x_ 
   movl 4(%ebx), %ecx
 .endm
 
-.macro d2_str_c_ 
+.macro d2_str_x_ 
   movl 8(%ebx), %ecx
 .endm
 
-.macro d0_str_d_ 
+.macro d0_str_y_ 
   movl (%ebx), %edx
 .endm
 
-.macro d1_str_d_ 
+.macro d1_str_y_ 
   movl 4(%ebx), %edx
 .endm
 
-.macro d2_str_d_ 
+.macro d2_str_y_ 
   movl 8(%ebx), %edx
 .endm
 
-.macro dtop1_ # move stack pointer down one cell
+.macro top1_ # move stack pointer down one cell
   leal -4(%ebx), %ebx
 .endm
 
-.macro dtop2_ # move stack pointer down two cells
+.macro top2_ # move stack pointer down two cells
   leal -8(%ebx), %ebx
 .endm
 
-.macro dtop3_ # move stack pointer down three cells
+.macro top3_ # move stack pointer down three cells
   leal -12(%ebx), %ebx
 .endm
 
-
-.macro dpush_ # save tos on data stack
-  dtop1_
+.macro push_ # save WR on data stack
+  top1_
   str_d0_
 .endm
 
-.macro dnip_
+.macro pusha_ # save a on data stack
+  top1_
+  a_str_d0_
+.endm
+
+.macro pushb_ # save b on data stack
+  top1_
+  b_str_d0_
+.endm
+
+.macro pushx_ # save x on data stack
+  top1_
+  x_str_d0_
+.endm
+
+.macro pushy_ # save y on data stack
+  top1_
+  y_str_d0_
+.endm
+
+.macro nip_
   leal 4(%ebx), %ebx
 .endm
 
-.macro dnip2_
+.macro nip2_
   leal 8(%ebx), %ebx
 .endm
 
-.macro dnip3_
+.macro nip3_
   leal 12(%ebx), %ebx
 .endm
 
-.macro dpop_ # load tos from stack, increment stack pointer
+.macro pop_ # load WR from stack, increment stack pointer
   d0_
-  dnip_
+  nip_
 .endm
 
-.macro d0popd_
-  d0_str_d_
-  dnip_
+.macro popy_
+  d0_str_y_
+  nip_
+.endm
+
+.macro popa_
+  d0_str_a_
+  nip_
+.endm
+
+.macro popb_
+  d0_str_b_
+  nip_
+.endm
+
+.macro popx_
+  d0_str_x_
+  nip_
 .endm
 
 # test with bit constant
@@ -376,13 +410,13 @@
 .endm
 
 .macro swap_
-  d0_str_d_
+  d0_str_y_
   str_d0_
-  d_
+  y_
 .endm
 
 .macro over_
-  dpush_
+  push_
   d1_
 .endm
 
@@ -394,19 +428,19 @@
   movl %eax, %ebx
 .endm
 
-.macro dpop2_
-  dnip_
-  dpop_
+.macro pop2_
+  nip_
+  pop_
 .endm
 
 .macro plus_
-  d0popd_
+  popy_
   addl %edx, %eax
 .endm
 
 .macro minus_
-  str_d_
-  dpop_
+  str_y_
+  pop_
   sub %edx, %eax
 .endm
 
@@ -416,17 +450,17 @@
 
 .macro and_
   and (%ebx), %eax
-  dnip_
+  nip_
 .endm
 
 .macro or_
   or (%ebx), %eax
-  dnip_
+  nip_
 .endm
 
 .macro xor_
   xor (%ebx), %eax
-  dnip_
+  nip_
 .endm
 
 .macro not_
@@ -439,7 +473,7 @@
 .endm
 
 # Push constant on datastack
-.macro dolit_ val
+.macro lit_ val
   movl $\val, %eax
 .endm
 
@@ -495,11 +529,11 @@
   or %edi, %edi
 .endm
 
-.macro c_iszero_
+.macro x_iszero_
   or %ecx, %ecx
 .endm
 
-.macro d_iszero_
+.macro y_iszero_
   or %edx, %edx
 .endm
 
@@ -519,11 +553,11 @@
   xor %edi, %edi 
 .endm
 
-.macro zero_c_
+.macro zero_x_
   xor %ecx, %ecx
 .endm
 
-.macro zero_d_
+.macro zero_y_
   xor %edx, %edx
 .endm
 
@@ -533,23 +567,23 @@
 .endm
 
 .macro one_
-  dolit_ 1
+  lit_ 1
 .endm
 
 .macro two_
-  dolit_ 2
+  lit_ 2
 .endm
 
 .macro four_
-  dolit_ 4
+  lit_ 4
 .endm
 
 .macro ten_
-  dolit_ 10
+  lit_ 10
 .endm
 
 .macro bl_
-  dolit_ 32
+  lit_ 32
 .endm
 
 .macro true_
@@ -557,14 +591,14 @@
 .endm
 
 .macro lshift_
-  str_c_
-  dpop_
+  str_x_
+  pop_
   shl %cl, %eax
 .endm
 
 .macro rshift_
-  str_c_
-  dpop_
+  str_x_
+  pop_
   shr %cl, %eax
 .endm
 
@@ -573,7 +607,7 @@
 .endm
 
 .macro store_
-  d0popd_
+  popy_
   movl %edx, (%eax)
 .endm
 
@@ -583,7 +617,7 @@
 .endm
 
 .macro plus_str_
-  d0_str_d_
+  popy_
   addl  %edx, (%eax)   
 .endm
 
@@ -600,7 +634,7 @@
 .endm
 
 .macro hstore_
-  d0popd_
+  popy_
   movw %dx, (%eax)     
 .endm
 
@@ -609,7 +643,7 @@
 .endm
 
 .macro plus_hstr_
-  d0popd_
+  popy_
   addw %dx, (%eax)
 .endm
 
@@ -622,7 +656,7 @@
 .endm
 
 .macro cstr_
-  d0popd_
+  popy_
   movb %dl, (%eax)
 .endm
 
@@ -631,7 +665,7 @@
 .endm
 
 .macro plus_cstr_
-  d0popd_
+  popy_
   addb %dl, (%eax)
 .endm
 
@@ -647,11 +681,11 @@
   mov %eax, %edi
 .endm
 
-.macro str_c_
+.macro str_x_
   mov %eax, %ecx
 .endm
 
-.macro str_d_
+.macro str_y_
   mov %eax, %edx
 .endm
 
@@ -663,11 +697,11 @@
   mov %edi, %eax
 .endm
 
-.macro c_
+.macro x_
   mov %ecx, %eax
 .endm
 
-.macro d_
+.macro y_
   mov %edx, %eax
 .endm
 

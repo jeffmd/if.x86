@@ -49,7 +49,7 @@ Forthword_ DP, 0, "dp"
 # ( offset -- )
 # add offset to (dictionary pointer) DP
 Forthword_ DPPLUS, 0, "dp+"
-  dpush_
+  push_
   call DPSHARP
   jmp PLUS_STR
 
@@ -74,7 +74,7 @@ Forthword_ CP, 0, "cp"
 # ( offset -- cp#)
 # add offset to (code pointer) CP
 Forthword_ CPPLUS, 0, "cp+"
-  dpush_
+  push_
   call CPSHARP
   jmp PLUS_STR
 
@@ -122,11 +122,11 @@ CHECK_LAST_IS_CALL:
 
 TAIL_CALL_OPTIMIZE:
   # replace CP - 5 byte instruction with 0xe9
-  dolit_ 0xe9        # ( 0xe9 )
-  dpush_             # ( 0xe9 0xe9 )
+  lit_ 0xe9        # ( 0xe9 )
+  push_              # ( 0xe9 0xe9 )
   call CP            # ( 0xe9 CP )
   sub $5, %eax       # ( 0xe9 CP-5 )
-  cstr_            # ( CP-5 )
+  cstr_              # ( CP-5 )
   # clear last is call flag in fflags
   andw $~(1 << LAST_IS_CALL_FB), fflags
   ret
@@ -140,14 +140,14 @@ Forthword_ UWID, 0, "uwid"
   je UWID_end
 
   # wid.word = smudge
-  dpush_       # ( xt xt )
+  push_        # ( xt xt )
   call CURRENT # ( xt CURRENT )
   fetch_       # ( xt wid )
   store_       # ( wid )
   #call CLRCACHE
   # set smudge to zero indicating no longer compiling a word
   call SMUDGE  # ( SMUDGE )
-  zero_str_   # ( SMUDGE )
+  zero_str_    # ( SMUDGE )
 UWID_end:
   ret
 
@@ -159,27 +159,27 @@ Forthword_ LBRACKET, IMMEDIATE_EN, "["
 
 
 # ( n -- )
-# store 8 bit value on TOS into code section ram at (code pointer) CP
+# store 8 bit value in WR into code section ram at (code pointer) CP
 Forthword_ COMMA, 0, ","
-  dpush_           # ( n n )
+  push_            # ( n n )
   call CP          # ( n CP )
-  cstr_          # ( CP )
+  cstr_            # ( CP )
   jmp CPPLUSONE    # 
 
 # ( n -- )
-# store double word 32 bit value on TOS into code section ram at (code pointer) CP
+# store double word 32 bit value in WR into code section ram at (code pointer) CP
 Forthword_ DWCOMMA, 0, "dw,"
-  dpush_
+  push_
   call CP
   store_
   four_
   jmp CPPLUS
 
 # ( n -- )
-# store 32 bit value on TOS into dictionary section ram at (dictionary pointer) DP
+# store 32 bit value in WR into dictionary section ram at (dictionary pointer) DP
 # automaticaly increment dp position by 4 bytes
 Forthword_ DPSTORE, 0, "dp!"
-  dpush_
+  push_
   call DP
   store_
   four_
@@ -193,21 +193,21 @@ Forthword_ COPYSTRING, 0, "copy$"
   d0_                # ( s-addr len len' len')
   b_hstr_
   bhplus_
-  d1_str_c_
+  d1_str_x_
   d2_str_a_          # ( s-addr ) A: addr
   cld
   rep movsb
   b_                 # ( s-addr+len )
-  dnip3_
+  nip3_
   ret
 
 # ( addr len len' -- )
 # copies a counted string with flags to program ram
 Forthword_ STRINGPROGSTORE, 0, "$cp!"
-  dpush_
+  push_
   call CP
   call COPYSTRING
-  dpush_
+  push_
   call CPSHARP
   store_
   ret
@@ -215,10 +215,10 @@ Forthword_ STRINGPROGSTORE, 0, "$cp!"
 # ( addr len len' -- )
 # copies a counted string with flags to dictionary ram
 Forthword_ STRINGDICTSTORE, 0, "$dp!"
-  dpush_
+  push_
   call DP
   call COPYSTRING
-  dpush_
+  push_
   call DPSHARP
   store_
   ret
@@ -253,15 +253,15 @@ FINDI_BEGIN:
 Forthword_ INLINE, 0, "inline"
   # find the ret instruction, want count to ret
   # count will be number of bytes to inline
-  dpush_                   # ( start start )
-  dolit_ 0xc3              # ( start 0xc3 )
+  push_                    # ( start start )
+  lit_ 0xc3              # ( start 0xc3 )
   call FINDB               # ( start count )
 
   # cp swap dup dp+ itoi
-  dpush_                   # ( start count count )
+  push_                    # ( start count count )
   call CP                  # ( start count cp )
   swap_                    # ( start cp count )
-  dpush_                   # ( start cp count count )
+  push_                    # ( start cp count count )
   call CPPLUS              # ( start cp count )
   jmp MCPY                 # ( )
 
@@ -280,14 +280,14 @@ Forthword_ NFATOXTF, 0, "nfa>xtf"
   iszero_                     # ( n )
   je NFATOXTF_EXIT
 
-  dpush_                      # ( nfa nfa )
+  push_                       # ( nfa nfa )
   hfetch_                     # ( nfa xtflags )
   rpush_                      # ( nfa xtflags) (R: xtflags)
-  dpop_                       # ( nfa )
+  pop_                        # ( nfa )
   call NFA2LFA                # ( lfa )
   fourplus_   # lfa>xtlink    # ( xtlink )
   fetch_                      # ( xt )
-  dpush_                      # ( xt xt )
+  push_                       # ( xt xt )
   rpop_                       # ( xt xtflags )
 
 NFATOXTF_EXIT:
@@ -299,10 +299,10 @@ NFATOXTF_EXIT:
 Forthword_ ONLY, IMMEDIATE_EN, "only"
   # forth vocab always takes slot 0
   one_                        # ( 1 )
-  dpush_                      # ( 1 1 )
-  dolit_ EE_FORTHWORDLIST     # ( 1 FLIST )
-  dpush_                      # ( 1 FLIST FLIST )
-  dpush_                      # ( 1 FLIST FLIST FLIST )
+  push_                       # ( 1 1 )
+  lit_ EE_FORTHWORDLIST     # ( 1 FLIST )
+  push_                       # ( 1 FLIST FLIST )
+  push_                       # ( 1 FLIST FLIST FLIST )
   call CURRENT                # ( 1 FLIST FLIST CURRENT )
   store_                      # ( 1 FLIST CURRENT )
   # make current also forth vocab

@@ -38,7 +38,12 @@ ram_CONTEXT: .space 4 * 10 # 10 wordlists max
 fflags: .space 2
 ram_dp: .space 4
 ram_cp: .space 4
-TOS: .space 4
+# interpreter register copy
+WR: .space 4
+RA: .space 4
+RB: .space 4
+RC: .space 4
+RD: .space 4
 rstack0: .space 4
 ram_handler: .space 4
 ram_sharptib: .space 2
@@ -107,7 +112,6 @@ Forthword_ COLD, 0, "cold"
   movl $sysvar_base, %ebp
   call WIPE
 	rp_
-	dpush_
 	call RP0
 	store_
   call WARM
