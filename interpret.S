@@ -456,7 +456,7 @@ FINDW_NEXT:
 Forthword_ DOSLIT, 0, "(slit)"
   # get return address to get string length, calculate string address start,
   # and calculate return address
-  rpop_          # ( raddr )  (R: raddr -- )
+  r0_            # ( raddr )  (R: raddr)
   push_          # ( raddr raddr )
   top1_          # ( raddr ? raddr )
   # get the string length
@@ -470,7 +470,7 @@ Forthword_ DOSLIT, 0, "(slit)"
   over_          # ( straddr slength straddr slength)
   plus_          # ( straddr slength straddr+slength )
   # also skip string length
-  rpush_         # ( straddr slength straddr+k ) (R: -- straddr+k )
+  str_r0_        # ( straddr slength straddr+k ) (R: straddr+k )
   pop_           # ( straddr slength )
   ret
 
