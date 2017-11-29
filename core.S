@@ -78,7 +78,28 @@ Forthword_ D1, INLINE_OPT, "d1"
 Forthword_ D2, INLINE_OPT, "d2"
   d2_
   ret
-  
+
+# ( n2 n1 -- n1 n1 )
+#   d0 WR
+# fetch WR register and place in datastack[0] 
+Forthword_ STR_D0, INLINE_OPT, "!d0"
+  str_d0_
+  ret
+    
+# ( n3 n2 n1 -- n1 n2 n1 )
+#   d1 d0 WR
+# fetch WR register and place in datastack[1] 
+Forthword_ STR_D1, INLINE_OPT, "!d1"
+  str_d1_
+  ret
+    
+# ( n4 n3 n2 n1 -- n1 n3 n2 n1 )
+#   d2 d1 d0 WR
+# fetch WR register and place in datastack[2] 
+Forthword_ STR_D2, INLINE_OPT, "!d2"
+  str_d2_
+  ret
+    
 # ( n2 n1 -- n2 n1 ) A: n2
 #   d0 WR
 # fetch datastack[0] and store in A register
