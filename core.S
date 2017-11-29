@@ -127,33 +127,145 @@ Forthword_ D0_STR_X, INLINE_OPT, "d0!x"
 Forthword_ D0_STR_Y, INLINE_OPT, "d0!y"
   d0_str_y_
   ret
+   
+# ( n3 n2 n1 -- n3 n2 n1 ) A: n3
+#   d1 d0 WR
+# fetch datastack[1] and store in A register
+Forthword_ D1_STR_A, INLINE_OPT, "d1!a"
+  d1_str_a_
+  ret
   
-# ( ?  n1 -- n1 n2 ) A: n1
+# ( n3 n2 n1 -- n3 n2 n1 ) B: n3
+#   d1 d0 WR
+# fetch datastack[1] and store in B register
+Forthword_ D1_STR_B, INLINE_OPT, "d1!b"
+  d1_str_b_
+  ret
+  
+# ( n3 n2 n1 -- n3 n2 n1 ) X: n3
+#   d1 d0 WR
+# fetch datastack[1] and store in X register
+Forthword_ D1_STR_X, INLINE_OPT, "d1!x"
+  d1_str_x_
+  ret
+  
+# ( n3 n2 n1 -- n3 n2 n1 ) Y: n3
+#   d1 d0 WR
+# fetch datastack[1] and store in Y register
+Forthword_ D1_STR_Y, INLINE_OPT, "d1!y"
+  d1_str_y_
+  ret
+  
+# ( n4 n3 n2 n1 -- n4 n3 n2 n1 ) A: n4
+#   d2 d1 d0 WR
+# fetch datastack[2] and store in A register
+Forthword_ D2_STR_A, INLINE_OPT, "d2!a"
+  d2_str_a_
+  ret
+  
+# ( n4 n3 n2 n1 -- n4 n3 n2 n1 ) B: n4
+#   d2 d1 d0 WR
+# fetch datastack[2] and store in B register
+Forthword_ D2_STR_B, INLINE_OPT, "d2!b"
+  d2_str_b_
+  ret
+  
+# ( n4 n3 n2 n1 -- n4 n3 n2 n1 ) X: n4
+#   d2 d1 d0 WR
+# fetch datastack[2] and store in X register
+Forthword_ D2_STR_X, INLINE_OPT, "d2!x"
+  d2_str_x_
+  ret
+  
+# ( n4 n3 n2 n1 -- n4 n3 n2 n1 ) Y: n4
+#   d2 d1 d0 WR
+# fetch datastack[2] and store in Y register
+Forthword_ D2_STR_Y, INLINE_OPT, "d2!y"
+  d2_str_y_
+  ret
+  
+# ( ?  n2 -- n1 n2 ) A: n1
 #   d0 WR
 # fetch A register and store in d0 stack position
 Forthword_ A_STR_D0, INLINE_OPT, "a!d0"
   a_str_d0_
   ret
   
-# ( ?  n1 -- n1 n2 ) B: n1
+# ( ?  n2 -- n1 n2 ) B: n1
 #   d0 WR
 # fetch B register and store in d0 stack position
 Forthword_ B_STR_D0, INLINE_OPT, "b!d0"
   b_str_d0_
   ret
   
-# ( ?  n1 -- n1 n2 ) X: n1
+# ( ?  n2 -- n1 n2 ) X: n1
 #   d0 WR
 # fetch X register and store in d0 stack position
 Forthword_ X_STR_D0, INLINE_OPT, "x!d0"
   x_str_d0_
   ret
   
-# ( ?  n1 -- n1 n2 ) Y: n1
+# ( ?  n2 -- n1 n2 ) Y: n1
 #   d0 WR
 # fetch y register and store in d0 stack position
 Forthword_ Y_STR_D0, INLINE_OPT, "y!d0"
   y_str_d0_
+  ret
+  
+# ( ?  ?  n1 -- n2 ? n1 ) A: n2
+#   d1 d0 WR
+# fetch A register and store in d1 stack position
+Forthword_ A_STR_D1, INLINE_OPT, "a!d1"
+  a_str_d1_
+  ret
+  
+# ( ?  ?  n1 -- n2 ?  n1 ) B: n2
+#   d1 d0 WR
+# fetch B register and store in d1 stack position
+Forthword_ B_STR_D1, INLINE_OPT, "b!d1"
+  b_str_d1_
+  ret
+  
+# ( ?  ?  n1 -- n2 ?  n1 ) X: n2
+#   d1 d0 WR
+# fetch X register and store in d1 stack position
+Forthword_ X_STR_D1, INLINE_OPT, "x!d1"
+  x_str_d1_
+  ret
+  
+# ( ?  ?  n1 -- n2 ?  n1 ) Y: n2
+#   d1 d0 WR
+# fetch y register and store in d1 stack position
+Forthword_ Y_STR_D1, INLINE_OPT, "y!d1"
+  y_str_d1_
+  ret
+  
+# ( ?  ?  ?  n1 -- n2 ?  ? n1 ) A: n2
+#   d2 d1 d0 WR
+# fetch A register and store in d2 stack position
+Forthword_ A_STR_D2, INLINE_OPT, "a!d2"
+  a_str_d2_
+  ret
+  
+# ( ?  ?  ?  n1 -- n2 ?  ? n1 ) B: n2
+#   d2 d1 d0 WR
+# fetch B register and store in d2 stack position
+Forthword_ B_STR_D2, INLINE_OPT, "b!d2"
+  b_str_d2_
+  ret
+  
+# ( ?  ?  ?  n1 -- n2 ?  ? n1 ) X: n2
+#   d2 d1 d0 WR
+# fetch X register and store in d2 stack position
+Forthword_ X_STR_D2, INLINE_OPT, "x!d2"
+  x_str_d2_
+  ret
+  
+# ( ?  ?  ?  n1 -- n2 ?  ? n1 ) Y: n2
+#   d2 d1 d0 WR
+# fetch y register and store in d2 stack position
+Forthword_ Y_STR_D2, INLINE_OPT, "y!d2"
+  y_str_d2_
   ret
   
 # ( n1 n2 -- n2 n1 ) Y: d0
@@ -428,6 +540,90 @@ Forthword_ R2_STR_Y, INLINE_OPT, "r2!y"
 	r2_str_y_
 	ret
 
+# (R: n2 -- n1 ) A: n1
+#     r0
+# fetch A register and store in r0 return stack position
+Forthword_ A_STR_R0, INLINE_OPT, "a!r0"
+  a_str_r0_
+  ret
+  
+# (R: n2 -- n1 ) B: n1
+#     r0
+# fetch B register and store in r0 return stack position
+Forthword_ B_STR_R0, INLINE_OPT, "b!r0"
+  b_str_r0_
+  ret
+  
+# (R: n2 -- n1 ) X: n1
+#     r0
+# fetch X register and store in r0 return stack position
+Forthword_ X_STR_R0, INLINE_OPT, "x!r0"
+  x_str_r0_
+  ret
+  
+# (R: n2 -- n1 ) Y: n1
+#     r0
+# fetch y register and store in r0 return stack position
+Forthword_ Y_STR_R0, INLINE_OPT, "y!r0"
+  y_str_r0_
+  ret
+  
+# (R: ?  n1 -- n2 n1 ) A: n2
+#     r1 r0
+# fetch A register and store in r1 return stack position
+Forthword_ A_STR_R1, INLINE_OPT, "a!r1"
+  a_str_r1_
+  ret
+  
+# (R: ?  n1 -- n2 n1 ) B: n2
+#     r1 r0
+# fetch B register and store in r1 return stack position
+Forthword_ B_STR_R1, INLINE_OPT, "b!r1"
+  b_str_r1_
+  ret
+  
+# (R: ?  n1 -- n2 n1 ) X: n2
+#     r1 r0
+# fetch X register and store in r1 return stack position
+Forthword_ X_STR_R1, INLINE_OPT, "x!r1"
+  x_str_r1_
+  ret
+  
+# (R: ?  n1 -- n2 n1 ) Y: n2
+#     r1 r0
+# fetch y register and store in r1 return stack position
+Forthword_ Y_STR_R1, INLINE_OPT, "y!r1"
+  y_str_r1_
+  ret
+  
+# (R: ?  ?  n1 -- n2 ?  n1 ) A: n2
+#     r2 r1 r0
+# fetch A register and store in r2 return stack position
+Forthword_ A_STR_R2, INLINE_OPT, "a!r2"
+  a_str_r2_
+  ret
+  
+# (R: ?  ?  n1 -- n2 ?  n1 ) B: n2
+#     r2 r1 r0
+# fetch B register and store in r2 return stack position
+Forthword_ B_STR_R2, INLINE_OPT, "b!r2"
+  b_str_r2_
+  ret
+  
+# (R: ?  ?  n1 -- n2 ?  n1 ) X: n2
+#     r2 r1 r0
+# fetch X register and store in r2 return stack position
+Forthword_ X_STR_R2, INLINE_OPT, "x!R2"
+  x_str_r2_
+  ret
+  
+# (R: ?  ?  n1 -- n2 ?  n1 ) Y: n2
+#     r2 r1 r0
+# fetch y register and store in r2 return stack position
+Forthword_ Y_STR_R2, INLINE_OPT, "y!r2"
+  y_str_r2_
+  ret
+  
 # (  -- n)
 # current return stack pointer address
 Forthword_ RP, INLINE_OPT, "rp"

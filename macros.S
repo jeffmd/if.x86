@@ -416,11 +416,6 @@
   nip_
 .endm
 
-.macro popy_
-  d0_str_y_
-  nip_
-.endm
-
 .macro popa_
   d0_str_a_
   nip_
@@ -433,6 +428,11 @@
 
 .macro popx_
   d0_str_x_
+  nip_
+.endm
+
+.macro popy_
+  d0_str_y_
   nip_
 .endm
 
