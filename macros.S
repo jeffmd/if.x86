@@ -130,6 +130,38 @@
   movl (%esp), %edx
 .endm
 
+.macro r1_str_a_
+  movl 4(%esp), %esi
+.endm
+
+.macro r1_str_b_
+  movl 4(%esp), %edi
+.endm
+
+.macro r1_str_x_
+  movl 4(%esp), %ecx
+.endm
+
+.macro r1_str_y_
+  movl 4(%esp), %edx
+.endm
+
+.macro r2_str_a_
+  movl 8(%esp), %esi
+.endm
+
+.macro r2_str_b_
+  movl 8(%esp), %edi
+.endm
+
+.macro r2_str_x_
+  movl 8(%esp), %ecx
+.endm
+
+.macro r2_str_y_
+  movl 8(%esp), %edx
+.endm
+
 .macro str_r0_
   movl %eax, (%esp)
 .endm

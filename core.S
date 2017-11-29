@@ -323,6 +323,111 @@ Forthword_ R2, INLINE_OPT, "r2"
 	r2_
 	ret
 
+# ( n1 -- n1) (R: n2 -- n1 )
+#   WR            R0
+# put a copy of WR register into R0 on return stack
+Forthword_ STR_R0, INLINE_OPT, "!r0"
+	str_r0_
+	ret
+
+# ( n1 -- n1) (R: n3 n2 -- n1 n2 )
+#   WR            R1 R0
+# put a copy of WR register into R1 on return stack
+Forthword_ STR_R1, INLINE_OPT, "!r1"
+	str_r1_
+	ret
+
+# ( n1 -- n1) (R: n4 n3 n2 -- n1 n3 n2 )
+#   WR            R2 R1 R0
+# put a copy of WR register into R2 on return stack
+Forthword_ STR_R2, INLINE_OPT, "!r2"
+	str_r2_
+	ret
+
+# ( -- ) (R: n1 -- n1 ) A: n1
+#            R0
+# put a copy of R0 into A register
+Forthword_ R0_STR_A, INLINE_OPT, "r0!a"
+	r0_str_a_
+	ret
+
+# ( -- ) (R: n1 -- n1 ) B: n1
+#            R0
+# put a copy of R0 into B register
+Forthword_ R0_STR_B, INLINE_OPT, "r0!b"
+	r0_str_b_
+	ret
+
+# ( -- ) (R: n1 -- n1 ) X: n1
+#            R0
+# put a copy of R0 into X register
+Forthword_ R0_STR_X, INLINE_OPT, "r0!x"
+	r0_str_x_
+	ret
+
+# ( -- ) (R: n1 -- n1 ) Y: n1
+#            R0
+# put a copy of R0 into Y register
+Forthword_ R0_STR_Y, INLINE_OPT, "r0!y"
+	r0_str_y_
+	ret
+
+# ( -- ) (R: n2 n1 -- n2 n1 ) A: n2
+#            R1 R0
+# put a copy of R1 into A register
+Forthword_ R1_STR_A, INLINE_OPT, "r1!a"
+	r1_str_a_
+	ret
+
+# ( -- ) (R: n2 n1 -- n2 n1 ) B: n2
+#            R1 R0
+# put a copy of R0 into B register
+Forthword_ R1_STR_B, INLINE_OPT, "r1!b"
+	r1_str_b_
+	ret
+
+# ( -- ) (R: n2 n1 -- n2 n1 ) X: n2
+#            R1 R0
+# put a copy of R1 into X register
+Forthword_ R1_STR_X, INLINE_OPT, "r1!x"
+	r1_str_x_
+	ret
+
+# ( -- ) (R: n2 n1 -- n2 n1 ) Y: n2
+#            R1 R0
+# put a copy of R1 into Y register
+Forthword_ R1_STR_Y, INLINE_OPT, "r1!y"
+	r1_str_y_
+	ret
+
+# ( -- ) (R: n3 n2 n1 -- n3 n2 n1 ) A: n3
+#            R2 R1 R0
+# put a copy of R2 into A register
+Forthword_ R2_STR_A, INLINE_OPT, "r2!a"
+	r2_str_a_
+	ret
+
+# ( -- ) (R: n3 n2 n1 -- n3 n2 n1 ) B: n3
+#            R2 R1 R0
+# put a copy of R2 into B register
+Forthword_ R2_STR_B, INLINE_OPT, "r2!b"
+	r2_str_b_
+	ret
+
+# ( -- ) (R: n3 n2 n1 -- n3 n2 n1 ) X: n3
+#            R2 R1 R0
+# put a copy of R2 into X register
+Forthword_ R2_STR_X, INLINE_OPT, "r2!x"
+	r2_str_x_
+	ret
+
+# ( -- ) (R: n3 n2 n1 -- n3 n2 n1 ) Y: n3
+#            R2 R1 R0
+# put a copy of R2 into Y register
+Forthword_ R2_STR_Y, INLINE_OPT, "r2!y"
+	r2_str_y_
+	ret
+
 # (  -- n)
 # current return stack pointer address
 Forthword_ RP, INLINE_OPT, "rp"
