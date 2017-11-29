@@ -1076,7 +1076,7 @@ Forthword_ Y_, INLINE_OPT, "y"
   ret
 
 # ( -- n )
-# Read a word (32bit) from memory pointed to by register A (Extended VM)
+# Read a word (32bit) from memory pointed to by register A
 Forthword_ A_FETCH, INLINE_OPT, "a@"
   a_fetch_
   ret
@@ -1088,7 +1088,7 @@ Forthword_ A_STR, INLINE_OPT, "a!"
   ret
 
 # ( -- n )
-# Read a half word (32bit) from memory pointed to by register A (Extended VM)
+# Read a half word (32bit) from memory pointed to by register A
 Forthword_ A_HFETCH, INLINE_OPT, "ah@"
   a_hfetch_
   ret
@@ -1100,7 +1100,7 @@ Forthword_ A_HSTR, INLINE_OPT, "ah!"
   ret
 
 # ( -- n )
-# Read a byte from memory pointed to by register A (Extended VM)
+# Read a byte from memory pointed to by register A
 Forthword_ A_CFETCH, INLINE_OPT, "ac@"
   a_cfetch_
   ret
@@ -1112,22 +1112,132 @@ Forthword_ A_CSTORE, INLINE_OPT, "ac!"
   ret
 
 # ( -- )
-# update register A with post increment 4+ from last memory operation (Extended VM)
+# update register A with post increment 4+ from last memory operation
 Forthword_ APLUS, INLINE_OPT, "a+"
   aplus_
   ret
 
 # ( -- )
-# update register A with post increment 2+ from last memory operation (Extended VM)
+# update register A with post increment 2+ from last memory operation
 Forthword_ AHPLUS, INLINE_OPT, "ah+"
   ahplus_
   ret
 
 
 # ( -- )
-# update register A with post increment 1+ from last memory operation (Extended VM)
+# update register A with post increment 1+ from last memory operation
 Forthword_ ACPLUS, INLINE_OPT, "ac+"
   acplus_
+  ret
+
+# ( -- n )
+# Read a word (32bit) from memory pointed to by register B
+Forthword_ B_FETCH, INLINE_OPT, "b@"
+  b_fetch_
+  ret
+
+# ( n -- )
+# store a word to RAM address pointed to by b register
+Forthword_ B_STR, INLINE_OPT, "b!"
+  b_str_
+  ret
+
+# ( -- n )
+# Read a half word (32bit) from memory pointed to by register B
+Forthword_ B_HFETCH, INLINE_OPT, "bh@"
+  b_hfetch_
+  ret
+
+# ( h -- )
+# store a half word to RAM address pointed to by b reg
+Forthword_ B_HSTR, INLINE_OPT, "bh!"
+  b_hstr_
+  ret
+
+# ( -- n )
+# Read a byte from memory pointed to by register B
+Forthword_ B_CFETCH, INLINE_OPT, "bc@"
+  b_cfetch_
+  ret
+
+# ( c -- )
+# store a single byte to RAM address pointed to by B reg
+Forthword_ B_CSTORE, INLINE_OPT, "bc!"
+  b_cstr_
+  ret
+
+# ( -- )
+# update register B with post increment 4+ from last memory operation
+Forthword_ BPLUS, INLINE_OPT, "b+"
+  bplus_
+  ret
+
+# ( -- )
+# update register B with post increment 2+ from last memory operation
+Forthword_ BHPLUS, INLINE_OPT, "bh+"
+  bhplus_
+  ret
+
+
+# ( -- )
+# update register B with post increment 1+ from last memory operation
+Forthword_ BCPLUS, INLINE_OPT, "bc+"
+  bcplus_
+  ret
+
+# ( -- n )
+# Read a word (32bit) from memory pointed to by register X
+Forthword_ X_FETCH, INLINE_OPT, "x@"
+  x_fetch_
+  ret
+
+# ( n -- )
+# store a word to RAM address pointed to by x register
+Forthword_ X_STR, INLINE_OPT, "x!"
+  x_str_
+  ret
+
+# ( -- n )
+# Read a half word (32bit) from memory pointed to by register X
+Forthword_ X_HFETCH, INLINE_OPT, "xh@"
+  x_hfetch_
+  ret
+
+# ( h -- )
+# store a half word to RAM address pointed to by x reg
+Forthword_ X_HSTR, INLINE_OPT, "xh!"
+  x_hstr_
+  ret
+
+# ( -- n )
+# Read a byte from memory pointed to by register X
+Forthword_ X_CFETCH, INLINE_OPT, "xc@"
+  x_cfetch_
+  ret
+
+# ( c -- )
+# store a single byte to RAM address pointed to by X reg
+Forthword_ X_CSTORE, INLINE_OPT, "xc!"
+  x_cstr_
+  ret
+
+# ( -- )
+# update register X with post increment 4+ from last memory operation
+Forthword_ XPLUS, INLINE_OPT, "x+"
+  xplus_
+  ret
+
+# ( -- )
+# update register X with post increment 2+ from last memory operation
+Forthword_ XHPLUS, INLINE_OPT, "xh+"
+  xhplus_
+  ret
+
+
+# ( -- )
+# update register X with post increment 1+ from last memory operation
+Forthword_ XCPLUS, INLINE_OPT, "xc+"
+  xcplus_
   ret
 
 # (start dest count -- )
