@@ -8,7 +8,7 @@
 
 # ( -- state )
 # system state variable. 0 is interpret mode. Not 0 is compile mode
-Forthword_ STATEFETCH, 0, "state"
+Forthword_ STATE, 0, "state"
   user_ state
   hfetch_
   ret
@@ -156,8 +156,8 @@ CHECK_LAST_IS_CALL:
     jmp RET_C
 
 TAIL_CALL_OPTIMIZE:
-  # replace CP - 5 byte instruction with 0xe9
-  lit_ 0xe9        # ( 0xe9 )
+  # replace CP - 5 call instruction with 0xe9
+  lit_ 0xe9          # ( 0xe9 )
   push_              # ( 0xe9 0xe9 )
   call CP            # ( 0xe9 CP )
   sub $5, %eax       # ( 0xe9 CP-5 )
@@ -180,8 +180,7 @@ Forthword_ UWID, 0, "uwid"
   store_       # ( wid )
   #call CLRCACHE
   # set smudge to zero indicating no longer compiling a word
-  zero_        # ( 0 )
-  call SMUDGE_STR # ( SMUDGE )
+  call ZERO_SMUDGE_STR # ( SMUDGE )
 UWID_end:
   ret
 
@@ -254,31 +253,37 @@ Forthword_ STRINGDICTSTORE, 0, "$dp!"
   store_
   ret
 
-# ( start match -- start count )
-# match is the 8 bit value to search for in ram
-# start is the start address of the search in ram
-# the search goes up in ram address space
-# count is number of bytes to get to match value in ram
-# or get word index of match
-Forthword_ FINDB, 0, "findb"
+# ( source destination term -- count )
+# copy bytes from source to destination until match is made
+# term is the 8 bit value that terminates copy operation
+# source is the start address of the source in ram
+# destination is the start address of where memory is copied to
+# the copy/search goes up in ram address space
+# count is the number of bytes copied
+Forthword_ COPY_BYTE_UNTIL, 0, "copy.byte.until"
   # fetch from ram and check if equal to match byte
   rpusha_
   rpushb_
-  str_b_           # ( start match ) B: match
-  d0_str_a_        # ( start match ) A: start
+  str_x_             # ( source destination term ) X: term
+  d0_str_b_          # ( source destination match ) B: destination
+  d1_str_a_          # ( source destination match ) A: source
   # begin
-FINDI_BEGIN:
-    movsxb (%esi), %edx # ( start )
+CBU_BEGIN:
+    a_cfetch_        # ( source destination byte )
     acplus_
-    and $0xFF, %edx
-    cmp %edx, %edi    # ( start )
+    and $0xFF, %eax
+    cmp %eax, %ecx    
     # until
-    jne FINDI_BEGIN
+    je CBU_DONE
+    b_cstr_          # ( source destination byte ) [B]: byte
+    bcplus_          # ( source destination byte ) B+1
+    jmp CBU_BEGIN
 
-  a_               # ( start end )
-  oneminus_        # ( start end-1 )
-  over_            # ( start end-1 start )
-  minus_           # ( start count )
+CBU_DONE:
+  d0_                # ( source destination destination )
+  b_str_d0_          # ( source destination+count destination )
+  minus_             # ( source count )
+  nip_               # ( count )
   rpopb_
   rpopa_
   ret
@@ -289,16 +294,11 @@ Forthword_ INLINE, 0, "inline"
   # find the ret instruction, want count to ret
   # count will be number of bytes to inline
   push_                    # ( start start )
-  lit_ 0xc3                # ( start 0xc3 )
-  call FINDB               # ( start count )
-
-  # cp swap dup dp+ itoi
-  push_                    # ( start count count )
-  call CP                  # ( start count cp )
-  swap_                    # ( start cp count )
-  push_                    # ( start cp count count )
-  call CPPLUS              # ( start cp count )
-  jmp MCPY                 # ( )
+  call CP                  # ( start cp )
+  push_                    # ( start cp cp )
+  lit_ 0xc3                # ( start cp 0xc3 )
+  call COPY_BYTE_UNTIL     # ( count )
+  jmp CPPLUS
 
 # ( nfa -- lfa )
 # get the link field address from the name field address

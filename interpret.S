@@ -102,11 +102,15 @@ Forthword_ BL, INLINE_OPT, "bl"
   bl_
   ret
 
+# ( -- )
+# ignore remaining text to end of line
 Forthword_ COMMENt, IMMEDIATE_EN, "\\"
+  push_      # preserve WR
   call STIB
   str_d0_
-  call G_IN
+  call G_IN  # skip to end of input buffer
   hstore_
+  pop_      
   ret
 
 # ( -- key )
@@ -500,7 +504,7 @@ Forthword_ REC_NUM, 0, "rec#"
   iszero_
   je REC_NONUMBER
     rnip2_                 # ( n f )
-    call STATEFETCH        # ( n state )
+    call STATE             # ( n state )
     iszero_
     je REC_NUMBER_OK
       pop_
@@ -543,7 +547,7 @@ REC_WORD_FOUND:
   #    rjmp CHECK_IMMEDIATE
 
 CHECK_COMPILE_ONLY:
-#    bl STATEFETCH
+#    bl STATE
 #    zerosense_
 #    bne.n CHECK_IMMEDIATE
         # word can only be used in compile state
@@ -562,11 +566,13 @@ CHECK_IMMEDIATE:
 
 REC_WORD_CHECKSTATE:
     # check state
-    call STATEFETCH
+    push_            # ( xt flag flag )
+    call STATE       # ( xt flag state )
     iszero_
+    pop_             # ( xt flag )
     je REC_WORD_EXECUTE
       # in compile mode so compile xt
-      call COMPILEXT
+      call COMPILEXT # ( ? )
       true_
       ret
 
@@ -660,7 +666,7 @@ Forthword_ PROMPTERROR, 0, ".??"
 # ( -- )
 # check if a ready prompt is required
 Forthword_ QP_RD, 0, "?prd"
-  call STATEFETCH
+  call STATE
   # output ready prompt if in interpret mode
   # <-if>
   iszero_

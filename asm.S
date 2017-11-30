@@ -35,17 +35,15 @@ Forthword_ JUMPS, 0, "jmps"
 # ( reldist -- )
 # reldist: relative distance as 2's compliment
 Forthword_ JMP_COMMA, 0, "jmp,"
-  push_
-	call CALLOFF
 	call JUMP            # ( rellong jumpinst )
 	call COMMA           # ( rellong ? )
   pop_                 # ( rellong )
-	jmp DWCOMMA          # ( ? )
+	call DWCOMMA         # ( ? )
+	jmp CALLOFF
 
 # compile jump at start address
 # ( start dest -- )
 Forthword_ JMPC, 0, "jmpc"
-  call TAILOPTOFF
   over_                # ( start dest start )
   call RELDST          # ( start reldst )
   call JUMP            # ( start rellong jumpinst )
@@ -55,7 +53,7 @@ Forthword_ JMPC, 0, "jmpc"
   oneplus_             # ( start rellong start+1 )
   store_               # ( start start+1 )
   pop_                 # ( start )
-  ret
+  jmp TAILOPTOFF
 
 # conditional jump over a jmp if not zero
 # ( -- )
@@ -81,15 +79,14 @@ Forthword_ COMPILEXT, 0, "cxt"
   # should word be inlinned?
 	test $(INLINE_OPT << 8), %eax
 	# if bit 0 of high byte flag is 0 then word is to be inlinned
-  pop_                 # ( xt )
   jne DO_COMPILEXT
     # not a call so disable tail call optimization
-    call CALLOFF
+    call CALLOFF       # ( xt ? )
+    pop_               # ( xt )
     jmp INLINE
 
 DO_COMPILEXT:
   # calculate relative distance in words from start to dest
-  push_
   call CP              # ( xt cp )
   call RELDST          # ( distance )
   # fall through into CALLC
@@ -102,25 +99,21 @@ Forthword_ CALLC, 0, "call,"
   # call is an 8 bit instruction with a 32 bit 2's compliment offset
   # bit pattern:
   #
-  push_
-  lit_ 0xe8
-  call COMMA           # ( dist )
-  pop_
+  push_                # ( dist dist )
+  lit_ 0xe8            # ( dist 0xe8 )
+  call COMMA           # ( dist ? )
+  pop_                 # ( dist )
   # adjust rel distance to account for instruction length of call
-  lit_ 5
-  minus_
+  sub $5, %eax         # ( dist-5 )
   # store offset
   jmp DWCOMMA
 
 # compile top of stack as inlinned immediate 32 bit constant
 # ( n -- )
 Forthword_ LIT, 0, "lit"
-  # compile dup_
-  lit_ 0x89fc5b8d
-  call DWCOMMA
-  lit_ 0x03
-  call COMMA
+  push_
   lit_ 0xb8
   call COMMA
+  pop_
   # store 32 bit val from tos
   jmp DWCOMMA
