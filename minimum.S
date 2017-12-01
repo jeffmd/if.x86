@@ -586,7 +586,7 @@ Forthword_ INCLUDEF, 0, "include"
 Forthword_ DOCMDARG, 0, "docmdarg"
   call ARGCADDR      # ( ARGCADDR )
   fetch_             # ( ARGC )
-  push_             
+  push_              # ( ARGC ARGC )
   one_               # ( ARGC 1 )
   call GREATER       # ( flag )
   iszero_

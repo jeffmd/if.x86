@@ -129,7 +129,7 @@ Forthword_ KEYFILE, 0, "keyfile"
   call KEYFILEADDR         # ( 0 keyfile# )
   fetch_                   # ( 0 filedes )
   push_                    # ( 0 filedes ? )
-  leal 4(%ebx), %eax        # ( 0 filedes ebx+4 )
+  leal 4(%ebx), %eax       # ( 0 filedes ebx+4 )
   push_                    # ( 0 filedes ebx+4 ebx+4 )
   one_                     # ( 0 filedes ebx+4 1 )
   call READF               # ( key count )
@@ -138,7 +138,7 @@ Forthword_ KEYFILE, 0, "keyfile"
   one_                     # ( key count 1 )
   call EQUAL               # ( key flag )
   iszero_                  # ( key flag )
-  pop_
+  pop_                     # ( key )
   jne KEYEND
     oneminus_
     jmp BYE
@@ -799,9 +799,9 @@ Forthword_ QUIT, 0, "quit"
   call SP0
   str_sp_
   # reset return stack pointer
-  #call RP0
-  #fetch_
-  #str_rp_
+  call RP0
+  fetch_
+  str_rp_
   call RESET
   jmp DOTASKS
 

@@ -107,13 +107,12 @@ Forthword_ SP0, 0, "sp0"
 # ( -- )
 # start up asforth.
 Forthword_ COLD, 0, "cold"
-  pushl %ebp
   movl $topdatastack, %ebx
   movl $sysvar_base, %ebp
-  call WIPE
 	rp_
+	push_
 	call RP0
 	store_
+  call WIPE
   call WARM
-  popl %ebp
   ret
