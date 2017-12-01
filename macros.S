@@ -379,6 +379,12 @@
   str_d0_
 .endm
 
+.macro push2_ # save WR on data stack
+  top2_
+  str_d0_
+  str_d1_
+.endm
+
 .macro pusha_ # save a on data stack
   top1_
   a_str_d0_

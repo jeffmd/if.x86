@@ -169,8 +169,7 @@ Forthword_ DIGITQ, 0, "digit?"
   ret
 
 DIGITQ0:
-  push_                # ( n n )
-  push_                # ( n n n )
+  push2_               # ( n n n )
   call BASEFETCH       # ( n n base )
   call UGREATEREQUAL   # ( n flag )
   iszero_

@@ -397,9 +397,8 @@ FINDNFA_BEGIN1:
 FINDNFA_CHECK:
   
   rpush_                      # ( c-addr len nfa) (R: nfa )
-  d1_                         # ( c-addr len c-addr )
-  push_                       # ( c-addr len c-addr c-addr )
-  d1_                         # ( c-addr len c-addr len )
+  pop_
+  call TWOOVER                # ( c-addr len c-addr len )
   push_                       # ( c-addr len c-addr len len )
   r0_                         # ( c-addr len c-addr len nfa )
   call STRINGLEN              # ( c-addr len c-addr len f-addr len )
@@ -449,12 +448,8 @@ Forthword_ FINDW, 0, "findw"
 FINDW_BEGIN:
   iszero_
   js FINDLAST         # ( addr len idx * )
-    d2_               # ( addr len idx addr )
-    push_             # ( addr len idx addr addr )
-    d2_               # ( addr len idx addr len )
-    # get next wordlist in array
-    push_             # ( addr len idx addr len len )
-    d2_               # ( addr len idx addr len idx )
+    pop_              # ( addr len idx )
+    call THREEOVER    # ( addr len idx addr len idx )
     call FINDWI       # ( addr len idx nfa )
     iszero_
     # end loop if word found

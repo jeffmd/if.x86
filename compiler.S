@@ -335,9 +335,8 @@ Forthword_ ONLY, IMMEDIATE_EN, "only"
   # forth vocab always takes slot 0
   one_                        # ( 1 )
   push_                       # ( 1 1 )
-  lit_ EE_FORTHWORDLIST     # ( 1 FLIST )
-  push_                       # ( 1 FLIST FLIST )
-  push_                       # ( 1 FLIST FLIST FLIST )
+  lit_ EE_FORTHWORDLIST       # ( 1 FLIST )
+  push2_                      # ( 1 FLIST FLIST FLIST )
   call CURRENT                # ( 1 FLIST FLIST CURRENT )
   store_                      # ( 1 FLIST CURRENT )
   # make current also forth vocab

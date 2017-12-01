@@ -21,6 +21,12 @@ Forthword_ DPUSH, INLINE_OPT, "push"
   push_
   ret  
   
+# ( n -- n n n )
+# push WR onto top of data stack twice
+Forthword_ DPUSH2, INLINE_OPT, "push2"
+  push2_
+  ret  
+  
 # ( n1 n2 -- n1 a  n2 )
 #   d0 WR    d1 d0 WR
 # push register A onto top of data stack
@@ -292,8 +298,25 @@ Forthword_ OVER, INLINE_OPT, "over"
 # ( x1 x2 -- x1 x2 x1 x2)
 # Place a copy of x1 and x2 on top of the stack
 Forthword_ TWOOVER, 0, "2over"
-  over_
-  jmp OVER
+  top2_
+  str_d1_
+  d2_
+  str_d0_
+  d1_
+  ret
+  
+# ( x1 x2 x3 -- x1 x2 x3 x1 x2 x3 )
+# Place a copy of x1, x2, x3 on top of the stack
+Forthword_ THREEOVER, 0, "3over"
+  top3_
+  str_d2_
+  mov 16(%ebx), %eax
+  str_d1_
+  mov 12(%ebx), %eax
+  str_d0_
+  d2_
+  ret
+
 
 # ( n1 n2 -- n1)
 #   d0 WR    WR
