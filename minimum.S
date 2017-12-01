@@ -493,13 +493,13 @@ NO_IDLESLEEP:
 
 # ( -- )
 # turn sleep off
-Forthword_ SLEEPOFF, 0, "sleepoff"
+Forthword_ SLEEPOFF, 0, "sleep.off"
   zero_
   jmp IDLETIMESTORE
 
 # ( -- )
 # turn sleep on
-Forthword_ SLEEPON, 0, "sleepon"
+Forthword_ SLEEPON, 0, "sleep.on"
   lit_ 5000
   jmp IDLETIMESTORE
 
@@ -507,7 +507,7 @@ Forthword_ SLEEPON, 0, "sleepon"
 # ( caddr -- ** )
 # open a file that will be used for key input
 # caddr points to null terminated file name
-Forthword_ DOINCLUDE, 0, "doinclude"
+Forthword_ DOINCLUDE, 0, "(include)"
   # set file open mode to reading
   push_                 # ( caddr caddr )
   zero_                 # ( caddr 0 )
@@ -548,14 +548,17 @@ Forthword_ DOINCLUDE, 0, "doinclude"
   call CLOSEF           # ( ? )
   # pop tor into keyfile
   rpop_                 # ( KEYFILE ) ( R: itime fflags KEY )
+  push_                 # ( KEYFILE KEYFILE )
   call KEYFILEADDR      # ( KEYFILE KEYFILEADDR )
   store_                # ( KEYFILEADDR )
   # pop top of return into defer key
   rpop_                 # ( KEY ) ( R: itime fflags )
+  push_                 # ( KEY KEY )
   call KEYADDR          # ( KEY KEYADDR )
   store_                # ( KEYADDR )
   # restore FFLAGS
   rpop_                 # ( fflags ) ( R: itime )
+  push_                 # ( fflags fflags )
   call FFLAGS           # ( fflags FFLAGS )
   call HSTORE           # ( FFLAGS )
   rpop_                 # ( itime ) ( R: )
