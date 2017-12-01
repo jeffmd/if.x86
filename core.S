@@ -417,6 +417,27 @@ Forthword_ RPUSHY, INLINE_OPT, "rpushy"
 	rpushy_
 	ret
 
+# ( n2 n1 -- n2 n1 ) (R: -- n2 )
+#   d0 WR
+# push D0 on top of return stack
+Forthword_ RPUSHD0, INLINE_OPT, "rpushd0"
+	rpushd0_
+	ret
+
+# ( n3 n2 n1 -- n3 n2 n1 ) (R: -- n3 )
+#   d1 d0 WR
+# push D1 on top of return stack
+Forthword_ RPUSHD1, INLINE_OPT, "rpushd1"
+	rpushd1_
+	ret
+
+# ( n4 n3 n2 n1 -- n4 n3 n2 n1 ) (R: -- n4 )
+#   d2 d1 d0 WR
+# push D2 on top of return stack
+Forthword_ RPUSHD2, INLINE_OPT, "rpushd2"
+	rpushd2_
+	ret
+
 # ( -- n) (R: n -- n )
 # put a copy of TOR in WR
 Forthword_ R0, INLINE_OPT, "r0"
