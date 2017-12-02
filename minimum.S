@@ -283,11 +283,11 @@ Forthword_ NUMBER, 0, "num"
   call PRAEFIX            # ( addr' len' )
   call NUMBERSIGN         # ( addr len flagsign2 )
   push_                   # ( addr len flagsign2 flagsign2 )
-  rpop_                   # ( addr len flagsign2 flagsign ) (R: base )
+  r0_                     # ( addr len flagsign2 flagsign ) (R: base flagsign)
   or_                     # ( addr len flagsign' )
-  rpush_                  # ( addr len flagsign' ) (R: base flagsign')
-  d0_str_x_               # ( addr len flagsign' ) C: len
-  d1_str_y_               # ( addr len flagsign' ) D: addr
+  str_r0_                 # ( addr len flagsign' ) (R: base flagsign')
+  d0_str_x_               # ( addr len flagsign' ) X: len
+  d1_str_y_               # ( addr len flagsign' ) Y: addr
   zero_                   # ( addr len 0 )
   str_d1_                 # ( 0 len 0 )
   y_str_d0_               # ( 0 addr 0 )
@@ -508,9 +508,12 @@ Forthword_ SLEEPON, 0, "sleep.on"
 # caddr points to null terminated file name
 Forthword_ DOINCLUDE, 0, "(include)"
   # set file open mode to reading
-  push_                 # ( caddr caddr )
+  str_y_                # ( caddr ) Y: caddr
   zero_                 # ( caddr 0 )
-  call OPENF            # ( filedes )
+  rpush_                # ( caddr 0 ) (R: 0 )
+  rpushy_               # ( caddr 0 ) (R: 0 caddr )
+  call open             # ( filedes )
+  rnip2_                # ( filedes ) (R:  )
   # if file descriptor > 0 then open is success
   push_                 # ( filedes filedes )
   call ZEROGREATER      # ( filedes flag )
@@ -544,7 +547,9 @@ Forthword_ DOINCLUDE, 0, "(include)"
   # close keyfile
   call KEYFILEADDR      # ( KEYFILEADDR )
   fetch_                # ( KEYFILE )
-  call CLOSEF           # ( ? )
+  rpush_                # ( KEYFILE ) (R: oitime offlags oKEY oKEYFILE KEYFILE )
+  call close            # ( ? )
+  rnip_                 # ( ? ) (R: oitime offlags oKEY oKEYFILE )
   # pop tor into keyfile
   rpop_                 # ( KEYFILE ) ( R: itime fflags KEY )
   push_                 # ( KEYFILE KEYFILE )

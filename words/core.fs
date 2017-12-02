@@ -5,8 +5,9 @@
 \ Compiler
 \ skip everything up to the closing bracket on the same line
 : (
-    $29 parse
-    2drop
+    push          \ ( ?  ? )
+    $29 parse     \ ( ?  addr u )
+    pop2          \ ( ? )
 ; immediate
 
 
@@ -30,20 +31,20 @@
 
 \ store address of the next free dictionary cell
 : dp#! ( addr -- )
-    dp# !
+    push dp# !
 ;
 
 \ store address of the next free code cell
 : cp#! ( addr -- )
-    cp# !
+    push cp# !
 ;
 
 
 ( -- ) ( C: x "<spaces>name" -- )
 \ create a dictionary entry and register in word list
 : rword
-    (create)      ( voc-link )
-    cur@          ( voc-link wid )
+    (create)      ( nfa )
+    push cur@     ( nfa wid )
     !             ( )
 ;
 
@@ -82,7 +83,7 @@ rword dcell* inlined
 \ search dictionary for name, returns XT
 : '  ( "<spaces>name" -- XT )
     'f
-    drop
+    pop
 ;
 
 ( -- ) ( C: "<space>name" -- )
@@ -101,9 +102,10 @@ rword dcell* inlined
 \ and xt and flag are compiled as two literals
 : ['f]
     'f
-    swap
-    lit
-    lit
+    push
+    d1 lit
+    d0 lit
+    nip2
 ; :ic
 
 

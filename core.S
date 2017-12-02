@@ -288,6 +288,12 @@ Forthword_ DNIP, INLINE_OPT, "nip"
   nip_ 
   ret
   
+# ( n1 n2 n3 -- n3 )
+# drop top 2 items from datastack.
+Forthword_ DNIP2, INLINE_OPT, "nip2"
+  nip2_ 
+  ret
+  
 # ( x1 x2 -- x1 x2 x1 )
 #   do WR
 # push WR on data stack and place D1 in WR
@@ -406,8 +412,38 @@ Forthword_ RPOPY, INLINE_OPT, "rpopy"
 
 # ( -- ) (R: n -- )
 # Drop TOR
-Forthword_ RPOPNOS, INLINE_OPT, "rnip"
+Forthword_ RNIP, INLINE_OPT, "rnip"
 	rnip_
+	ret
+
+# ( -- ) (R: n2 n1 -- )
+# remove 2 top cells of return stack
+Forthword_ RNIP2, INLINE_OPT, "rnip2"
+	rnip2_
+	ret
+
+# ( -- ) (R: n3 n2 n1 -- )
+# remove 3 top cells of return stack
+Forthword_ RNIP3, INLINE_OPT, "rnip3"
+	rnip3_
+	ret
+
+# ( -- ) (R: -- ? )
+# add 1 cell to return stack
+Forthword_ RTOP1, INLINE_OPT, "rtop1"
+	rtop1_
+	ret
+
+# ( -- ) (R: -- ? ? )
+# add 2 cells to return stack
+Forthword_ RTOP2, INLINE_OPT, "rtop2"
+	rtop2_
+	ret
+
+# ( -- ) (R: -- ? ? ? )
+# add 3 cells to return stack
+Forthword_ RTOP3, INLINE_OPT, "rtop3"
+	rtop3_
 	ret
 
 # ( n -- ) (R: -- n)
@@ -438,6 +474,12 @@ Forthword_ RPUSHX, INLINE_OPT, "rpushx"
 # push Y on top of return stack
 Forthword_ RPUSHY, INLINE_OPT, "rpushy"
 	rpushy_
+	ret
+
+# ( -- ) (R: -- sp)
+# push datastack pointer on top of return stack
+Forthword_ RPUSHSP, INLINE_OPT, "rpushsp"
+	rpushsp_
 	ret
 
 # ( n2 n1 -- n2 n1 ) (R: -- n2 )

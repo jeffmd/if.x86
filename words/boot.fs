@@ -2,32 +2,32 @@
 \ header are (create) are created manually
 \ use (create) to make : then define the rest manually
 
-\ header ( addr len wid -- dp )
+\ header ( addr len wid -- nfa )
 \ 
-dp push         \ ( dp dp )
-pname header push push $FF00 or $dp! \ ( dp ? )
-  current @ @   \ ( dp linkaddr ) get latest word
-  dp!           \ ( dp ? ) set link field to prev word in vocab
-  cp dp! pop    \ ( dp ) set code pointer field
+dp push         \ ( nfa nfa ) name field address
+pname header push push $FF00 or $dp! \ ( nfa ? )
+  current @ @   \ ( nfa linkaddr ) get latest word
+  dp!           \ ( nfa ? ) set link field to prev word in vocab
+  cp dp! pop    \ ( nfa ) set code pointer field
   smudge!       \ ( ? )
   ]
-    push dp     \ ( addr len wid dp )
-    rpush       \ ( addr len wid dp ) (R: dp )
-    rpushd0     \ ( addr len wid dp ) (R: dp wid )
-    d1 !d0      \ ( addr len len len ) (R: dp wid )
+    push dp     \ ( addr len wid nfa )
+    rpush       \ ( addr len wid nfa ) (R: nfa )
+    rpushd0     \ ( addr len wid nfa ) (R: nfa wid )
+    d1 !d0      \ ( addr len len len ) (R: nfa wid )
     $FF00 or    \ ( addr len len|$FF00 )
     $dp!        \ ( ? )
-    rpop @      \ ( linkaddr ) (R: dp )
+    rpop @      \ ( linkaddr ) (R: nfa )
     dp!         \ ( ? )
-    rpop        \ ( dp )  
+    rpop        \ ( dp )
   [
   ;opt
   uwid
 
-\ (create) ( <input> -- dp )
-pname (create) push current @ header \ ( dp )
-  push cp       \ ( dp cp )
-  dp! pop       \ ( dp )
+\ (create) ( <input> -- nfa )
+pname (create) push current @ header \ ( nfa )
+  push cp       \ ( nfa cp )
+  dp! pop       \ ( nfa )
   smudge!       \ ( ? )
   ]
     pname push current @ header push cp dp! pop

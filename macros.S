@@ -114,6 +114,18 @@
   leal 12(%esp), %esp
 .endm
 
+.macro rtop1_
+  leal -4(%esp), %esp
+.endm
+
+.macro rtop2_
+  leal -8(%esp), %esp
+.endm
+
+.macro rtop3_
+  leal -12(%esp), %esp
+.endm
+
 .macro r0_str_a_
   movl (%esp), %esi
 .endm
