@@ -104,7 +104,11 @@ rword dcell* inlined
     'f
     push
     d1 lit,
-    push,
+    \ compile literal of 'f push
+    [ 'f push swap lit, ]
+    push
+    [ pop lit, ]
+    cxt
     d0 lit,
     nip2
 ; :ic
