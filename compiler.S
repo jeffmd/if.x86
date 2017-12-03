@@ -161,6 +161,16 @@ TAIL_CALL_OPTIMIZE:
   push_              # ( 0xe9 0xe9 )
   call CP            # ( 0xe9 CP )
   sub $5, %eax       # ( 0xe9 CP-5 )
+  push_              # ( 0xe9 CP-5 CP-5 )
+  # make sure current instruction is a call otherwise compile a return
+  cfetch_            # ( 0xe9 CP-5 inst )
+  and $0xff, %eax
+  cmp $0xe8, %eax
+  je DO_JMPOPT
+    nip2_
+    jmp RET_C
+DO_JMPOPT:
+  pop_
   cstr_              # ( CP-5 )
   # clear last is call flag in fflags
   andw $~(1 << LAST_IS_CALL_FB), fflags
