@@ -92,7 +92,7 @@ rword dcell* inlined
 \ compiles xt as literal
 : [']
     '
-    lit
+    lit,
 ; :ic
 
 
@@ -103,8 +103,9 @@ rword dcell* inlined
 : ['f]
     'f
     push
-    d1 lit
-    d0 lit
+    d1 lit,
+    push,
+    d0 lit,
     nip2
 ; :ic
 

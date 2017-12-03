@@ -1,9 +1,17 @@
 # asm.$ - words that generate inline assembly 
 
 # ( -- )
-# compile assembler pop {pc}
+# compile assembler ret
 Forthword_ RET_C, 0, "ret,"
   lit_ 0xc3
+  jmp COMMA
+
+# ( -- )
+# compile assembler data stack push
+Forthword_ PUSH_C, 0, "push,"
+  lit_ 0x89fc5b8d
+  call DWCOMMA
+  lit_ 0x03
   jmp COMMA
 
 # calc relative distance
@@ -110,7 +118,7 @@ Forthword_ CALLC, 0, "call,"
 
 # compile top of stack as inlinned immediate 32 bit constant
 # ( n -- )
-Forthword_ LIT, 0, "lit"
+Forthword_ LIT, 0, "lit,"
   push_
   lit_ 0xb8
   call COMMA
