@@ -8,16 +8,16 @@
 
 \ read the following cell from the executing word and append it
 \ to the current dictionary position.
-: (compile)  ( -- )
+: (program)  ( -- )
     r>r+     ( raddr ) ( R: raddr+1 )
     @        ( nfa )
     nfa>xtf  ( xt xtflags )
     cxt
 ;
 
-\ compile into pending new word
-: compile ( C: x "<spaces>name" -- )
-  ['f] (compile) cxt
+\ program a word into pending new word
+: program: ( C: x "<spaces>name" -- )
+  ['f] (program) cxt
   find dw,
 ; :ic
 
@@ -29,14 +29,14 @@
 : create
     rword
     \ leave address after call on tos
-    compile popret
+    program: popret
 ;
 
 
 \ copy the first character of the next word onto the stack
 : char  ( "<spaces>name" -- c )
     pname
-    drop
+    pop
     c@
 ;
 
@@ -45,7 +45,7 @@
 \ of the word on the stack
 : [char]
     char
-    lit
+    lit,
 ; immediate
 
 
@@ -58,24 +58,22 @@
     \ change call at XT to code after (does>)
     \ code at XT is 'bl POPRET'
     \ want to change POPRET address to return address
-    r>                        ( retaddr )
+    rpop push                 ( retaddr retaddr ) ( R:  )
     \ get address of call POPRET
     \ get current word and then get its XT being compiled
     cur@ @                    ( retaddr nfa )
-    nfa>lfa                   ( retaddr lfa )
-    \ skip over lfa to get to xt field and load xt
-    dcell+  @                     ( retaddr xt )
+    nfa>xtf                   ( retaddr xt flags )
     \ temp save cp on return stack
-    cp >r
+    cp rpush                  ( retaddr xt cp ) ( R: cp )
     \ set cp to xt
-    dup cp#!                   ( retaddr xt )
+    d0 cp#! pop               ( retaddr xt )
     \ modify the call
     \ calc displacement
     reldst                    ( dst )
     \ compile a call instruction
-    call,                       ( )
+    call,                     ( ? )
     \ restore cp
-    r> cp#!                    ( )
+    rpop cp#!                 ( ? ) ( R: )
 ;
 
 ( -- )
@@ -84,9 +82,9 @@
 \ used in conjunction with create
 \ ie: : name create .... does> .... ;
 : does>
-    compile (does>)
+    program: (does>)
     \ compile pop return to tos which is used as 'THIS' pointer
-    compile r>
+    program: rpop
 ; :ic
 
 ( -- xt )
@@ -96,32 +94,32 @@
     cp ]
 ;
 
-( -- start )
+( -- start  ? )
 \ Compiler
 \ places current dictionary position for forward
 \ branch resolve on TOS and advances CP
 : >mark
-    cp
-    5 cp+           \ advance CP to allow jmp
+    cp push       ( start start )
+    5 cp+         \ advance CP to allow jmp
 ;
 
-( start -- )
+( start ? -- )
 \ Compiler
 \ do forward jump
 : >jmp
-    ?sp              ( start ) \ check stack integrety
+    ?sp              ( start ? ) \ check stack integrety
     cp               ( start dest )
     jmpc             ( )
 ;
 
-( -- dest )
+( -- dest ? )
 \ Compiler
 \ place destination for backward branch
 : <mark
-    cp            ( dest )
+    cp push          ( dest dest )
 ;
 
-( dest -- )
+( dest ? -- )
 \ Compiler
 \ do backward jump
 : <jmp
@@ -130,20 +128,20 @@
     cp             \ ( dest start )
     swap           \ ( start dest )
     jmpc
-    5 cp+           \ advance CP
+    5 cp+          \ advance CP
 ;
 
-\ Compiler
+
 \ compile zerosense and conditional jump forward
 : ?jmpc
-
-    compile 0?       \ inline zerosense
+    program: 0?       \ inline zerosense
+    program: pop
     jne1,
 ;
 
-\ compile dupzerosense and conditional jump forward
+\ compile zerosense and conditional jump forward
 : ??jmpc
-    compile ?0?
+    program: 0?
     jne1,
 ;
 
@@ -165,7 +163,6 @@
     >mark
 ; :ic
 
-
 ( C: orig1 -- orig2 )
 \ Compiler
 \ resolve the forward reference and place
@@ -173,7 +170,7 @@
 \ part of: if...else...then
 : else
     >mark         \ mark forward rjmp at end of true code
-    swap          \ swap new mark with previouse mark
+    pop swap push \ swap new mark with previouse mark
     >jmp          \ rjmp from previous mark to false code starting here
 ; :ic
 
@@ -199,7 +196,6 @@
 \ Compiler
 \ compile a jump back to dest
 \ part of: begin...again
-
 : again
     <jmp
 ; :ic
@@ -210,7 +206,7 @@
 \ part of: begin...while...repeat
 : while
     [compile] if
-    swap
+    pop swap push
 ; :ic
 
 ( f -- f) ( C: dest -- orig dest )
@@ -219,7 +215,7 @@
 \ part of: begin...?while...repeat
 : ?while
     [compile] ?if
-    swap
+    pop swap push
 ; :ic
 
 ( --  ) ( C: orig dest -- )
@@ -230,7 +226,6 @@
   [compile] again
   >jmp
 ; :ic
-
 
 ( f -- ) ( C: dest -- )
 \ Compiler
@@ -258,19 +253,19 @@
 \ compile the XT of the word currently
 \ being defined into the dictionary
 : recurse
-  smudge @ nfa>xtf cxt  
+  smudge nfa>xtf cxt  
 ; :ic
 
 \ allocate or release n bytes of memory in RAM
 : allot ( n -- )
-    here + here# !
+    push here + push here# !
 ;
 
 ( x -- ) ( C: x "<spaces>name" -- )
 \ create a constant in the dictionary
 : con
-    rword
-    lit
+    push rword pop
+    lit,
     ret,
 ;
 
@@ -296,7 +291,7 @@
 
 \ compiles a string from RAM to program RAM
 : s, ( addr len -- )
-    dup
+    push
     $cp!
 ;
 
@@ -304,7 +299,7 @@
 \ String
 \ compiles a string to program RAM
 : slit
-    compile (slit)     ( -- addr n)
+    push program: (slit) pop    ( addr n )
     s,
 ; immediate
 
@@ -315,8 +310,8 @@
 \ at runtime leaves ( -- ram-addr count) on stack
 : s"
     $22
-    parse        ( -- addr n)
-    state@
+    parse        ( addr n )
+    push state
     if  \ skip if not in compile mode
       [compile] slit
     then
@@ -327,9 +322,9 @@
 \ compiles string into dictionary to be printed at runtime
 : ."
      [compile] s"             \ "
-     state@
+     push state
      if
-       compile type
+       program: type
      else
        type
      then
