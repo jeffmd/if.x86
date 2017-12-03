@@ -102,15 +102,14 @@ rword dcell* inlined
 \ and xt and flag are compiled as two literals
 : ['f]
     'f
-    push
-    d1 lit,
+    swap
+    lit,
     \ compile literal of 'f push
     [ 'f push swap lit, ]
     push
     [ pop lit, ]
     cxt
-    d0 lit,
-    nip2
+    pop lit,
 ; :ic
 
 
