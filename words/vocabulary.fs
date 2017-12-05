@@ -127,11 +127,15 @@
   create
   [compile] immediate
   \ allocate space in ram for head and tail of vocab word list
-  wordlist dup d, ( wid )
+  wordlist push  ( wid wid )
+  \ voc.wid = wid
+  dw,            ( wid ? )
   \ wid.name = vocabulary.nfa  
-  cur@ @ swap dcell+ !
+  cur@ @ swap    ( voc.nfa wid )
+  dcell+ !       ( voc.nfa )
   does>
    @ \ get header address
+   \ make this vocabulary the active search context
    context!
 ;
 
@@ -142,39 +146,36 @@
 
 \ setup forth name pointer in forth wid name field
 \ get forth nfa - its the most recent word created
-cur@ @ ( nfa )
+cur@ @ push ( nfa nfa )
 \ get the forth wid, initialize it and set name field
 \ forthwid.word is already initialized
 context @ dcell+ ( nfa forthwid.name )
 \ forthwid.name = nfa
-tuck ! ( forthwid.name )
+! ( forthwid.name )
 \ forthwid.link = 0
-dcell+ dup 0! ( forthwid.link )
+dcell+ 0! ( forthwid.link )
 \ forthwid.child = 0
 dcell+ 0! ( )
 
 \ print name field
 : .nf ( nfa -- )
-      $l $FF and             ( cnt addr addr n ) \ mask immediate bit
-      type space             ( cnt addr )
+      $l push $FF and  ( addr cnt n ) \ mask immediate bit
+      type space       ( ? )
 ;
  
 \ list words starting at a name field address
 : lwords ( nfa -- )
-    0 swap
+    push 0 push              ( nfa 0 0 )
     begin
-      ?dup                   ( cnt addr addr )
-    while                    ( cnt addr ) \ is nfa = counted string
-      dup                    ( cnt addr addr )
-      .nf                    ( cnt addr )
-      nfa>lfa                ( cnt lfa )
-      @                      ( cnt addr )
-      swap                   ( addr cnt )
-      1+                     ( addr cnt+1 )
-      swap                   ( cnt+1 addr )
+    d1                       ( nfa cnt nfa )
+    ?while                   ( nfa cnt nfa ) \ is nfa = counted string
+      .nf d1                 ( nfa cnt nfa )
+      nfa>lfa                ( nfa cnt lfa )
+      @ !d1                  ( nfa' cnt addr )
+      d0 1+ !d0              ( nfa' cnt+1 cnt+1 )
     repeat 
-
-    cr ." count: " .
+    cr ." count: " pop .
+    nip
 ;
 
 \ List the names of the definitions in the context vocabulary.
@@ -188,7 +189,7 @@ dcell+ 0! ( )
 
 \ list the root words
 : rwords ( -- )
-  [ find WIPE lit ]
+  [ find WIPE lit, ]
   lwords
 ;
 
@@ -196,23 +197,23 @@ dcell+ 0! ( )
 : order ( -- )
   ." Search: "
   \ get context index and use as counter
-  contidx h@
+  contidx h@ push              ( idx idx )
   begin
   \ iterate through vocab array and print out vocab names
   ?while
-    dup dcell* context +
+    dcell* push context +      ( idx context' )
     \ get context wid
-    @
+    @                          ( idx wid )
     \ if not zero then print vocab name 
-    ?dup if
+    ?if
       \ next cell has name field address 
-      dcell+ @
-      .nf
+      dcell+ @                 ( idx nfa )
+      .nf                      ( idx ? )
     then
     \ decrement index
-    1-
+    d0 1- !d0
   repeat
-  drop
+  pop
   ." Forth Root" cr
   ." definitions: "
   cur@ dcell+ @ .nf cr
@@ -226,32 +227,34 @@ dcell+ 0! ( )
     \ print indent
     over spaces ." |- "
     \ get name from name field
-    dcell+ dup @ ( spaces linkwid.name name )
+    d0 dcell+ !d0 @ ( spaces linkwid.name name )
     \ print name and line feed
-    .nf cr ( spaces link.name )
+    .nf cr        ( spaces link.name ? )
     \ get link field
-    dcell+ ( spaces linkwid.link )
     \ increase spaces for indenting child vocabularies
-    over 4+ over ( spaces linkwid.link spaces+4 linkwid.link )
+    d1 4+ push    ( spaces linkwid.name spaces+4 spaces+4 )
+    d1 dcell+ !d1 ( spaces linkwid.link spaces+4 linkwid.link )
     \ get child link and recurse: print child vocabularies
-    dcell+ @ recurse ( spaces linkwid.link )
+    dcell+ @      ( spaces linkwid.link spaces+4 child )
+    recurse       ( spaces linkwid.link )
     \ get link for next sibling
     @
   repeat
-  2drop
+  pop2
 ;
 
 \ list context vocabulary and all child vocabularies
 \ order is newest to oldest
 : vocs ( -- )
   \ start spaces at 2
-  2
+  push 2        ( ? 2 )
   \ get top search vocabulary address
   \ it is the head of the vocabulary linked list
-  wid@  ( wid )
+  push wid@     ( ? 2 wid )
   \ print context vocabulary
-  dup dcell+ @ .nf cr
+  push dcell+   ( ? 2 wid wid.name )
+  @ .nf cr pop  ( ? 2 wid )
   \ get child link of linked list
-  wid:child @ ( linkwid )
-  .childvocs cr
+  wid:child @   ( ? 2 childwid )
+  .childvocs cr ( ? )
 ;
