@@ -44,21 +44,21 @@
 \ initialize wid fields of definitions vocabulary
 : widinit ( wid -- wid )
   \ wid.word = 0
-  !y ( wid ) \ Y: wid
-  0! ( wid )
+  !x ( wid )  \ X: wid
+  0! ( wid ) \ wid.word = 0
 
   \ parent wid child field is in cur@->child
   push cur@ wid:child  ( wid parentwid.child )
   push  ( wid parentwid.child parentwid.child )
-  @     ( wid parentwid.child childLink )
-  push y wid:link ( wid parentwid.child childLink wid.link )
+  @     ( wid parentwid.child childwid )
+  push x wid:link ( wid parentwid.child childwid wid.link )
   \ wid.link = childLink
   !         ( wid parentwid.child wid.link )
   \ wid.child = 0
   dcell+ 0! ( wid parentwid.child wid.child )
   \ parentwid.child = wid
   pop       ( wid parentwid.child )
-  ! y       ( wid )
+  ! x       ( wid )
 ;
 
 \ make a wordlist record in data ram
@@ -225,17 +225,17 @@ dcell+ 0! ( )
   \ while link is not zero
   ?while  ( spaces linkwid )
     \ print indent
-    over spaces ." |- "
+    over spaces ." |- " ( spaces linkwid ? )
     \ get name from name field
     d0 dcell+ !d0 @ ( spaces linkwid.name name )
     \ print name and line feed
     .nf cr        ( spaces link.name ? )
-    \ get link field
     \ increase spaces for indenting child vocabularies
     d1 4+ push    ( spaces linkwid.name spaces+4 spaces+4 )
+    \ get link field
     d1 dcell+ !d1 ( spaces linkwid.link spaces+4 linkwid.link )
     \ get child link and recurse: print child vocabularies
-    dcell+ @      ( spaces linkwid.link spaces+4 child )
+    dcell+ @      ( spaces linkwid.link spaces+4 childwid )
     recurse       ( spaces linkwid.link )
     \ get link for next sibling
     @
