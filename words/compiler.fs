@@ -124,7 +124,7 @@
 \ do backward jump
 : <jmp
     ?sp            \ make sure there is something on the stack
-    \ compile a jmp at current DP that jumps back to mark
+    \ compile a jmp at current CP that jumps back to mark
     cp             \ ( dest start )
     swap           \ ( start dest )
     jmpc
@@ -258,7 +258,7 @@
 
 \ allocate or release n bytes of memory in RAM
 : allot ( n -- )
-    push here + push here# !
+    !y here +y push here# !
 ;
 
 ( x -- ) ( C: x "<spaces>name" -- )

@@ -7,7 +7,7 @@
 
 \ get context array address using context index
 : context# ( -- addr )
-  context push contidx h@ dcell* +
+  context !y contidx h@ dcell* +y
 ;
 
 \ get a wordlist id from context array
@@ -39,7 +39,7 @@
 \ add link field offset
 : wid:link ( wid -- wid:link) dcell+ dcell+ ;
 \ add child field offset
-: wid:child ( wid -- wid:child ) push 3 dcell* + ;
+: wid:child ( wid -- wid:child ) !y 3 dcell* +y ;
 
 \ initialize wid fields of definitions vocabulary
 : widinit ( wid -- wid )
@@ -201,7 +201,7 @@ dcell+ 0! ( )
   begin
   \ iterate through vocab array and print out vocab names
   ?while
-    dcell* push context +      ( idx context' )
+    dcell* !y context +y      ( idx context' )
     \ get context wid
     @                          ( idx wid )
     \ if not zero then print vocab name 

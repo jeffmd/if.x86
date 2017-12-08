@@ -43,7 +43,7 @@ var hld
 
 \ Address of the temporary scratch buffer.
 : pad ( -- a-addr )
-    here push 20 +
+    here !y 20 +y
 ;
 
 \ initialize the pictured numeric output conversion process
@@ -94,8 +94,8 @@ var hld
 
 \ unsigned PNO with single cell numbers
 : u. ( u -- )
-    push2 0 ( n n 0 ) \ want unsigned
-    !d1     ( 0 n 0 )
+    push2 0 ( u u 0 ) \ want unsigned
+    !d1     ( 0 u 0 )
     .r 
 ;
 

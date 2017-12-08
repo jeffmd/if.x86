@@ -237,9 +237,8 @@ Forthword_ SLASHSTRING, 0, "/$"
   over_         # ( addr1 u1 n u1 )
   call MIN      # ( addr1 u1 n|u1 )
   push_         # ( addr1 u1 n n )
-  d2_           # ( addr1 u1 n addr1 )
-  over_         # ( addr1 u1 n addr1 n )
-  plus_         # ( addr1 u1 n addr2 )
+  d2_str_y_     # ( addr1 u1 n n ) Y: addr1
+  addy_         # ( addr1 u1 n addr2 )
   str_d2_       # ( addr2 u1 n addr2 )
   pop_          # ( addr2 u1 n )
   minus_        # ( addr2 u2 )
@@ -368,9 +367,9 @@ Forthword_ PNAME, 0, "pname"
 # ( addr len idx -- 0 | nfa )
 FINDWI:
   fourstar_          # ( addr len idx*4 )
-  push_              # ( addr len idx*4 idx*4 )
-  call CONTEXT       # ( addr len idx*4 context )
-  plus_              # ( addr len context' )
+  str_y_             # ( addr len idx*4 ) Y: idx*4
+  call CONTEXT       # ( addr len context )
+  addy_              # ( addr len context' )
   fetch_             # ( addr len wid )
 
 # ( c-addr len wid -- [ 0 | nfa ] )
@@ -483,8 +482,8 @@ Forthword_ DOSLIT, 0, "(slit)"
   twoplus_       # ( raddr slength straddr )
   # calculate the number of words to skip over for return address
   str_d1_        # ( straddr slength straddr )
-  over_          # ( straddr slength straddr slength)
-  plus_          # ( straddr slength straddr+slength )
+  d0_str_y_      # ( straddr slength straddr ) Y: slength
+  addy_          # ( straddr slength straddr+slength )
   # also skip string length
   str_r0_        # ( straddr slength straddr+k ) (R: straddr+k )
   pop_           # ( straddr slength )
@@ -875,7 +874,9 @@ ACCEPT_echo:
   call EMIT              # ( k ? )
   # now store the key in the input buffer
   call STIB              # ( k tibaddr #tib)
-  plus_                  # ( k tibaddr+#tib )
+  d0_str_y_              # ( k tibaddr #tib) Y: tibaddr
+  addy_                  # ( k tibaddr tibaddr+#tib )
+  nip_                   # ( k tibaddr+#tib )
   cstr_                  # ( tibaddr+#tib )
 
   call SHARPTIB          # ( #tib )

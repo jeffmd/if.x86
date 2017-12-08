@@ -316,7 +316,9 @@ Forthword_ NFA2LFA, 0, "nfa>lfa"
   call STRINGLEN               # ( nfa+2 len+flags )
   # mask out flags in len, allow up to 31 characters
   and $31, %eax                # ( nfa+2 len )
-  plus_                        # ( nfa+2+len )
+  d0_str_y_                    # ( nfa+2 len ) Y: nfa+2
+  addy_                        # ( nfa+2 nfa+2+len )
+  nip_                         # ( nfa+2+len )
   ret
 
 # ( nfa -- [ 0 ] | [ xt xtflags] )

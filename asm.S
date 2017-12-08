@@ -119,6 +119,7 @@ Forthword_ CALLC, 0, "call,"
 # compile top of stack as inlinned immediate 32 bit constant
 # ( n -- )
 Forthword_ LIT, 0, "lit,"
+# use FFLAGS bit 5,6,7 to select register to use
   push_
   lit_ 0xb8
   call COMMA

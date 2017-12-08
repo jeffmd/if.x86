@@ -258,10 +258,10 @@ Forthword_ TO_NUMBER, 0, ">num"
 
 TO_NUMBER_CONV:
   d2_str_y_            # ( u adr len digit ) Y: u
-  push_                # ( u adr len digit digit )
-  call BASEFETCH       # ( u adr len digit base )
-  imul %edx, %eax      # ( u adr len digit u*base )
-  plus_                # ( u adr len u'' )
+  str_x_               # ( u adr len digit ) X: digit
+  call BASEFETCH       # ( u adr len base )
+  imul %edx, %eax      # ( u adr len u*base )
+  addx_                # ( u adr len u'' )
   str_d2_              # ( u'' adr len u'' )
   one_                 # ( u'' adr len 1 )
   call SLASHSTRING     # ( u'' adr' len' )
@@ -579,8 +579,8 @@ Forthword_ INCLUDEF, 0, "include"
   # parse input for filename to include
   call PNAME     # ( addr len )
   # add null to end of string
-  over_          # ( addr len addr )
-  plus_          # ( addr addr' )
+  d0_str_y_      # ( addr len ) Y: addr
+  addy_          # ( addr addr' )
   zero_cstr_     # ( addr addr' )
   pop_           # ( addr )
   jmp DOINCLUDE

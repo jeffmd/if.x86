@@ -744,10 +744,34 @@ Forthword_ RTORPLUS, INLINE_OPT, "r>r+"
 
 #@@@@@@@@@@@@@ Arithmatic @@@@@@@@@@@@@
 
-# ( n1 n2 -- n3)
-# add n1 and n2
-Forthword_ PLUS, INLINE_OPT, "+"
-  plus_
+# ( n1 -- n1+y )
+# add n1 and y
+Forthword_ PLUSY, INLINE_OPT, "+y"
+  addy_
+  ret
+
+# ( n1 -- n1+x )
+# add n1 and y
+Forthword_ PLUSX, INLINE_OPT, "+x"
+  addx_
+  ret
+
+# ( n1 -- n1+a )
+# add n1 and y
+Forthword_ PLUSA, INLINE_OPT, "+a"
+  adda_
+  ret
+
+# ( n1 -- n1+b )
+# add n1 and b
+Forthword_ PLUSB, INLINE_OPT, "+b"
+  addb_
+  ret
+
+# ( n1 -- n1+y )
+# add n1 and y
+Forthword_ PLUS, INLINE_OPT, "+y"
+  addy_
   ret
 
 # ( n1|u1 n2|u2 -- n1-n2|u1-u2 )
@@ -1223,20 +1247,20 @@ Forthword_ A_CSTORE, INLINE_OPT, "ac!"
 
 # ( -- )
 # update register A with post increment 4+ from last memory operation
-Forthword_ APLUS, INLINE_OPT, "a+"
+Forthword_ APLUS, INLINE_OPT, "a++"
   aplus_
   ret
 
 # ( -- )
 # update register A with post increment 2+ from last memory operation
-Forthword_ AHPLUS, INLINE_OPT, "ah+"
+Forthword_ AHPLUS, INLINE_OPT, "ah++"
   ahplus_
   ret
 
 
 # ( -- )
 # update register A with post increment 1+ from last memory operation
-Forthword_ ACPLUS, INLINE_OPT, "ac+"
+Forthword_ ACPLUS, INLINE_OPT, "ac++"
   acplus_
   ret
 
@@ -1278,20 +1302,20 @@ Forthword_ B_CSTORE, INLINE_OPT, "bc!"
 
 # ( -- )
 # update register B with post increment 4+ from last memory operation
-Forthword_ BPLUS, INLINE_OPT, "b+"
+Forthword_ BPLUS, INLINE_OPT, "b++"
   bplus_
   ret
 
 # ( -- )
 # update register B with post increment 2+ from last memory operation
-Forthword_ BHPLUS, INLINE_OPT, "bh+"
+Forthword_ BHPLUS, INLINE_OPT, "bh++"
   bhplus_
   ret
 
 
 # ( -- )
 # update register B with post increment 1+ from last memory operation
-Forthword_ BCPLUS, INLINE_OPT, "bc+"
+Forthword_ BCPLUS, INLINE_OPT, "bc++"
   bcplus_
   ret
 
@@ -1333,20 +1357,20 @@ Forthword_ X_CSTORE, INLINE_OPT, "xc!"
 
 # ( -- )
 # update register X with post increment 4+ from last memory operation
-Forthword_ XPLUS, INLINE_OPT, "x+"
+Forthword_ XPLUS, INLINE_OPT, "x++"
   xplus_
   ret
 
 # ( -- )
 # update register X with post increment 2+ from last memory operation
-Forthword_ XHPLUS, INLINE_OPT, "xh+"
+Forthword_ XHPLUS, INLINE_OPT, "xh++"
   xhplus_
   ret
 
 
 # ( -- )
 # update register X with post increment 1+ from last memory operation
-Forthword_ XCPLUS, INLINE_OPT, "xc+"
+Forthword_ XCPLUS, INLINE_OPT, "xc++"
   xcplus_
   ret
 

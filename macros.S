@@ -42,7 +42,13 @@
 # 00 : standard
 # 01 : litteral
 # 10 : ALU
-# 11 :   
+# 11 : 
+# bit 5, 6 ,7: register load
+# 000 : WR
+# 001 : Y
+# 010 : X
+# 011 : B
+# 100 : A
 
 # Inline macros
 
@@ -483,10 +489,22 @@
   pop_
 .endm
 
-.macro plus_
-  popy_
+.macro addy_
   addl %edx, %eax
 .endm
+
+.macro addx_
+  addl %ecx, %eax
+.endm
+
+.macro adda_
+  addl %esi, %eax
+.endm
+
+.macro addb_
+  addl %edi, %eax
+.endm
+
 
 .macro minus_
   str_y_
