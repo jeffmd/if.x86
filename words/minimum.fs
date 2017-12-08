@@ -4,10 +4,10 @@
 ( n min max -- f )
 \ check if n is within min..max
 : within
-    over       \ n min max min 
-    - !x       \ n min diff  X: diff
-    pop -      \ n-min 
-    push x     \ n-min x
+    d0!y       \ n min max Y: min
+    -y !x      \ n min diff X: diff
+    d1 -y !d1  \ n-min min n-min 
+    nip x      \ n-min diff
     u<         \ flag
 ;
 
@@ -70,7 +70,8 @@ var hld
 
 \ Pictured Numeric Output: convert PNO buffer into an string
 : #> ( u1 -- addr count )
-    hld @ push pad over -
+    hld @ !y    \ addr Y: addr  
+    push pad -y \ addr pad-addr
 ;
 
 \ place a - in HLD if n is negative
@@ -85,8 +86,8 @@ var hld
     pop sign   ( ? )
     #>         ( addr len )
     push rpop  ( addr len w )  ( R: )
-    over       ( addr len w len )
-    -          ( addr len spaces )
+    d0!y       ( addr len w Y:len )
+    -y         ( addr len spaces )
     spaces     ( addr len ? )
     pop type   ( )
     space

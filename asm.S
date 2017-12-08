@@ -19,7 +19,9 @@ Forthword_ PUSH_C, 0, "push,"
 Forthword_ RELDST, 0, "reldst"
   # calculate relative distance in bytes from start to dest
   # rel dist = dest - start
-  minus_               # ( dest-start )
+  str_y_                # ( dest start ) Y: start
+  pop_                  # ( dest )
+  minusy_               # ( dest-start )
   ret
 
 # build assembler instruction jmp - unconditional long jump

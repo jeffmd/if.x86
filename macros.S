@@ -505,11 +505,20 @@
   addl %edi, %eax
 .endm
 
-
-.macro minus_
-  str_y_
-  pop_
+.macro minusy_
   sub %edx, %eax
+.endm
+
+.macro minusx_
+  sub %ecx, %eax
+.endm
+
+.macro minusa_
+  sub %esi, %eax
+.endm
+
+.macro minusb_
+  sub %edi, %eax
 .endm
 
 .macro neg_
@@ -548,8 +557,16 @@
   inc %eax
 .endm
 
+.macro yoneplus_
+  inc %edx
+.endm
+
 .macro oneminus_
   dec %eax
+.endm
+
+.macro yoneminus_
+  dec %edx
 .endm
 
 .macro twoplus_

@@ -4,7 +4,7 @@ only
 \ Tools
 \ Amount of available RAM (incl. PAD)
 : unused
-    sp0 here -
+    sp0 !y here -y
 ;
 
 ( addr1 cnt -- addr2)

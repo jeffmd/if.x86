@@ -236,12 +236,12 @@ MCMP_DONE:
 Forthword_ SLASHSTRING, 0, "/$"
   over_         # ( addr1 u1 n u1 )
   call MIN      # ( addr1 u1 n|u1 )
-  push_         # ( addr1 u1 n n )
-  d2_str_y_     # ( addr1 u1 n n ) Y: addr1
-  addy_         # ( addr1 u1 n addr2 )
-  str_d2_       # ( addr2 u1 n addr2 )
-  pop_          # ( addr2 u1 n )
-  minus_        # ( addr2 u2 )
+  str_y_        # ( addr1 u1 n ) Y: n
+  d1_           # ( addr1 u1 addr1 )
+  addy_         # ( addr1 u1 addr2 )
+  str_d1_       # ( addr2 u1 addr2 )
+  pop_          # ( addr2 u1 )
+  minusy_       # ( addr2 u2 )
   ret
 
 # ( addr -- addr+2 len )
@@ -263,26 +263,26 @@ Forthword_ CSKIP, 0, "cskip"
   str_b_               # ( addr1 n1 c ) B: c
   d1_str_a_            # ( addr1 n1 c ) A: addr1
   d0_                  # ( addr1 n1 n1 )
-  str_d1_              # ( n1 n1 n1 )
+  str_y_               # ( addr1 n1 n1 ) Y: n1
+  str_x_               # ( addr1 n1 n1 ) X: n1
+  nip2_                # ( n1 )
   jmp PFA_CSKIP2
   
 PFA_CSKIP1:
-  a_cfetch_            # ( n1 n' c' )
+  a_cfetch_            # ( c' )
   acplus_
-  cmp %edi, %eax       # ( n1 n' c' )
-  d0_                  # ( n1 n' n' )
+  cmp %edi, %eax       # ( c' )
   jne PFA_CSKIP3
-  oneminus_            # ( n1 n' n'-1 )
-  str_d0_              # ( n1 n'-1 n'-1 )
+  yoneminus_           # ( c' ) Y-1
 PFA_CSKIP2:
-  iszero_              # ( n1 n' n' )
+  y_iszero_             # ( c' )
   jne PFA_CSKIP1
 
 PFA_CSKIP3:
   rpopb_
   rpopa_
-  pop_                 # ( n1 n' )
-  minus_               # ( n1-n' )
+  x_                   # ( n1 )
+  minusy_              # ( n1-n' )
   ret
 
 # ( addr1 n1 c -- addr1 n2 )
@@ -295,26 +295,26 @@ Forthword_ CSCAN, 0, "cscan"
   str_b_               # ( addr1 n1 c ) B: c
   d1_str_a_            # ( addr1 n1 c ) A: addr1
   d0_                  # ( addr1 n1 n1 )
-  push_                # ( addr1 n1 n1 n1 )
+  str_y_               # ( addr1 n1 n1 ) Y: n1 
+  str_x_               # ( addr1 n1 n1 ) X: n1
+  nip_                 # ( addr1 n1 )
   jmp PFA_CSCAN2
   
 PFA_CSCAN1:
-  a_cfetch_            # ( addr1 n1 n1 c' )
+  a_cfetch_            # ( addr1 c' )
   acplus_
-  cmp %edi, %eax       # ( addr1 n1 n1 c' )
-  d0_                  # ( addr1 n1 n1 n' )
+  cmp %edi, %eax       # ( addr1 c' )
   je PFA_CSCAN3
-  oneminus_            # ( addr1 n1 n1 n'-1 )
-  str_d0_              # ( addr1 n1 n'-1 n'-1)
+  yoneminus_           # ( addr1 c' ) Y-1
 PFA_CSCAN2:
-  iszero_              # ( addr1 n1 n' n' )
+  y_iszero_             # ( addr1 c' )
   jne PFA_CSCAN1
 
 PFA_CSCAN3:
   rpopb_
   rpopa_
-  pop_
-  minus_               # ( addr1 n1-n' )
+  x_                   # ( addr1 n1 )
+  minusy_              # ( addr1 n1-n' )
   ret
 
 # ( -- srcaddr len  )
@@ -884,11 +884,11 @@ ACCEPT_echo:
 
 ACCEPT_checkmaxinput:
   # check if max number of char input
-  lit_ TIBSIZE         # ( tibsize )
-  push_
-  call SHARPTIB          # ( tibsize #tibaddr )
-  hfetch_                # ( tibsize #tib )
-  minus_                 # ( tibsize-#tib )
+  call SHARPTIB          # ( #tibaddr )
+  hfetch_                # ( #tib )
+  str_y_                 # ( #tib ) Y: #tib
+  lit_ TIBSIZE           # ( tibsize )
+  minusy_                # ( tibsize-#tib )
   # <if>
   iszero_                # ( tibsize-#tib )
   je ACCEPT_atmaxinput

@@ -290,10 +290,10 @@ CBU_BEGIN:
     jmp CBU_BEGIN
 
 CBU_DONE:
-  d0_                # ( source destination destination )
-  b_str_d0_          # ( source destination+count destination )
-  minus_             # ( source count )
-  nip_               # ( count )
+  d0_str_y_          # ( source destination byte ) Y: destination
+  nip2_              # ( byte )
+  b_                 # ( destination+count )
+  minusy_            # ( count )
   rpopb_
   rpopa_
   ret

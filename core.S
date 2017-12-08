@@ -746,38 +746,50 @@ Forthword_ RTORPLUS, INLINE_OPT, "r>r+"
 
 # ( n1 -- n1+y )
 # add n1 and y
-Forthword_ PLUSY, INLINE_OPT, "+y"
+Forthword_ ADDY, INLINE_OPT, "+y"
   addy_
   ret
 
 # ( n1 -- n1+x )
-# add n1 and y
-Forthword_ PLUSX, INLINE_OPT, "+x"
+# add n1 and x
+Forthword_ ADDX, INLINE_OPT, "+x"
   addx_
   ret
 
 # ( n1 -- n1+a )
-# add n1 and y
-Forthword_ PLUSA, INLINE_OPT, "+a"
+# add n1 and a
+Forthword_ ADDA, INLINE_OPT, "+a"
   adda_
   ret
 
 # ( n1 -- n1+b )
 # add n1 and b
-Forthword_ PLUSB, INLINE_OPT, "+b"
+Forthword_ ADDB, INLINE_OPT, "+b"
   addb_
   ret
 
-# ( n1 -- n1+y )
-# add n1 and y
-Forthword_ PLUS, INLINE_OPT, "+y"
-  addy_
+# ( n1|u1 -- n1-y|u1-y )
+# subtract y from n1
+Forthword_ MINUSY, INLINE_OPT, "-y"
+  minusy_
   ret
 
-# ( n1|u1 n2|u2 -- n1-n2|u1-u2 )
-# subtract n2 from n1
-Forthword_ MINUS, INLINE_OPT, "-"
-  minus_
+# ( n1|u1 -- n1-x|u1-x )
+# subtract x from n1
+Forthword_ MINUSX, INLINE_OPT, "-x"
+  minusx_
+  ret
+
+# ( n1|u1 -- n1-a|u1-a )
+# subtract a from n1
+Forthword_ MINUSA, INLINE_OPT, "-a"
+  minusa_
+  ret
+
+# ( n1|u1 -- n1-b|u1-b )
+# subtract b from n1
+Forthword_ MINUSB, INLINE_OPT, "-b"
+  minusb_
   ret
 
 # ( u1|n1 u2|n2 -- u3|n3 )
