@@ -1,11 +1,11 @@
 # macros.S
 
-# tos -> %eax # parameter top of stack [TOS] register
+# wreg -> %eax # W register and also considered Top of Stack
 # dsp -> %ebx # holds the Forth Parameter/Data stack pointer
 # areg -> %esi # A register used for memory pointer operations - non-volatile: user must preserve
 # breg -> %edi # B register used for general purpose operations - non-volatile: user must preserve
-# creg -> %ecx # C register used for general purpose operations 
-# dreg -> %edx # D register used as a temp register
+# xreg -> %ecx # X register used for general purpose operations 
+# yreg -> %edx # Y register used as a temp register
 # sysvar -> %ebp # system variables base pointer
 # temporary registers %ecx, %edx,
 
