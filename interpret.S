@@ -723,12 +723,12 @@ DOINTERPRET_ok:
 # ( -- )
 # set terminate flag which indicates request to exit forth interpreter
 Forthword_ BYE, 0, "bye"
-  one_
-  push_
   call FFLAGS
   str_x_
+  one_
+  str_y_
   x_hfetch_
-  or_
+  ory_
   x_hstr_
   ret
 

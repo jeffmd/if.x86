@@ -282,9 +282,8 @@ Forthword_ NUMBER, 0, "num"
   pop_                    # ( addr len )
   call PRAEFIX            # ( addr' len' )
   call NUMBERSIGN         # ( addr len flagsign2 )
-  push_                   # ( addr len flagsign2 flagsign2 )
-  r0_                     # ( addr len flagsign2 flagsign ) (R: base flagsign)
-  or_                     # ( addr len flagsign' )
+  r0_str_y_               # ( addr len flagsign2 Y:flagsign ) (R: base flagsign)
+  ory_                    # ( addr len flagsign' )
   str_r0_                 # ( addr len flagsign' ) (R: base flagsign')
   d0_str_x_               # ( addr len flagsign' ) X: len
   d1_str_y_               # ( addr len flagsign' ) Y: addr

@@ -842,10 +842,28 @@ Forthword_ ANDB_, INLINE_OPT, "and.b"
   andb_
   ret
 
-# ( n1 n2 -- n3 )
+# ( n1 -- n1.or.y )
 # logical or
-Forthword_ OR, INLINE_OPT, "or"
-  or_
+Forthword_ ORY, INLINE_OPT, "or.y"
+  ory_
+  ret
+
+# ( n1 -- n1.or.x )
+# logical or
+Forthword_ ORX, INLINE_OPT, "or.x"
+  orx_
+  ret
+
+# ( n1 -- n1.or.a )
+# logical or
+Forthword_ ORA, INLINE_OPT, "or.a"
+  ora_
+  ret
+
+# ( n1 -- n1.or.b )
+# logical or
+Forthword_ ORB, INLINE_OPT, "or.b"
+  orb_
   ret
 
 # ( n1 n2 -- n3)
@@ -1330,6 +1348,24 @@ Forthword_ APLUS1, INLINE_OPT, "a+1"
   aplus1_
   ret
 
+# ( -- )
+# update register A with decrement 4
+Forthword_ AMINUS4, INLINE_OPT, "a-4"
+  aminus4_
+  ret
+
+# ( -- )
+# update register A with decrement 2
+Forthword_ AMINUS2, INLINE_OPT, "a-2"
+  aminus2_
+  ret
+
+# ( -- )
+# update register A with decrement 1
+Forthword_ AMINUS1, INLINE_OPT, "a-1"
+  aminus1_
+  ret
+
 # ( -- n )
 # Read a word (32bit) from memory pointed to by register B
 Forthword_ B_FETCH, INLINE_OPT, "b@"
@@ -1378,11 +1414,28 @@ Forthword_ BPLUS2, INLINE_OPT, "b+2"
   bplus2_
   ret
 
-
 # ( -- )
 # update register B with post increment 1+ from last memory operation
 Forthword_ BPLUS1, INLINE_OPT, "b+1"
   bplus1_
+  ret
+
+# ( -- )
+# update register B with decrement 4
+Forthword_ BMINUS4, INLINE_OPT, "b-4"
+  bminus4_
+  ret
+
+# ( -- )
+# update register B with decrement 2
+Forthword_ BMINUS2, INLINE_OPT, "b-2"
+  bminus2_
+  ret
+
+# ( -- )
+# update register B with decrement 1
+Forthword_ BMINUS1, INLINE_OPT, "b-1"
+  bminus1_
   ret
 
 # ( -- n )
@@ -1438,6 +1491,61 @@ Forthword_ XPLUS2, INLINE_OPT, "x+2"
 # update register X with post increment 1+ from last memory operation
 Forthword_ XPLUS1, INLINE_OPT, "x+1"
   xplus1_
+  ret
+
+# ( -- )
+# update register X with decrement 4
+Forthword_ XMINUS4, INLINE_OPT, "x-4"
+  xminus4_
+  ret
+
+# ( -- )
+# update register X with decrement 2
+Forthword_ XMINUS2, INLINE_OPT, "x-2"
+  xminus2_
+  ret
+
+# ( -- )
+# update register X with decrement 1
+Forthword_ XMINUS1, INLINE_OPT, "x-1"
+  xminus1_
+  ret
+
+# ( -- )
+# update register Y with post increment 4+ from last memory operation
+Forthword_ YPLUS4, INLINE_OPT, "y+4"
+  yplus4_
+  ret
+
+# ( -- )
+# update register Y with post increment 2+ from last memory operation
+Forthword_ YPLUS2, INLINE_OPT, "y+2"
+  yplus2_
+  ret
+
+
+# ( -- )
+# update register Y with post increment 1+ from last memory operation
+Forthword_ YPLUS1, INLINE_OPT, "y+1"
+  yplus1_
+  ret
+
+# ( -- )
+# update register Y with decrement 4
+Forthword_ YMINUS4, INLINE_OPT, "y-4"
+  yminus4_
+  ret
+
+# ( -- )
+# update register Y with decrement 2
+Forthword_ YMINUS2, INLINE_OPT, "y-2"
+  yminus2_
+  ret
+
+# ( -- )
+# update register Y with decrement 1
+Forthword_ YMINUS1, INLINE_OPT, "y-1"
+  yminus1_
   ret
 
 # (start dest count -- )
