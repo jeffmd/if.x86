@@ -866,10 +866,28 @@ Forthword_ ORB, INLINE_OPT, "or.b"
   orb_
   ret
 
-# ( n1 n2 -- n3)
+# ( n1 -- n1.xor.y)
 # exclusive or
-Forthword_ XOR, INLINE_OPT, "xor"
-  xor_
+Forthword_ XORY, INLINE_OPT, "xor.y"
+  xory_
+  ret
+
+# ( n1 -- n1.xor.x)
+# exclusive or
+Forthword_ XORX, INLINE_OPT, "xor.x"
+  xorx_
+  ret
+
+# ( n1 -- n1.xor.a)
+# exclusive or
+Forthword_ XORA, INLINE_OPT, "xor.a"
+  xora_
+  ret
+
+# ( n1 -- n1.xor.b)
+# exclusive or
+Forthword_ XORB, INLINE_OPT, "xor.b"
+  xorb_
   ret
 
 # ( n1 -- n2)
@@ -905,7 +923,9 @@ Forthword_ NOTB, INLINE_OPT, "not.b"
 # ( n1 n2 -- flag)
 # flag is true if n1 is not equal to n2
 Forthword_ NOTEQUAL, INLINE_OPT, "<>"
-  xor_
+  d0_str_y_
+  nip_
+  xory_
   ret
 
 # ( n1 n2 -- flag )

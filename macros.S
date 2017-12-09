@@ -573,9 +573,20 @@
   or %edi, %eax
 .endm
 
-.macro xor_
-  xor (%ebx), %eax
-  nip_
+.macro xory_
+  xor %edx, %eax
+.endm
+
+.macro xorx_
+  xor %ecx, %eax
+.endm
+
+.macro xora_
+  xor %esi, %eax
+.endm
+
+.macro xorb_
+  xor %edi, %eax
 .endm
 
 .macro not_
