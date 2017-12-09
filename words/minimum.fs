@@ -20,8 +20,8 @@
 \ only accepts positive values
 : spaces ( n -- )
     \ make sure a positive number
-    push 0> and
-    push
+    !y 0> and.y   ( n' Y:n )
+    push          ( n' n' )
     begin
     ?while
       space

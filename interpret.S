@@ -173,7 +173,7 @@ Forthword_ TYPE, 0, "type"
 
 TYPE1:
   a_cfetch_
-  acplus_
+  aplus1_
   call EMIT
   d0_
   oneminus_
@@ -270,10 +270,10 @@ Forthword_ CSKIP, 0, "cskip"
   
 PFA_CSKIP1:
   a_cfetch_            # ( c' )
-  acplus_
+  aplus1_
   cmp %edi, %eax       # ( c' )
   jne PFA_CSKIP3
-  yoneminus_           # ( c' ) Y-1
+  yminus1_           # ( c' ) Y-1
 PFA_CSKIP2:
   y_iszero_             # ( c' )
   jne PFA_CSKIP1
@@ -302,12 +302,12 @@ Forthword_ CSCAN, 0, "cscan"
   
 PFA_CSCAN1:
   a_cfetch_            # ( addr1 c' )
-  acplus_
+  aplus1_
   cmp %edi, %eax       # ( addr1 c' )
   je PFA_CSCAN3
-  yoneminus_           # ( addr1 c' ) Y-1
+  yminus1_             # ( addr1 c' ) Y-1
 PFA_CSCAN2:
-  y_iszero_             # ( addr1 c' )
+  y_iszero_            # ( addr1 c' )
   jne PFA_CSCAN1
 
 PFA_CSCAN3:

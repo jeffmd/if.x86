@@ -525,9 +525,36 @@
   neg %eax
 .endm
 
-.macro and_
-  and (%ebx), %eax
-  nip_
+.macro negy_
+  neg %edx
+.endm
+
+.macro negx_
+  neg %ecx
+.endm
+
+.macro nega_
+  neg %esi
+.endm
+
+.macro negb_
+  neg %edi
+.endm
+
+.macro andy_
+  and %edx, %eax
+.endm
+
+.macro andx_
+  and %ecx, %eax
+.endm
+
+.macro anda_
+  and %esi, %eax
+.endm
+
+.macro andb_
+  and %edi, %eax
 .endm
 
 .macro or_
@@ -544,6 +571,22 @@
   not %eax
 .endm
 
+.macro noty_
+  not %edx
+.endm
+
+.macro notx_
+  not %ecx
+.endm
+
+.macro nota_
+  not %esi
+.endm
+
+.macro notb_
+  not %edi
+.endm
+
 .macro user_ sym
   leal (\sym-sysvar_base)(%ebp), %eax
 .endm
@@ -557,16 +600,8 @@
   inc %eax
 .endm
 
-.macro yoneplus_
-  inc %edx
-.endm
-
 .macro oneminus_
   dec %eax
-.endm
-
-.macro yoneminus_
-  dec %edx
 .endm
 
 .macro twoplus_
@@ -861,41 +896,102 @@
   movb %al, (%ecx)
 .endm
 
-.macro aplus_
+.macro aplus4_
   add $4, %esi
 .endm
 
-.macro bplus_
+.macro bplus4_
   add $4, %edi
 .endm
 
-.macro xplus_
+.macro xplus4_
   add $4, %ecx
 .endm
 
-.macro ahplus_
+.macro yplus4_
+  add $4, %edx
+.endm
+
+.macro aminus4_
+  sub $4, %esi
+.endm
+
+.macro bminus4_
+  sub $4, %edi
+.endm
+
+.macro xminus4_
+  sub $4, %ecx
+.endm
+
+.macro yminus4_
+  sub $4, %edx
+.endm
+
+.macro aplus2_
   add $2, %esi
 .endm
 
-.macro bhplus_
+.macro bplus2_
   add $2, %edi
 .endm
 
-.macro xhplus_
+.macro xplus2_
   add $2, %ecx
 .endm
 
-.macro acplus_
+.macro yplus2_
+  add $2, %edx
+.endm
+
+.macro aminus2_
+  sub $2, %esi
+.endm
+
+.macro bminus2_
+  sub $2, %edi
+.endm
+
+.macro xminus2_
+  sub $2, %ecx
+.endm
+
+.macro yminus2_
+  sub $2, %edx
+.endm
+
+.macro aplus1_
   inc %esi
 .endm
 
-.macro bcplus_
+.macro bplus1_
   inc %edi
 .endm
 
-.macro xcplus_
+.macro xplus1_
   inc %ecx
 .endm
+
+.macro yplus1_
+  inc %ecx
+.endm
+
+.macro aminus1_
+  dec %esi
+.endm
+
+.macro bminus1_
+  dec %edi
+.endm
+
+.macro xminus1_
+  dec %ecx
+.endm
+
+.macro yminus1_
+  dec %edx
+.endm
+
 
 .macro ascii_ str, flg=0
   #.p2align 1 # Align to even locations

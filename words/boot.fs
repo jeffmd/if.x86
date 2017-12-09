@@ -58,10 +58,10 @@ pname (create) push current @ header \ ( nfa )
 \ ( n -- )
 \ set wid flags of current word
 : widf
-    push       \ ( n n )
-    cur@ @ !x  \ ( n nfa ) X: nfa
-    xh@        \ ( n flags )
-    and        \ ( n&flags )
+    !y         \ ( n ) y; n
+    cur@ @ !x  \ ( nfa ) X: nfa
+    xh@        \ ( flags )
+    and.y      \ ( n&flags )
     xh!        \ ( n&flags )
   [
   ;opt uwid

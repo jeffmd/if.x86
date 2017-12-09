@@ -230,7 +230,7 @@ Forthword_ COPYSTRING, 0, "copy$"
   str_b_             # ( s-addr len len' d-addr ) B: d-addr
   d0_                # ( s-addr len len' len')
   b_hstr_
-  bhplus_
+  bplus2_
   d1_str_x_
   d2_str_a_          # ( s-addr ) A: addr
   cld
@@ -280,13 +280,13 @@ Forthword_ COPY_BYTE_UNTIL, 0, "copy.byte.until"
   # begin
 CBU_BEGIN:
     a_cfetch_        # ( source destination byte )
-    acplus_
+    aplus1_
     and $0xFF, %eax
     cmp %eax, %ecx    
     # until
     je CBU_DONE
     b_cstr_          # ( source destination byte ) [B]: byte
-    bcplus_          # ( source destination byte ) B+1
+    bplus1_          # ( source destination byte ) B+1
     jmp CBU_BEGIN
 
 CBU_DONE:

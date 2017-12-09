@@ -805,11 +805,41 @@ Forthword_ NEGATE, INLINE_OPT, "neg"
   neg_
   ret
 
+# ( Y:n1 -- Y:-n1 )
+# 2-compliment of Y
+Forthword_ NEGATEY, INLINE_OPT, "neg.y"
+  negy_
+  ret
 
-# ( n1 n2 -- n3 )
+# ( X:n1 -- X:-n1 )
+# 2-compliment of X
+Forthword_ NEGATEX, INLINE_OPT, "neg.x"
+  negx_
+  ret
+
+
+# ( n1 -- n1andy )
 # bitwise and
-Forthword_ AND_, INLINE_OPT, "and"
-  and_
+Forthword_ ANDY_, INLINE_OPT, "and.y"
+  andy_
+  ret
+
+# ( n1 -- n1andx )
+# bitwise and
+Forthword_ ANDX_, INLINE_OPT, "and.x"
+  andx_
+  ret
+
+# ( n1 -- n1anda )
+# bitwise and
+Forthword_ ANDA_, INLINE_OPT, "and.a"
+  anda_
+  ret
+
+# ( n1 -- n1andb )
+# bitwise and
+Forthword_ ANDB_, INLINE_OPT, "and.b"
+  andb_
   ret
 
 # ( n1 n2 -- n3 )
@@ -828,6 +858,30 @@ Forthword_ XOR, INLINE_OPT, "xor"
 # 1-complement of WR
 Forthword_ NOT, INLINE_OPT, "not"
   not_
+  ret
+
+# ( n1 -- n2)
+# 1-complement of y
+Forthword_ NOTY, INLINE_OPT, "not.y"
+  noty_
+  ret
+
+# ( n1 -- n2)
+# 1-complement of x
+Forthword_ NOTX, INLINE_OPT, "not.x"
+  notx_
+  ret
+
+# ( n1 -- n2)
+# 1-complement of a
+Forthword_ NOTA, INLINE_OPT, "not.a"
+  nota_
+  ret
+
+# ( n1 -- n2)
+# 1-complement of b
+Forthword_ NOTB, INLINE_OPT, "not.b"
+  notb_
   ret
 
 # ( n1 n2 -- flag)
@@ -1259,21 +1313,21 @@ Forthword_ A_CSTORE, INLINE_OPT, "ac!"
 
 # ( -- )
 # update register A with post increment 4+ from last memory operation
-Forthword_ APLUS, INLINE_OPT, "a++"
-  aplus_
+Forthword_ APLUS4, INLINE_OPT, "a+4"
+  aplus4_
   ret
 
 # ( -- )
 # update register A with post increment 2+ from last memory operation
-Forthword_ AHPLUS, INLINE_OPT, "ah++"
-  ahplus_
+Forthword_ APLUS2, INLINE_OPT, "a+2"
+  aplus2_
   ret
 
 
 # ( -- )
 # update register A with post increment 1+ from last memory operation
-Forthword_ ACPLUS, INLINE_OPT, "ac++"
-  acplus_
+Forthword_ APLUS1, INLINE_OPT, "a+1"
+  aplus1_
   ret
 
 # ( -- n )
@@ -1314,21 +1368,21 @@ Forthword_ B_CSTORE, INLINE_OPT, "bc!"
 
 # ( -- )
 # update register B with post increment 4+ from last memory operation
-Forthword_ BPLUS, INLINE_OPT, "b++"
-  bplus_
+Forthword_ BPLUS4, INLINE_OPT, "b+4"
+  bplus4_
   ret
 
 # ( -- )
 # update register B with post increment 2+ from last memory operation
-Forthword_ BHPLUS, INLINE_OPT, "bh++"
-  bhplus_
+Forthword_ BPLUS2, INLINE_OPT, "b+2"
+  bplus2_
   ret
 
 
 # ( -- )
 # update register B with post increment 1+ from last memory operation
-Forthword_ BCPLUS, INLINE_OPT, "bc++"
-  bcplus_
+Forthword_ BPLUS1, INLINE_OPT, "b+1"
+  bplus1_
   ret
 
 # ( -- n )
@@ -1369,21 +1423,21 @@ Forthword_ X_CSTORE, INLINE_OPT, "xc!"
 
 # ( -- )
 # update register X with post increment 4+ from last memory operation
-Forthword_ XPLUS, INLINE_OPT, "x++"
-  xplus_
+Forthword_ XPLUS4, INLINE_OPT, "x+4"
+  xplus4_
   ret
 
 # ( -- )
 # update register X with post increment 2+ from last memory operation
-Forthword_ XHPLUS, INLINE_OPT, "xh++"
-  xhplus_
+Forthword_ XPLUS2, INLINE_OPT, "x+2"
+  xplus2_
   ret
 
 
 # ( -- )
 # update register X with post increment 1+ from last memory operation
-Forthword_ XCPLUS, INLINE_OPT, "xc++"
-  xcplus_
+Forthword_ XPLUS1, INLINE_OPT, "x+1"
+  xplus1_
   ret
 
 # (start dest count -- )

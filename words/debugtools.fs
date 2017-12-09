@@ -33,11 +33,11 @@ only
 ( bbb reg -- )
 \ tools
 \ clear the bits of reg defined by bit pattern in bbb
-: rbc !x not xc@ and xc! ;
+: rbc !x d0!y nip not.y xc@ and.y xc! ;
 
 \ modify bits of reg defined by mask
 : rbm ( val mask reg -- )
-    !x xc@ and or
+    !x d0!y nip xc@ and.y or
     xc!
 ;
 
