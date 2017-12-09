@@ -763,6 +763,26 @@ DOTASKS_N1:
   ret
 
 # ( -- )
+# turn emit off
+Forthword_ EMIT_OFF, 0, "emit.off"
+  # reset output source for emit
+  lit_ NOOP
+  push_
+  call EMITADDR
+  store_
+  ret
+
+# ( -- )
+# turn emit on for default output
+Forthword_ EMIT_ON, 0, "emit.on"
+  # reset output source for emit
+  lit_ PUTCHAR
+  push_
+  call EMITADDR
+  store_
+  ret
+
+# ( -- )
 # reset input source
 Forthword_ RESET, 0, "reset"
   call ZERO_SMUDGE_STR
@@ -773,12 +793,8 @@ Forthword_ RESET, 0, "reset"
   call KEYADDR
   store_
 
-  # reset output source for emit
-  lit_ PUTCHAR
-  push_
-  call EMITADDR
-  store_
-
+  call EMIT_ON
+  
   # reset input buffer
   call INRESET
 
