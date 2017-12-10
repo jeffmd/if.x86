@@ -16,7 +16,7 @@
 ;
 
 \ save wordlist id in context array at context index
-: context! ( wid -- )
+: context! ( wid -- addr )
   push context# d0!y nip y.!
 ;
 
@@ -95,11 +95,13 @@
   \ index must be >= 1
   0>           ( contidx idx-1 flag )
   ?if
-    0 context! ( contidx idx-1 ) 
-    swap h!    ( contidx )
+    0 context! ( contidx idx-1 addr ) 
+    d0!y d1    ( contidx idx-1 contidx Y:idx-1 )
+    y.h!       ( contidx )
   else
-    pop2 [compile] only
+    [compile] only
   then
+  nip2
 ; immediate
 
 \ Used in the form:

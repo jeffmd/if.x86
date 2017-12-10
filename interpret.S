@@ -107,9 +107,10 @@ Forthword_ BL, INLINE_OPT, "bl"
 Forthword_ COMMENt, IMMEDIATE_EN, "\\"
   push_      # preserve WR
   call STIB
-  str_d0_
+  str_y_
+  nip_
   call G_IN  # skip to end of input buffer
-  hstore_
+  yw_hstr_
   pop_      
   ret
 

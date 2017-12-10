@@ -15,9 +15,9 @@ Forthword_ STATE, 0, "state"
 
 # ( val -- )
 Forthword_ STATESTORE, 0, "state!"
-  push_
+  str_y_
   user_ state
-  hstore_
+  yw_hstr_
   ret
 
 # ( -- )
@@ -347,17 +347,16 @@ NFATOXTF_EXIT:
 # other vocabularies
 Forthword_ ONLY, IMMEDIATE_EN, "only"
   # forth vocab always takes slot 0
-  one_                        # ( 1 )
-  push_                       # ( 1 1 )
-  lit_y_ EE_FORTHWORDLIST     # ( 1 1 ) Y:FLIST
-  call CURRENT                # ( 1 CURRENT )
-  yw_str_                     # ( 1 CURRENT )
+  lit_y_ EE_FORTHWORDLIST     # ( ? ) Y:FLIST
+  call CURRENT                # ( CURRENT )
+  yw_str_                     # ( CURRENT )
   # make current also forth vocab
-  call CONTEXT                # ( 1 CONTEXT )
-  yw_str_                     # ( 1 CONTEXT )
+  call CONTEXT                # ( CONTEXT )
+  yw_str_                     # ( CONTEXT )
   # move index to next slot
-  twominus_                   # ( 1 CONTEXT-2 )
-  hstore_                     # ( CONTEXT-2 )
+  twominus_                   # ( CONTEXT-2 )
+  lit_y_ 1                    # ( CONTEXT-2 Y:1 )
+  yw_hstr_                    # ( CONTEXT-2 )
   # make second slot have no vocab
   twoplus_                    # ( CONTEXT )
   fourplus_                   # ( CONTEXT+4 )

@@ -43,9 +43,10 @@ Forthword_ BASE, 0, "base"
 # ( n -- )
 # save base
 Forthword_ BASESTORE, 0, "base!"
-  push_
+  str_y_
   user_ USER_BASE
-  jmp HSTORE
+  yw_hstr_
+  ret
 
 # ( n -- )
 # load base
@@ -557,10 +558,9 @@ Forthword_ DOINCLUDE, 0, "(include)"
   call KEYADDR          # ( KEYADDR )
   yw_str_               # ( KEYADDR )
   # restore FFLAGS
-  rpop_                 # ( fflags ) ( R: itime )
-  push_                 # ( fflags fflags )
-  call FFLAGS           # ( fflags FFLAGS )
-  hstore_               # ( FFLAGS )
+  rpopy_                # ( KEYADDR Y:fflags ) ( R: itime )
+  call FFLAGS           # ( FFLAGS )
+  yw_hstr_              # ( FFLAGS )
   rpop_                 # ( itime ) ( R: )
   jmp IDLETIMESTORE
 

@@ -816,9 +816,20 @@
   movsxw (%eax), %eax
 .endm
 
-.macro hstore_
-  popy_
+.macro yw_hstr_
   movw %dx, (%eax)     
+.endm
+
+.macro xw_hstr_
+  movw %cx, (%eax)     
+.endm
+
+.macro aw_hstr_
+  movw %si, (%eax)     
+.endm
+
+.macro bw_hstr_
+  movw %di, (%eax)     
 .endm
 
 .macro zero_hstr_

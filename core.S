@@ -1256,7 +1256,7 @@ Forthword_ ONEMINUS_STR, INLINE_OPT, "1-!"
   oneminus_str_
   ret
 
-# ( a-addr -- )
+# ( a-addr -- a-addr )
 # add 1 to content of cell RAM address a-addr
 Forthword_ ONEPLUS_STR, INLINE_OPT, "1+!"
   oneplus_str_
@@ -1268,10 +1268,28 @@ Forthword_ HFETCH, INLINE_OPT, "h@"
   hfetch_
   ret
 
-# ( n16 a-addr -- )
-# store a half word (16 bits) to RAM address
-Forthword_ HSTORE, INLINE_OPT, "h!"
-  hstore_
+# ( a-addr -- a-addr Y:n16 )
+# store a half word (16 bits) in Y register to RAM address
+Forthword_ YWHSTORE, INLINE_OPT, "y.h!"
+  yw_hstr_
+  ret
+
+# ( a-addr -- a-addr X:n16 )
+# store a half word (16 bits) in X register to RAM address
+Forthword_ XWHSTORE, INLINE_OPT, "x.h!"
+  xw_hstr_
+  ret
+
+# ( a-addr -- a-addr A:n16 )
+# store a half word (16 bits) in A register to RAM address
+Forthword_ AWHSTORE, INLINE_OPT, "a.h!"
+  aw_hstr_
+  ret
+
+# ( a-addr -- a-addr B:n16 )
+# store a half word (16 bits) in B register to RAM address
+Forthword_ BWHSTORE, INLINE_OPT, "b.h!"
+  bw_hstr_
   ret
 
 # ( a-addr -- )
