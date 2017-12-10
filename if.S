@@ -42,8 +42,11 @@ ram_cp: .space 4
 WR: .space 4
 RA: .space 4
 RB: .space 4
-RC: .space 4
-RD: .space 4
+RX: .space 4
+RY: .space 4
+# litteral word defer
+Lit_Interpret: .space 4
+Lit_Compile: .space 4
 rstack0: .space 4
 ram_handler: .space 4
 ram_sharptib: .space 2

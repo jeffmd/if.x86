@@ -87,6 +87,21 @@ Forthword_ EMIT, 0, "emit"
   fetch_
   jmp EXEC
 
+# ( c -- )
+# fetch the lit vector and EXEC it. Will interpret a litteral for one of the registers
+Forthword_ LIT_INTERP, 0, "lit.interp"
+  push_
+  user_  Lit_Interpret
+  fetch_
+  jmp EXEC
+
+# ( c -- )
+# fetch the lit vector and EXEC it. Will compile a litteral for one of the registers
+Forthword_ LIT_COMP, 0, "lit.comp"
+  push_
+  user_  Lit_Compile
+  fetch_
+  jmp EXEC
 
 # ( -- )
 # cause subsequent output appear at the beginning of the next line
@@ -185,6 +200,64 @@ TYPE_END:
   rpopa_
   ret
 
+# ( xtc xti -- )
+# Select register for literal
+Forthword_ REGSET, IMMEDIATE_EN, "regset"
+  rpushy_
+  str_y_
+  user_ Lit_Interpret
+  yw_str_
+  d0_str_y_
+  user_ Lit_Compile
+  yw_str_
+  pop2_
+  rpopy_
+  ret
+
+# ( -- )
+# Select W register for literal
+Forthword_ WSET, IMMEDIATE_EN, "w="
+  push_
+  lit_ WLIT_C
+  push_
+  lit_ WLIT_INTERP
+  jmp REGSET
+  
+# ( -- )
+# Select A register for literal
+Forthword_ ASET, IMMEDIATE_EN, "a="
+  push_
+  lit_ ALIT_C
+  push_
+  lit_ ALIT_INTERP
+  jmp REGSET
+
+# ( -- )
+# Select B register for literal
+Forthword_ BSET, IMMEDIATE_EN, "b="
+  push_
+  lit_ BLIT_C
+  push_
+  lit_ BLIT_INTERP
+  jmp REGSET
+
+# ( -- )
+# Select X register for literal
+Forthword_ XSET, IMMEDIATE_EN, "x="
+  push_
+  lit_ XLIT_C
+  push_
+  lit_ XLIT_INTERP
+  jmp REGSET
+
+# ( -- )
+# Select Y register for literal
+Forthword_ YSET, IMMEDIATE_EN, "y="
+  push_
+  lit_ YLIT_C
+  push_
+  lit_ YLIT_INTERP
+  jmp REGSET
 
 # ( r-addr r-len f-addr f-len --  f)
 # compares two counted strings in RAM
@@ -490,6 +563,36 @@ Forthword_ DOSLIT, 0, "(slit)"
   pop_           # ( straddr slength )
   ret
 
+# ( n -- )
+# store n in WR
+Forthword_ WLIT_INTERP, IMMEDIATE_EN, "[w=]"
+      movl %eax, WR
+      ret
+
+# ( n -- )
+# store n in RY
+Forthword_ YLIT_INTERP, IMMEDIATE_EN, "[y=]"
+      movl %eax, RY
+      ret
+
+# ( n -- )
+# store n in RX
+Forthword_ XLIT_INTERP, IMMEDIATE_EN, "[x=]"
+      movl %eax, RX
+      ret
+
+# ( n -- )
+# store n in RA
+Forthword_ ALIT_INTERP, IMMEDIATE_EN, "[a=]"
+      movl %eax, RA
+      ret
+
+# ( n -- )
+# store n in RB
+Forthword_ BLIT_INTERP, IMMEDIATE_EN, "[b=]"
+      movl %eax, RB
+      ret
+
 # ( addr len -- [n] | [addr len] f )
 # recognizer for integer numbers
 Forthword_ REC_NUM, 0, "rec#"
@@ -502,14 +605,17 @@ Forthword_ REC_NUM, 0, "rec#"
     rnip2_                 # ( n f )
     call STATE             # ( n state )
     iszero_
+    pop_
     je REC_NUMBER_OK
-      pop_
-      jmp LIT
+      call LIT_COMP
+      jmp REC_NUMBER_DONE
 
 REC_NUMBER_OK:
-      popy_               # ( 0 ) Y: n
-      movl %edx, WR
-      true_               # ( n true ) (R: )
+      call LIT_INTERP
+      
+REC_NUMBER_DONE:
+      call WSET
+      true_               # ( true ) (R: )
       ret
 
 REC_NONUMBER:
@@ -579,16 +685,16 @@ REC_WORD_EXECUTE:
   y_str_d0_          # ( WR xt )
   movl RA, %esi
   movl RB, %edi
-  movl RC, %ecx
-  movl RD, %edx
+  movl RX, %ecx
+  movl RY, %edx
 
   call EXEC          # ( ?? )
   
   movl %eax, WR
   movl %esi, RA
   movl %edi, RB
-  movl %ecx, RC
-  movl %edx, RD
+  movl %ecx, RX
+  movl %edx, RY
   true_              # ( true )
   ret
 
@@ -792,12 +898,10 @@ Forthword_ RESET, 0, "reset"
   yw_str_
 
   call EMIT_ON
-  
   # reset input buffer
   call INRESET
-
   call SLEEPON
-
+  call WSET
   # switch to interpret mode
   jmp LBRACKET
 

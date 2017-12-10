@@ -119,13 +119,45 @@ Forthword_ CALLC, 0, "call,"
   # store offset
   jmp DWCOMMA
 
-# compile top of stack as inlinned immediate 32 bit constant
-# ( n -- )
-Forthword_ LIT, 0, "lit,"
-# use FFLAGS bit 5,6,7 to select register to use
-  push_
-  lit_ 0xb8
+# compile inlinned immediate 32 bit constant
+# ( n ins -- )
+Forthword_ DOLIT, 0, "(lit,)"
   call COMMA
   pop_
   # store 32 bit val from tos
   jmp DWCOMMA
+
+# compile top of stack as inlinned immediate 32 bit constant
+# ( n -- )
+Forthword_ WLIT_C, 0, "lit,"
+  push_
+  lit_ 0xb8
+  jmp DOLIT
+
+# compile Y register load inlinned immediate 32 bit constant
+# ( n -- )
+Forthword_ YLIT_C, 0, "lit.y,"
+  push_
+  lit_ 0xba
+  jmp DOLIT
+
+# compile X register load inlinned immediate 32 bit constant
+# ( n -- )
+Forthword_ XLIT_C, 0, "lit.x,"
+  push_
+  lit_ 0xb9
+  jmp DOLIT
+
+# compile A register load inlinned immediate 32 bit constant
+# ( n -- )
+Forthword_ ALIT_C, 0, "lit.a,"
+  push_
+  lit_ 0xbe
+  jmp DOLIT
+
+# compile B register load inlinned immediate 32 bit constant
+# ( n -- )
+Forthword_ BLIT_C, 0, "lit.b,"
+  push_
+  lit_ 0xbf
+  jmp DOLIT
