@@ -22,9 +22,10 @@ Forthword_ IDLETIMEADDR, 0, "idletime#"
 # ( n -- )
 # set idletime
 Forthword_ IDLETIMESTORE, 0, "idletime!"
-  push_
+  str_y_
   user_ USER_IDLETIME
-  jmp STORE
+  yw_str_
+  ret
 
 # ( -- n )
 # get idletime
@@ -439,17 +440,16 @@ Forthword_ CATCH, 0, "catch"
   rpush_              # ( xt hxt ) (R: callerret SP hxt )
   # rp@ handler !
   rp_                 # ( xt RP ) (R: callerret SP hxt)
-  push_               # ( xt RP RP )
-  call HANDLER        # ( xt RP haddr )
-  store_              # ( xt haddr )
+  str_y_              # ( xt RP Y:RP )
+  call HANDLER        # ( xt haddr )
+  yw_str_             # ( xt haddr )
   pop_                # ( xt )
   call EXEC
   # restore handler
   # r> handler !
-  rpop_               # ( hxt ) (R: callerret SP )
-  push_               # ( hxt hxt )
-  call HANDLER        # ( hxt haddr )
-  store_              # ( haddr )
+  rpopy_              # ( hxt ) (R: callerret SP )
+  call HANDLER        # ( haddr )
+  yw_str_             # ( haddr )
   rnip_               # ( haddr ) (R: callerret)
   zero_               # ( 0 )
   ret
@@ -460,12 +460,11 @@ Forthword_ CATCH, 0, "catch"
 Forthword_ THROW, 0, "throw"
   call TYPE          # ( ? )
   call HANDLER       # ( haddr )
+  str_x_             # ( haddr X:haddr )
   fetch_             # ( RP_handler )
   str_rp_            # ( RP_handler ) (R: callerret SP hxt)
-  rpop_              # ( hxt ) (R: callerret SP )
-  push_
-  call HANDLER       # ( hxt haddr )
-  store_             # ( haddr )
+  rpopy_             # ( RP_handler Y:hxt ) (R: callerret SP )
+  x_str_             # ( RP_handler )
   rpop_              # ( SP ) (R: callerret )
   str_sp_            # ( ... )
   one_               # ( ... 1 )
@@ -534,13 +533,13 @@ Forthword_ DOINCLUDE, 0, "(include)"
   call KEYFILEADDR      # ( filedes KEYFILEADDR ) (R: itime fflags KEY)
   fetch_                # ( filedes KEYFILE ) (R: itime fflags KEY)
   rpush_                # ( filedes KEYFILE ) (R: itime fflags KEY KEYFILE)
+  d0_str_y_             # ( filedes KEYFILE Y:filedes )
   call KEYFILEADDR      # ( filedes KEYFILEADDR )
-  store_                # ( KEYFILEADDR )
+  yw_str_               # ( filedes KEYFILEADDR )
   # defer key to keyfile for input
-  lit_ KEYFILE        # ( KEYFILE )
-  push_                 # ( KEYFILE KEYFILE )
-  call KEYADDR          # ( KEYFILE KEYFILEADDR )
-  store_                # ( KEYFILEADDR )
+  lit_y_ KEYFILE        # ( KEYFILEADDR Y:KEYFILE )
+  call KEYADDR          # ( KEYADDR )
+  yw_str_               # ( KEYADDR )
   # run interpreter
   call DOTASKS          # ( ? )
   # close keyfile
@@ -550,20 +549,18 @@ Forthword_ DOINCLUDE, 0, "(include)"
   call close            # ( ? )
   rnip_                 # ( ? ) (R: oitime offlags oKEY oKEYFILE )
   # pop tor into keyfile
-  rpop_                 # ( KEYFILE ) ( R: itime fflags KEY )
-  push_                 # ( KEYFILE KEYFILE )
-  call KEYFILEADDR      # ( KEYFILE KEYFILEADDR )
-  store_                # ( KEYFILEADDR )
+  rpopy_                # ( ? Y: KEYFILE ) ( R: itime fflags KEY )
+  call KEYFILEADDR      # ( KEYFILEADDR )
+  yw_str_               # ( KEYFILEADDR )
   # pop top of return into defer key
-  rpop_                 # ( KEY ) ( R: itime fflags )
-  push_                 # ( KEY KEY )
-  call KEYADDR          # ( KEY KEYADDR )
-  store_                # ( KEYADDR )
+  rpopy_                # ( KEYFILEADDR Y:KEY ) ( R: itime fflags )
+  call KEYADDR          # ( KEYADDR )
+  yw_str_               # ( KEYADDR )
   # restore FFLAGS
   rpop_                 # ( fflags ) ( R: itime )
   push_                 # ( fflags fflags )
   call FFLAGS           # ( fflags FFLAGS )
-  call HSTORE           # ( FFLAGS )
+  hstore_               # ( FFLAGS )
   rpop_                 # ( itime ) ( R: )
   jmp IDLETIMESTORE
 
@@ -607,15 +604,13 @@ DOCMDARG_EXIT:
 # ( -- )
 # must be last word in core
 Forthword_ WIPE, 0, "WIPE"
-  lit_ DPSTART
-  push_
+  lit_y_ DPSTART
   call DPSHARP
-  store_
+  yw_str_
 
-  lit_ CPSTART
-  push_
+  lit_y_ CPSTART
   call CPSHARP
-  store_
+  yw_str_
 
   lit_ EE_FORTHWORDLIST
   zero_str_
@@ -623,13 +618,12 @@ Forthword_ WIPE, 0, "WIPE"
   zero_str_
 
   # init pause to noop
-  lit_ NOOP
-  push_
+  lit_y_ NOOP
   call PAUSEADDR
-  store_
+  yw_str_
 
-  lit_ HERESTART
-  push_
+  lit_y_ HERESTART
   call HEREADDR
-  store_
+  yw_str_
+  
   jmp ONLY

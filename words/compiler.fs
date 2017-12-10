@@ -6,10 +6,10 @@
 ; :ic
 
 
-\ read the following cell from the executing word and append it
-\ to the current dictionary position.
+\ read the following cell from the executing word and program it
+\ into the current dictionary position.
 : (program)  ( -- )
-    r>r+     ( raddr ) ( R: raddr+1 )
+    r0+     ( raddr ) ( R: raddr+cell )
     @        ( nfa )
     nfa>xtf  ( xt xtflags )
     cxt
@@ -258,7 +258,7 @@
 
 \ allocate or release n bytes of memory in RAM
 : allot ( n -- )
-    !y here +y push here# !
+    !y here y+w here# y.!
 ;
 
 ( x -- ) ( C: x "<spaces>name" -- )

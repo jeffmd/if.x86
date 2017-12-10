@@ -505,6 +505,22 @@
   addl %edi, %eax
 .endm
 
+.macro yaddw_
+  addl %eax, %edx
+.endm
+
+.macro xaddw_
+  addl %eax, %ecx
+.endm
+
+.macro aaddw_
+  addl %eax, %esi
+.endm
+
+.macro baddw_
+  addl %eax, %edi
+.endm
+
 .macro minusy_
   sub %edx, %eax
 .endm
@@ -616,6 +632,10 @@
 # Push constant on datastack
 .macro lit_ val
   movl $\val, %eax
+.endm
+
+.macro lit_y_ val
+  movl $\val, %edx
 .endm
 
 .macro oneplus_
@@ -747,9 +767,20 @@
   movl (%eax), %eax
 .endm
 
-.macro store_
-  popy_
+.macro yw_str_
   movl %edx, (%eax)
+.endm
+
+.macro xw_str_
+  movl %ecx, (%eax)
+.endm
+
+.macro aw_str_
+  movl %esi, (%eax)
+.endm
+
+.macro bw_str_
+  movl %edi, (%eax)
 .endm
 
 .macro zero_str_

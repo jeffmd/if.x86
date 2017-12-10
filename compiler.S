@@ -56,9 +56,9 @@ Forthword_ SMUDGE, 0, "smudge"
 # ( addr -- )
 # system SMUDGE. Get program address of latest word being compiled.
 Forthword_ SMUDGE_STR, 0, "smudge!"
-  push_
+  str_y_
   user_ COLON_SMUDGE
-  store_
+  yw_str_
   ret
 
 # ( -- )
@@ -184,10 +184,10 @@ Forthword_ UWID, 0, "uwid"
   je UWID_end
 
   # wid.word = smudge
-  push_        # ( xt xt )
-  call CURRENT # ( xt CURRENT )
-  fetch_       # ( xt wid )
-  store_       # ( wid )
+  str_y_       # ( xt ) Y:xt
+  call CURRENT # ( CURRENT )
+  fetch_       # ( wid )
+  yw_str_      # ( wid )
   #call CLRCACHE
   # set smudge to zero indicating no longer compiling a word
   call ZERO_SMUDGE_STR # ( SMUDGE )
@@ -205,9 +205,9 @@ Forthword_ COMMA, 0, ","
 # ( n -- )
 # store double word 32 bit value in WR into code section ram at (code pointer) CP
 Forthword_ DWCOMMA, 0, "dw,"
-  push_
+  str_y_
   call CP
-  store_
+  yw_str_
   four_
   jmp CPPLUS
 
@@ -215,9 +215,9 @@ Forthword_ DWCOMMA, 0, "dw,"
 # store 32 bit value in WR into dictionary section ram at (dictionary pointer) DP
 # automaticaly increment dp position by 4 bytes
 Forthword_ DPSTORE, 0, "dp!"
-  push_
+  str_y_
   call DP
-  store_
+  yw_str_
   four_
   jmp DPPLUS
 
@@ -247,9 +247,9 @@ Forthword_ STRINGPROGSTORE, 0, "$cp!"
   push_
   call CP
   call COPYSTRING
-  push_
+  str_y_
   call CPSHARP
-  store_
+  yw_str_
   ret
 
 # ( addr len len' -- )
@@ -258,9 +258,9 @@ Forthword_ STRINGDICTSTORE, 0, "$dp!"
   push_
   call DP
   call COPYSTRING
-  push_
+  str_y_
   call DPSHARP
-  store_
+  yw_str_
   ret
 
 # ( source destination term -- count )
@@ -347,13 +347,12 @@ Forthword_ ONLY, IMMEDIATE_EN, "only"
   # forth vocab always takes slot 0
   one_                        # ( 1 )
   push_                       # ( 1 1 )
-  lit_ EE_FORTHWORDLIST       # ( 1 FLIST )
-  push2_                      # ( 1 FLIST FLIST FLIST )
-  call CURRENT                # ( 1 FLIST FLIST CURRENT )
-  store_                      # ( 1 FLIST CURRENT )
+  lit_y_ EE_FORTHWORDLIST     # ( 1 1 ) Y:FLIST
+  call CURRENT                # ( 1 CURRENT )
+  yw_str_                     # ( 1 CURRENT )
   # make current also forth vocab
-  call CONTEXT                # ( 1 FLIST CONTEXT )
-  store_                      # ( 1 CONTEXT )
+  call CONTEXT                # ( 1 CONTEXT )
+  yw_str_                     # ( 1 CONTEXT )
   # move index to next slot
   twominus_                   # ( 1 CONTEXT-2 )
   hstore_                     # ( CONTEXT-2 )

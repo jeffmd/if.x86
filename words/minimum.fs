@@ -48,7 +48,7 @@ var hld
 
 \ initialize the pictured numeric output conversion process
 : <# ( n -- n )
-    push pad push hld ! pop
+    push pad !y hld y.! pop
 ;
 
 \ pictured numeric output: convert one digit

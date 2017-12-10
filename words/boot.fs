@@ -13,7 +13,7 @@ pname header push !y $FF00 or.y $dp! \ ( nfa ? )
   ]
     push dp     \ ( addr len wid nfa )
     rpush       \ ( addr len wid nfa ) (R: nfa )
-    rpushd0     \ ( addr len wid nfa ) (R: nfa wid )
+    rpush.d0    \ ( addr len wid nfa ) (R: nfa wid )
     d1!y        \ ( addr len wid nfa ) (R: nfa wid )
     $FF00 or.y  \ ( addr len wid len|$FF00 )
     nip         \ ( addr len len|$FF00 )

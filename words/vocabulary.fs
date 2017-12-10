@@ -17,7 +17,7 @@
 
 \ save wordlist id in context array at context index
 : context! ( wid -- )
-  push context# !
+  push context# d0!y nip y.!
 ;
 
 \ get a valid wid from the context
@@ -45,20 +45,22 @@
 : widinit ( wid -- wid )
   \ wid.word = 0
   !x ( wid )  \ X: wid
-  0! ( wid ) \ wid.word = 0
+  0! ( wid )  \ wid.word = 0
 
   \ parent wid child field is in cur@->child
   push cur@ wid:child  ( wid parentwid.child )
-  push  ( wid parentwid.child parentwid.child )
-  @     ( wid parentwid.child childwid )
-  push x wid:link ( wid parentwid.child childwid wid.link )
+  push       ( wid parentwid.child parentwid.child )
+  @          ( wid parentwid.child childwid )
+  !y         ( wid parentwid.child childwid Y:childwid)
+  x wid:link ( wid parentwid.child wid.link )
   \ wid.link = childLink
-  !         ( wid parentwid.child wid.link )
+  y.!        ( wid parentwid.child wid.link )
   \ wid.child = 0
-  dcell+ 0! ( wid parentwid.child wid.child )
+  dcell+ 0!  ( wid parentwid.child wid.child )
   \ parentwid.child = wid
-  pop       ( wid parentwid.child )
-  ! x       ( wid )
+  pop        ( wid parentwid.child )
+  d0!y nip   ( parentwid.child )
+  y.! x      ( wid )
 ;
 
 \ make a wordlist record in data ram
@@ -111,7 +113,7 @@
 ( -- )
 : definitions
     context@
-    ?if push current ! then
+    ?if !y current y.! then
 ; immediate
 
 \ A defining word used in the form:
@@ -131,8 +133,9 @@
   \ voc.wid = wid
   dw,            ( wid ? )
   \ wid.name = vocabulary.nfa  
-  cur@ @ swap    ( voc.nfa wid )
-  dcell+ !       ( voc.nfa )
+  cur@ @ !y pop  ( wid Y:voc.nfa )
+  dcell+ y.!     ( wid.name )
+  
   does>
    @ \ get header address
    \ make this vocabulary the active search context
@@ -151,7 +154,7 @@ cur@ @ push ( nfa nfa )
 \ forthwid.word is already initialized
 context @ dcell+ ( nfa forthwid.name )
 \ forthwid.name = nfa
-! ( forthwid.name )
+d0!y nip y.! ( forthwid.name )
 \ forthwid.link = 0
 dcell+ 0! ( forthwid.link )
 \ forthwid.child = 0
@@ -159,7 +162,7 @@ dcell+ 0! ( )
 
 \ print name field
 : .nf ( nfa -- )
-      $l !y $FF and.y  ( addr cnt n ) \ mask immediate bit
+      $l !y $FF and.y  ( addr cnt ) \ mask immediate bit
       type space       ( ? )
 ;
  

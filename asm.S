@@ -60,9 +60,10 @@ Forthword_ JMPC, 0, "jmpc"
   push_                # ( start rellong jumpinst jumpinst )
   d2_                  # ( start rellong jumpinst start )
   cstr_                # ( start rellong start )
+  d0_str_y_            # ( start rellong start Y:rellong )
   oneplus_             # ( start rellong start+1 )
-  store_               # ( start start+1 )
-  pop_                 # ( start )
+  yw_str_              # ( start rellong start+1 )
+  nip2_                # ( start+1 )
   jmp TAILOPTOFF
 
 # conditional jump over a jmp if not zero

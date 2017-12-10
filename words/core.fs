@@ -31,12 +31,12 @@
 
 \ store address of the next free dictionary cell
 : dp#! ( addr -- )
-    push dp# !
+    !y dp# y.!
 ;
 
 \ store address of the next free code cell
 : cp#! ( addr -- )
-    push cp# !
+    !y cp# y.!
 ;
 
 
@@ -44,8 +44,8 @@
 \ create a dictionary entry and register in word list
 : rword
     (create)      ( nfa )
-    push cur@     ( nfa wid )
-    !             ( )
+    !y cur@       ( wid Y:nfa )
+    y.!           ( wid )
 ;
 
 ( -- dcell )

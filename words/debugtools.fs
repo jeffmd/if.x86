@@ -53,7 +53,8 @@ only
 : r? c@ .$ ;
 
 \ setup fence which is the lowest address that we can forget words
-find r? push var fence fence !
+var fence
+find r? !y fence y.!
 
 ( c: name -- )
 \ can only forget a name that is in the current definition
@@ -66,23 +67,20 @@ find r? push var fence fence !
     push            ( nfa nfa)
     push fence @    ( nfa nfa fence )
     >               ( nfa nfa>fence )
-    ?if
+    if
       \ nfa is valid
-      d0            ( nfa nfa )
       \ set dp to nfa
-      push dp#!     ( nfa dp# )
+      dp#!          ( dp# Y:nfa )
       \ set context wid to lfa
-      d0 nfa>lfa    ( lfa lfa )
-      @ !d0         ( nfa nfa )
-      cur@          ( nfa wid )
-      !             ( wid )
-    else
-      pop  
+      y nfa>lfa     ( lfa )
+      @ !y          ( nfa Y:nfa )
+      cur@          ( wid )
+      y.!           ( wid )
     then
   then
 ;
 
-find forget push fence !
+find forget !y fence y.!
 
 \ create a marker word
 \ when executed it will restore dp, here and current
@@ -99,12 +97,12 @@ find forget push fence !
   
   does> ( addr )
     \ restore here
-    push @ push here# !    ( addr ? )
+    push @ !y here# y.!    ( addr ? )
     \ restore dp
     d0 dcell+ !d0 @ dp#!   ( addr ? )
     \ restore current wid
-    d0 dcell+ !d0 @        ( addr nfa )
-    swap dcell+ @ !        ( wid )
+    d0 dcell+ !d0 @ !y     ( addr nfa Y:nfa )
+    pop dcell+ @ y.!       ( wid )
     \ only Forth and Root are safe vocabs
     [compile] only
 ;

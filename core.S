@@ -30,28 +30,28 @@ Forthword_ DPUSH2, INLINE_OPT, "push2"
 # ( n1 n2 -- n1 a  n2 )
 #   d0 WR    d1 d0 WR
 # push register A onto top of data stack
-Forthword_ DPUSHA, INLINE_OPT, "pusha"
+Forthword_ DPUSHA, INLINE_OPT, "push.a"
   pusha_
   ret  
   
 # ( n1 n2 -- n1 b  n2 )
 #   d0 WR    d1 d0 WR
 # push register B onto top of data stack
-Forthword_ DPUSHB, INLINE_OPT, "pushb"
+Forthword_ DPUSHB, INLINE_OPT, "push.b"
   pushb_
   ret  
   
 # ( n1 n2 -- n1 x  n2 )
 #   d0 WR    d1 d0 WR
 # push register X onto top of data stack
-Forthword_ DPUSHX, INLINE_OPT, "pushx"
+Forthword_ DPUSHX, INLINE_OPT, "push.x"
   pushx_
   ret  
   
 # ( n1 n2 -- n1 y  n2 )
 #   d0 WR    d1 d0 WR
 # push register Y onto top of data stack
-Forthword_ DPUSHY, INLINE_OPT, "pushy"
+Forthword_ DPUSHY, INLINE_OPT, "push.y"
   pushy_
   ret  
   
@@ -334,28 +334,28 @@ Forthword_ DPOP, INLINE_OPT, "pop"
 # ( n1 n2 n3 -- n1 n3 ) A: n2
 #   d1 d0 WR    d0 WR
 # pop top of data stack into register A
-Forthword_ DPOPA, INLINE_OPT, "popa"
+Forthword_ DPOPA, INLINE_OPT, "pop.a"
   popa_
   ret
 
 # ( n1 n2 n3 -- n1 n3 ) B: n2
 #   d1 d0 WR    d0 WR
 # pop top of data stack into register B
-Forthword_ DPOPB, INLINE_OPT, "popb"
+Forthword_ DPOPB, INLINE_OPT, "pop.b"
   popb_
   ret
 
 # ( n1 n2 n3 -- n1 n3 ) X: n2
 #   d1 d0 WR    d0 WR
 # pop top of data stack into register X
-Forthword_ DPOPX, INLINE_OPT, "popx"
+Forthword_ DPOPX, INLINE_OPT, "pop.x"
   popx_
   ret
 
 # ( n1 n2 n3 -- n1 n3 ) Y: n2
 #   d1 d0 WR    d0 WR
 # pop top of data stack into register Y
-Forthword_ DPOPY, INLINE_OPT, "popy"
+Forthword_ DPOPY, INLINE_OPT, "pop.y"
   popy_
   ret
 
@@ -388,25 +388,25 @@ Forthword_ RPOP, INLINE_OPT, "rpop"
 
 # ( -- ) (R: n2 --) A: n2
 # pop top of return stack into A
-Forthword_ RPOPA, INLINE_OPT, "rpopa"
+Forthword_ RPOPA, INLINE_OPT, "rpop.a"
 	rpopa_
 	ret
 
 # ( -- ) (R: n2 --) B: n2
 # pop top of return stack into B
-Forthword_ RPOPB, INLINE_OPT, "rpopb"
+Forthword_ RPOPB, INLINE_OPT, "rpop.b"
 	rpopb_
 	ret
 
 # ( -- ) (R: n2 --) X: n2
 # pop top of return stack into X
-Forthword_ RPOPX, INLINE_OPT, "rpopx"
+Forthword_ RPOPX, INLINE_OPT, "rpop.x"
 	rpopx_
 	ret
 
 # ( -- ) (R: n2 --) Y: n2
 # pop top of return stack into Y
-Forthword_ RPOPY, INLINE_OPT, "rpopy"
+Forthword_ RPOPY, INLINE_OPT, "rpop.y"
 	rpopy_
 	ret
 
@@ -454,52 +454,52 @@ Forthword_ RPUSH, INLINE_OPT, "rpush"
 
 # ( -- ) (R: -- a)
 # push A on top of return stack
-Forthword_ RPUSHA, INLINE_OPT, "rpusha"
+Forthword_ RPUSHA, INLINE_OPT, "rpush.a"
 	rpusha_
 	ret
 
 # ( -- ) (R: -- b)
 # push B on top of return stack
-Forthword_ RPUSHB, INLINE_OPT, "rpushb"
+Forthword_ RPUSHB, INLINE_OPT, "rpush.b"
 	rpushb_
 	ret
 
 # ( -- ) (R: -- x)
 # push X on top of return stack
-Forthword_ RPUSHX, INLINE_OPT, "rpushx"
+Forthword_ RPUSHX, INLINE_OPT, "rpush.x"
 	rpushx_
 	ret
 
 # ( -- ) (R: -- y)
 # push Y on top of return stack
-Forthword_ RPUSHY, INLINE_OPT, "rpushy"
+Forthword_ RPUSHY, INLINE_OPT, "rpush.y"
 	rpushy_
 	ret
 
 # ( -- ) (R: -- sp)
 # push datastack pointer on top of return stack
-Forthword_ RPUSHSP, INLINE_OPT, "rpushsp"
+Forthword_ RPUSHSP, INLINE_OPT, "rpush.sp"
 	rpushsp_
 	ret
 
 # ( n2 n1 -- n2 n1 ) (R: -- n2 )
 #   d0 WR
 # push D0 on top of return stack
-Forthword_ RPUSHD0, INLINE_OPT, "rpushd0"
+Forthword_ RPUSHD0, INLINE_OPT, "rpush.d0"
 	rpushd0_
 	ret
 
 # ( n3 n2 n1 -- n3 n2 n1 ) (R: -- n3 )
 #   d1 d0 WR
 # push D1 on top of return stack
-Forthword_ RPUSHD1, INLINE_OPT, "rpushd1"
+Forthword_ RPUSHD1, INLINE_OPT, "rpush.d1"
 	rpushd1_
 	ret
 
 # ( n4 n3 n2 n1 -- n4 n3 n2 n1 ) (R: -- n4 )
 #   d2 d1 d0 WR
 # push D2 on top of return stack
-Forthword_ RPUSHD2, INLINE_OPT, "rpushd2"
+Forthword_ RPUSHD2, INLINE_OPT, "rpush.d2"
 	rpushd2_
 	ret
 
@@ -736,7 +736,7 @@ Forthword_ POPRET, 0, "popret"
 # get TOR and then increment TOR by 1 cell (32 bit)
 # assumes TOR content will be used for 32 bit memory access
 # since this word must be called, skip the top most item on the return stack
-Forthword_ RTORPLUS, INLINE_OPT, "r>r+"
+Forthword_ RTORPLUS, INLINE_OPT, "r0+"
 	r0_
 	addl $4, (%esp)
 	ret
@@ -790,6 +790,30 @@ Forthword_ MINUSA, INLINE_OPT, "-a"
 # subtract b from n1
 Forthword_ MINUSB, INLINE_OPT, "-b"
   minusb_
+  ret
+
+# ( n1 -- n1 Y:Y+n1 )
+# y=y+n1
+Forthword_ YADDW, INLINE_OPT, "y+w"
+  yaddw_
+  ret
+
+# ( n1 -- n1 X:X+n1 )
+# x=x+n1
+Forthword_ XADDW, INLINE_OPT, "x+w"
+  xaddw_
+  ret
+
+# ( n1 -- n1 A:A+n1 )
+# a=a+n1
+Forthword_ AADDW, INLINE_OPT, "a+w"
+  aaddw_
+  ret
+
+# ( n1 -- n1 B:B+n1 )
+# b=b+n1
+Forthword_ BADDW, INLINE_OPT, "b+w"
+  baddw_
   ret
 
 # ( u1|n1 u2|n2 -- u3|n3 )
@@ -1172,10 +1196,28 @@ Forthword_ FETCH, INLINE_OPT, "@"
   fetch_
   ret
 
-# ( n32 a-addr -- )
-# store a word (32 bits) to RAM address
-Forthword_ STORE, INLINE_OPT, "!"
-  store_
+# ( addr Y:n -- )
+# store a word from Y (32 bits) to RAM address
+Forthword_ YWSTORE, INLINE_OPT, "y.!"
+  yw_str_
+  ret
+
+# ( addr X:n -- )
+# store a word From X (32 bits) to RAM address
+Forthword_ XWSTORE, INLINE_OPT, "x.!"
+  xw_str_
+  ret
+
+# ( addr A:n -- )
+# store a word From A (32 bits) to RAM address
+Forthword_ AWSTORE, INLINE_OPT, "a.!"
+  aw_str_
+  ret
+
+# ( addr B:n -- )
+# store a word From B (32 bits) to RAM address
+Forthword_ BWSTORE, INLINE_OPT, "b.!"
+  bw_str_
   ret
 
 # ( a-addr -- )

@@ -110,9 +110,9 @@ Forthword_ COLD, 0, "cold"
   movl $topdatastack, %ebx
   movl $sysvar_base, %ebp
 	rp_
-	push_
+	str_y_
 	call RP0
-	store_
+	yw_str_
   call WIPE
   call WARM
   ret
