@@ -836,9 +836,20 @@
   movw $0, (%eax)
 .endm
 
-.macro plus_hstr_
-  popy_
+.macro yplus_hstr_
   addw %dx, (%eax)
+.endm
+
+.macro xplus_hstr_
+  addw %cx, (%eax)
+.endm
+
+.macro aplus_hstr_
+  addw %si, (%eax)
+.endm
+
+.macro bplus_hstr_
+  addw %di, (%eax)
 .endm
 
 .macro oneplus_hstr_
@@ -858,9 +869,12 @@
   movb $0, (%eax)
 .endm
 
-.macro plus_cstr_
-  popy_
+.macro yplus_cstr_
   addb %dl, (%eax)
+.endm
+
+.macro xplus_cstr_
+  addb %cl, (%eax)
 .endm
 
 .macro oneplus_cstr_
@@ -1048,7 +1062,7 @@
 .endm
 
 .macro yplus1_
-  inc %ecx
+  inc %edx
 .endm
 
 .macro aminus1_

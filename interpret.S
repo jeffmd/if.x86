@@ -327,7 +327,7 @@ Forthword_ SRCIN, 0, "srcin"
   hfetch_             # ( srcaddr len gin)
   jmp SLASHSTRING     # ( srcaddr' len' )
 
-# ( -- )
+# ( -- ginaddr )
 # skip space in input source.
 Forthword_ SKIPBL, 0, "skipbl"
   call SRCIN          # ( srcaddr len )
@@ -336,9 +336,9 @@ Forthword_ SKIPBL, 0, "skipbl"
   call CSKIP          # ( n2 )
 
   # adjust >IN
-  push_
-  call G_IN           # ( n2 ginaddr )
-  plus_hstr_          # ( n2 )
+  str_y_              # ( n2 Y:n2 )
+  call G_IN           # ( ginaddr )
+  yplus_hstr_         # ( ginaddr )
   ret
 
 # ( char "ccc<char>" -- c-addr u )
@@ -349,13 +349,13 @@ Forthword_ PARSE, 0, "parse"
   push_              # ( addr len len )
   rpop_              # ( addr len c ) (R: )
   call CSCAN         # ( addr' len'')
-  push_              # ( addr' len'' len'')
+  str_y_             # ( addr' len'' Y:len'')
+  str_x_             # ( addr' len'' X:len'')
   # skip terminating delimeter
-  oneplus_           # ( addr' len'' len''+1 )
-  push_              # ( addr' len'' len''+1 len''+1 )
-  call G_IN          # ( addr' len'' len''+1 >in )
-  plus_hstr_         # ( addr' len'' >in )
-  pop_               # ( addr' len'' )
+  yplus1_            # ( addr' len'' Y:len''+1 )
+  call G_IN          # ( addr' >in )
+  yplus_hstr_        # ( addr' >in )
+  x_                 # ( addr' len'' )
   ret
 
 # ( "<name>" -- c-addr len )
@@ -869,9 +869,9 @@ ACCEPT_dodelete:
   call EMIT           # ( ? )
   # decrease cursor position by one
   call TRUE           # ( true )
-  push_               # ( true true )
-  call SHARPTIB       # ( true #tibaddr )
-  plus_hstr_          # ( #tibaddr )
+  str_y_              # ( true Y:true )
+  call SHARPTIB       # ( #tibaddr )
+  yplus_hstr_         # ( #tibaddr )
   jmp ACCEPT_checkmaxinput
 
 

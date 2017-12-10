@@ -1298,10 +1298,28 @@ Forthword_ ZERO_HSTR, INLINE_OPT, "0h!"
   zero_hstr_
   ret
 
-# ( n16 a-addr -- )
-# add n16 to content of half cell RAM address a-addr
-Forthword_ PLUS_HSTR, INLINE_OPT, "+h!"
-  plus_hstr_
+# ( a-addr -- a-addr )
+# add n16 in Y register to content of half cell RAM address a-addr
+Forthword_ YPLUS_HSTR, INLINE_OPT, "y+h!"
+  yplus_hstr_
+  ret
+
+# ( a-addr -- a-addr )
+# add n16 in X register to content of half cell RAM address a-addr
+Forthword_ XPLUS_HSTR, INLINE_OPT, "x+h!"
+  xplus_hstr_
+  ret
+
+# ( a-addr -- a-addr )
+# add n16 in A register to content of half cell RAM address a-addr
+Forthword_ APLUS_HSTR, INLINE_OPT, "a+h!"
+  aplus_hstr_
+  ret
+
+# ( a-addr -- a-addr )
+# add n16 in B register to content of half cell RAM address a-addr
+Forthword_ BPLUS_HSTR, INLINE_OPT, "b+h!"
+  bplus_hstr_
   ret
 
 # ( a-addr -- )
@@ -1328,10 +1346,16 @@ Forthword_ ZERO_CSTR, INLINE_OPT, "0c!"
   zero_cstr_
   ret
 
-# ( c a-addr -- )
-# add c byte to content of byte RAM address a-addr
-Forthword_ PLUS_CSTR, INLINE_OPT, "+c!"
-  plus_cstr_
+# ( a-addr -- )
+# add c byte in Y register to content of byte RAM address a-addr
+Forthword_ YPLUS_CSTR, INLINE_OPT, "y+c!"
+  yplus_cstr_
+  ret
+
+# ( a-addr -- )
+# add c byte in X register to content of byte RAM address a-addr
+Forthword_ XPLUS_CSTR, INLINE_OPT, "x+c!"
+  xplus_cstr_
   ret
 
 # ( a-addr -- )
