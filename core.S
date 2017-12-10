@@ -13,6 +13,7 @@ Forthword_ NOOP, INLINE_OPT, "noop"
   nop
   ret
 
+
 #@@@@@@@@@@@@@ Parameter Stack  Manipulation @@@@@@@@@@@@@@
 
 # ( n -- n n )
@@ -1151,30 +1152,6 @@ Forthword_ YISZERO, INLINE_OPT, "y0?"
 # leaves the value -1 (true) in WR
 Forthword_ TRUE, INLINE_OPT, "true"
   true_
-  ret
-
-# ( -- 1 )
-# place a value 1 in WR
-Forthword_ ONE, INLINE_OPT, "1"
-  one_
-  ret
-
-# ( -- 2 )
-# place a value 2 in WR
-Forthword_ TWO, INLINE_OPT, "2"
-  two_
-  ret
-
-# ( -- 4 )
-# place a value 4 in WR
-Forthword_ FOUR, INLINE_OPT, "4"
-  four_
-  ret
-
-# ( -- 10 )
-# place a value 10 in WR
-Forthword_ TEN, INLINE_OPT, "10"
-  ten_
   ret
 
 # ( n1 n2 -- n3)
