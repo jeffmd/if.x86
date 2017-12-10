@@ -1226,10 +1226,28 @@ Forthword_ ZERO_STR, INLINE_OPT, "0!"
   zero_str_
   ret
 
-# ( n32 a-addr -- )
-# add n32 to content of cell RAM address a-addr
-Forthword_ PLUS_STR, INLINE_OPT, "+!"
-  plus_str_
+# ( addr -- addr )
+# add Y to content of cell RAM address a-addr
+Forthword_ YPLUS_STR, INLINE_OPT, "y+!"
+  yplus_str_
+  ret
+
+# ( addr -- addr )
+# add X to content of cell RAM address a-addr
+Forthword_ XPLUS_STR, INLINE_OPT, "x+!"
+  xplus_str_
+  ret
+
+# ( addr -- addr )
+# add A to content of cell RAM address a-addr
+Forthword_ APLUS_STR, INLINE_OPT, "a+!"
+  aplus_str_
+  ret
+
+# ( addr -- addr )
+# add B to content of cell RAM address a-addr
+Forthword_ BPLUS_STR, INLINE_OPT, "b+!"
+  bplus_str_
   ret
 
 # ( a-addr -- )

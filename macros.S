@@ -788,9 +788,20 @@
   movl %edx, (%eax)
 .endm
 
-.macro plus_str_
-  popy_
+.macro yplus_str_
   addl  %edx, (%eax)   
+.endm
+
+.macro xplus_str_
+  addl  %ecx, (%eax)   
+.endm
+
+.macro aplus_str_
+  addl  %esi, (%eax)   
+.endm
+
+.macro bplus_str_
+  addl  %edi, (%eax)   
 .endm
 
 .macro oneminus_str_

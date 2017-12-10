@@ -84,9 +84,10 @@ Forthword_ DP, 0, "dp"
 # ( offset -- )
 # add offset to (dictionary pointer) DP
 Forthword_ DPPLUS, 0, "dp+"
-  push_
+  str_y_
   call DPSHARP
-  jmp PLUS_STR
+  yplus_str_
+  ret
 
 # ( -- )
 # increment 32 bit (dictionary pointer) DP by one cell
@@ -110,9 +111,10 @@ Forthword_ CP, 0, "cp"
 # ( offset -- cp#)
 # add offset to (code pointer) CP
 Forthword_ CPPLUS, 0, "cp+"
-  push_
+  str_y_
   call CPSHARP
-  jmp PLUS_STR
+  yplus_str_
+  ret
 
 # ( -- )
 # increment 32 bit (code pointer) CP by one cell
