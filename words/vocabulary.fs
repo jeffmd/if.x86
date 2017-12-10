@@ -171,16 +171,16 @@ dcell+ 0! ( )
 \ list words starting at a name field address
 : lwords ( nfa -- )
     push 0 push              ( nfa 0 0 )
-    begin
     d1                       ( nfa cnt nfa )
+    begin
     ?while                   ( nfa cnt nfa ) \ is nfa = counted string
-      .nf d1                 ( nfa cnt nfa )
-      nfa>lfa                ( nfa cnt lfa )
-      @ !d1                  ( nfa' cnt addr )
+      .nf                    ( nfa cnt ? )
       d0 1+ !d0              ( nfa' cnt+1 cnt+1 )
+      d1 nfa>lfa             ( nfa cnt lfa )
+      @ !d1                  ( nfa' cnt addr )
     repeat 
-    cr ." count: " pop .
-    nip
+    cr ." count: " d0 .
+    nip2
 ;
 
 \ List the names of the definitions in the context vocabulary.
