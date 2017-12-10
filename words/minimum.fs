@@ -43,7 +43,7 @@ var hld
 
 \ Address of the temporary scratch buffer.
 : pad ( -- a-addr )
-    here !y 20 +y
+    here y= 20 +y
 ;
 
 \ initialize the pictured numeric output conversion process
@@ -70,8 +70,8 @@ var hld
 
 \ Pictured Numeric Output: convert PNO buffer into an string
 : #> ( u1 -- addr count )
-    hld @ !y    \ addr Y: addr  
-    push pad -y \ addr pad-addr
+    hld @ !x    \ addr Y: addr  
+    push pad -x \ addr pad-addr
 ;
 
 \ place a - in HLD if n is negative

@@ -164,7 +164,7 @@ dcell+ 0! ( )
 
 \ print name field
 : .nf ( nfa -- )
-      $l !y $FF and.y  ( addr cnt ) \ mask immediate bit
+      $l y= $FF and.y  ( addr cnt ) \ mask immediate bit
       type space       ( ? )
 ;
  

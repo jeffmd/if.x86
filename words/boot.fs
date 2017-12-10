@@ -5,7 +5,7 @@
 \ header ( addr len wid -- nfa )
 \ 
 dp push         \ ( nfa nfa ) name field address
-pname header push !y $FF00 or.y $dp! \ ( nfa ? )
+pname header push y= $FF00 or.y $dp! \ ( nfa ? )
   current @ @   \ ( nfa linkaddr ) get latest word
   dp!           \ ( nfa ? ) set link field to prev word in vocab
   cp dp! pop    \ ( nfa ) set code pointer field
