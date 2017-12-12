@@ -273,26 +273,21 @@
 \ create a dictionary entry for a variable
 \ and allocate 32 bit RAM
 : var ( cchar -- )
-    here
-    con
-    dcell
-    allot
+    here con
+    dcell allot
 ;
 
 ( cchar -- )
 \ create a dictionary entry for a character variable
 \ and allocate 1 byte RAM
 : cvar
-    here
-    con
-    1
-    allot
+    here con
+    1 allot
 ;
 
 \ compiles a string from RAM to program RAM
 : s, ( addr len -- )
-    push
-    $cp!
+    push $cp!
 ;
 
 ( C: addr len -- )
@@ -309,8 +304,7 @@
 \ compiles a string to ram,
 \ at runtime leaves ( -- ram-addr count) on stack
 : s"
-    $22
-    parse        ( addr n )
+    $22 parse        ( addr n )
     push state
     if  \ skip if not in compile mode
       [compile] slit
