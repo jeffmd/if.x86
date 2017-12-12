@@ -37,13 +37,13 @@ var hld
 
 \ prepend character to pictured numeric output buffer
 : hold ( c -- )
-    push hld 1-!   
-    @ c!
+    !y hld 1-!   
+    @ y.c!
 ;
 
 \ Address of the temporary scratch buffer.
 : pad ( -- a-addr )
-    here y= 20 +y
+    y= 20 here  +y
 ;
 
 \ initialize the pictured numeric output conversion process

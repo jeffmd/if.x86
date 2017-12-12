@@ -172,8 +172,10 @@ TAIL_CALL_OPTIMIZE:
     nip2_
     jmp RET_C
 DO_JMPOPT:
-  pop_
-  cstr_              # ( CP-5 )
+  d0_                # ( 0xe9 CP-5 CP-5 )
+  d1_str_y_          # ( 0xe9 CP-5 CP-5 ) Y: 0xe9
+  nip2_              # ( CP-5 )
+  yw_cstr_           # ( CP-5 )
   # clear last is call flag in fflags
   andw $~(1 << LAST_IS_CALL_FB), fflags
   ret
@@ -199,9 +201,9 @@ UWID_end:
 # ( n -- )
 # store 8 bit value in WR into code section ram at (code pointer) CP
 Forthword_ COMMA, 0, ","
-  push_            # ( n n )
-  call CP          # ( n CP )
-  cstr_            # ( CP )
+  str_y_           # ( n )
+  call CP          # ( CP )
+  yw_cstr_         # ( CP )
   jmp CPPLUSONE    # 
 
 # ( n -- )

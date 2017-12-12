@@ -1305,16 +1305,28 @@ Forthword_ ONEPLUS_HSTR, INLINE_OPT, "1+h!"
   oneplus_hstr_
   ret
 
+# ( a-addr -- )
+# subtract 1 from content of half cell RAM address a-addr
+Forthword_ ONEMINUS_HSTR, INLINE_OPT, "1-h!"
+  oneminus_hstr_
+  ret
+
 # ( a-addr -- n8 )
 # read byte (8 bits) from RAM address
 Forthword_ CFETCH, INLINE_OPT, "c@"
   cfetch_
   ret
 
-# ( c a-addr -- )
-# store a single byte to RAM address
-Forthword_ CSTORE, INLINE_OPT, "c!"
-  cstr_
+# ( a-addr -- )
+# store a single byte from Y register to RAM address
+Forthword_ YW_CSTR, INLINE_OPT, "y.c!"
+  yw_cstr_
+  ret
+
+# ( a-addr -- )
+# store a single byte from Y register to RAM address
+Forthword_ XW_CSTR, INLINE_OPT, "x.c!"
+  xw_cstr_
   ret
 
 # ( a-addr -- )
@@ -1336,11 +1348,29 @@ Forthword_ XPLUS_CSTR, INLINE_OPT, "x+c!"
   ret
 
 # ( a-addr -- )
+# subtract byte in Y register from content of byte RAM address a-addr
+Forthword_ YMINUS_CSTR, INLINE_OPT, "y-c!"
+  yminus_cstr_
+  ret
+
+# ( a-addr -- )
+# subtract byte in X register from content of byte RAM address a-addr
+Forthword_ XMINUS_CSTR, INLINE_OPT, "x-c!"
+  xminus_cstr_
+  ret
+
+# ( a-addr -- )
 # add 1 to content of byte cell RAM address a-addr
 Forthword_ ONEPLUS_CSTR, INLINE_OPT, "1+c!"
   oneplus_cstr_
   ret
   
+# ( a-addr -- )
+# subtract 1 from content of byte cell RAM address a-addr
+Forthword_ ONEMINUS_CSTR, INLINE_OPT, "1-c!"
+  oneminus_cstr_
+  ret
+
 # ( n -- n ) A: n
 # copy WR to A register
 Forthword_ STR_A, INLINE_OPT, "!a"

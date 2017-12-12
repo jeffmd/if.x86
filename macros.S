@@ -89,7 +89,7 @@
 .endm
 
 .macro rpop_
-  pop %eax
+  popl %eax
 .endm
 
 .macro rpopa_ 
@@ -856,13 +856,20 @@
   addw  $1, (%eax)
 .endm
 
+.macro oneminus_hstr_
+  subw  $1, (%eax)
+.endm
+
 .macro cfetch_
   movsxb (%eax), %eax
 .endm
 
-.macro cstr_
-  popy_
+.macro yw_cstr_
   movb %dl, (%eax)
+.endm
+
+.macro xw_cstr_
+  movb %cl, (%eax)
 .endm
 
 .macro zero_cstr_
@@ -877,8 +884,20 @@
   addb %cl, (%eax)
 .endm
 
+.macro yminus_cstr_
+  subb %dl, (%eax)
+.endm
+
+.macro xminus_cstr_
+  subb %cl, (%eax)
+.endm
+
 .macro oneplus_cstr_
   addb $1, (%eax)
+.endm
+
+.macro oneminus_cstr_
+  subb $1, (%eax)
 .endm
 
 .macro str_a_

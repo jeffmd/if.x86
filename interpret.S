@@ -994,8 +994,9 @@ ACCEPT_echo:
   call STIB              # ( k tibaddr #tib)
   d0_str_y_              # ( k tibaddr #tib) Y: tibaddr
   addy_                  # ( k tibaddr tibaddr+#tib )
-  nip_                   # ( k tibaddr+#tib )
-  cstr_                  # ( tibaddr+#tib )
+  d1_str_y_              # ( k tibaddr tibaddr+#tib ) Y: k
+  yw_cstr_               # ( k tibaddr tibaddr+#tib )
+  nip2_                  # ( tibaddr+#tib )
 
   call SHARPTIB          # ( #tib )
   oneplus_hstr_          # ( ? )
