@@ -601,6 +601,21 @@ Forthword_ DOCMDARG, 0, "docmdarg"
 DOCMDARG_EXIT:
   ret
 
+# ( -- usecs seconds ) 
+# get time of day
+# gives the number of seconds and microseconds since the Epoch
+Forthword_ TIME, 0, "time"
+    zero_
+    push_
+    push_
+    rpush_
+    rpushsp_
+    call gettimeofday
+    rnip2_
+    pop_
+    ret
+    
+
 # ( -- )
 # must be last word in core
 Forthword_ WIPE, 0, "WIPE"
