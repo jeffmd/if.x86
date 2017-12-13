@@ -121,7 +121,7 @@ var hld
       ?while
         d0      ( ? limit counter-4 counter-4 )
         @       ( ? limit counter-4 val )
-        u. pop  ( ? limit counter-4 )
+        . pop  ( ? limit counter-4 )
     repeat
     nip2 pop
 ;
