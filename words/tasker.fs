@@ -74,7 +74,7 @@ maxtask dcell* allot
 : tidx+
   tidx@ 2* 1+ 
   \ if slot count is odd then 1+
-  count !x
+  !x count 
   y= 1 and.y +x !y
   tidx y.c!
 ;
