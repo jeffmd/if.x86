@@ -508,9 +508,9 @@ Forthword_ SLEEPON, 0, "sleep.on"
 Forthword_ DOINCLUDE, 0, "(include)"
   # set file open mode to reading
   str_y_                # ( caddr ) Y: caddr
-  zero_                 # ( caddr 0 )
-  rpush_                # ( caddr 0 ) (R: 0 )
-  rpushy_               # ( caddr 0 ) (R: 0 caddr )
+  zero_                 # ( 0 )
+  rpush_                # ( 0 ) (R: 0 )
+  rpushy_               # ( 0 ) (R: 0 caddr )
   call open             # ( filedes )
   rnip2_                # ( filedes ) (R:  )
   # if file descriptor > 0 then open is success
@@ -536,7 +536,8 @@ Forthword_ DOINCLUDE, 0, "(include)"
   rpush_                # ( filedes KEYFILE ) (R: itime fflags KEY KEYFILE)
   d0_str_y_             # ( filedes KEYFILE Y:filedes )
   call KEYFILEADDR      # ( filedes KEYFILEADDR )
-  yw_str_               # ( filedes KEYFILEADDR )
+  nip_                  # ( KEYFILEADDR )
+  yw_str_               # ( KEYFILEADDR )
   # defer key to keyfile for input
   lit_y_ KEYFILE        # ( KEYFILEADDR Y:KEYFILE )
   call KEYADDR          # ( KEYADDR )
