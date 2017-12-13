@@ -358,7 +358,7 @@ Forthword_ UM_DIVMOD, 0, "um/mod"
 Forthword_ U_DIVMOD, 0, "u/mod"
   str_x_
   d0_
-  cltd
+  zero_y_
   div %ecx
   y_str_d0_
   ret
