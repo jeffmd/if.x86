@@ -91,23 +91,26 @@ maxtask dcell* allot
    task& @ 
 ;
 
-( addr idx -- ) 
+( idx addr -- ) 
 \ store a task in a slot
 \ idx is the slot index range: 0 to 62
+\ addr is xt of word to be executed
 : task!
-  task& d0!y nip y.!
+  !x d0 task& nip x.!
 ;
 
 \ store a task in a slot
+\ example: 12 task mytask
+\ places xt of mytask in slot 12
 : task ( idx C: name -- )
-  push ' swap task!
+  push ' task!
 ;
 
 ( idx -- )
 \ clear task at idx slot
 \ replaces task with noop
 : taskclr 
-  push ['] noop swap task!
+  push ['] noop task!
 ;
 
 
@@ -144,7 +147,7 @@ var exms
 ( -- )
 \ clear all tasks
 : allclr
-  \ iterate 0 to 30 and clear tcnt[] and set tasks[] to noop
+  \ iterate 0 to maxtask and clear tcnt[] and set tasks[] to noop
   tidx 0c!
   0 push           ( idx 0 )
   begin
