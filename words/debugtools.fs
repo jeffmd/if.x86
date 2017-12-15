@@ -42,10 +42,10 @@ only
 ;
 
 
-( reg -- )
+( reg|addr -- )
 \ tools
 \ read register/ram byte contents and print in binary form
-: rb? c@ bin <# # # # # # # # # #> type space decimal ;
+: rb? c@ !x bin x <# # # # # # # # # #> type space decimal ;
 
 ( reg -- )
 \ tools
