@@ -104,12 +104,30 @@ Forthword_ SP0, 0, "sp0"
   movl $topdatastack, %eax
   ret
 
+.globl RECOVER
+.type RECOVER, @function
+
+# ( -- )
+# start up if after sig alarm ie segv.
+Forthword_ RECOVER, 0, "recover"
+  push %ebp
+  movl $topdatastack, %ebx
+  movl $sysvar_base, %ebp
+	call ONLY
+  call RESET
+  call DECIMAL           # default to decimal base
+  type_ "recovering...\n"
+	call QUIT
+	pop %ebp
+	ret
+
 .globl COLD
 .type COLD, @function
 
 # ( -- )
-# start up asforth.
+# start up if.
 Forthword_ COLD, 0, "cold"
+  push %ebp
   movl $topdatastack, %ebx
   movl $sysvar_base, %ebp
 	rp_
@@ -118,4 +136,5 @@ Forthword_ COLD, 0, "cold"
 	yw_str_
   call WIPE
   call WARM
+  pop %ebp
   ret
