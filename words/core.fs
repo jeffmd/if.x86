@@ -72,13 +72,18 @@ rword dcell* inlined
     ] 4* [
     ret,
 
-\ search dictionary for name, returns XT or 0
-: 'f  ( "<spaces>name" -- XT XTflags )
-    pname
-    findw
-    nfa>xtf
+( C:"<spaces>name" -- 0 | nfa )
+\ Dictionary
+\ search dictionary for name, returns nfa if found or 0 if not found
+: find
+    pname findw
 ;
 
+\ search dictionary for name, returns XT or 0
+: 'f  ( "<spaces>name" -- XT XTflags )
+    find
+    nfa>xtf
+;
 
 \ search dictionary for name, returns XT
 : '  ( "<spaces>name" -- XT )
@@ -92,7 +97,7 @@ rword dcell* inlined
 \ compiles xt as literal
 : [']
     '
-    lit,
+    w=,
 ; :ic
 
 
@@ -103,19 +108,11 @@ rword dcell* inlined
 : ['f]
     'f
     swap
-    lit,
+    w=,
     \ compile literal of 'f push
-    [ 'f push swap lit, ]
+    [ 'f push swap w=, ]
     push
-    [ pop lit, ]
+    [ pop w=, ]
     cxt
-    pop lit,
+    pop w=,
 ; :ic
-
-
-( C:"<spaces>name" -- 0 | nfa )
-\ Dictionary
-\ search dictionary for name, returns nfa if found or 0 if not found
-: find
-    pname findw
-;

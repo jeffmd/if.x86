@@ -369,7 +369,7 @@ Forthword_ DPOP2, INLINE_OPT, "pop2"
 
 # (  -- addr )
 # current data stack pointer
-Forthword_ SP_FETCH, 0, "sp"
+Forthword_ SP_FETCH, INLINE_OPT, "sp"
   sp_
   ret
   
@@ -431,21 +431,21 @@ Forthword_ RNIP3, INLINE_OPT, "rnip3"
 
 # ( -- ) (R: -- ? )
 # add 1 cell to return stack
-Forthword_ RTOP1, INLINE_OPT, "rtop1"
-	rtop1_
-	ret
+#Forthword_ RTOP1, INLINE_OPT, "rtop1"
+#	rtop1_
+#	ret
 
 # ( -- ) (R: -- ? ? )
 # add 2 cells to return stack
 Forthword_ RTOP2, INLINE_OPT, "rtop2"
-	rtop2_
-	ret
+#	rtop2_
+#	ret
 
 # ( -- ) (R: -- ? ? ? )
 # add 3 cells to return stack
-Forthword_ RTOP3, INLINE_OPT, "rtop3"
-	rtop3_
-	ret
+#Forthword_ RTOP3, INLINE_OPT, "rtop3"
+#	rtop3_
+#	ret
 
 # ( n -- ) (R: -- n)
 # push WR on top of return stack
@@ -481,27 +481,6 @@ Forthword_ RPUSHY, INLINE_OPT, "rpush.y"
 # push datastack pointer on top of return stack
 Forthword_ RPUSHSP, INLINE_OPT, "rpush.sp"
 	rpushsp_
-	ret
-
-# ( n2 n1 -- n2 n1 ) (R: -- n2 )
-#   d0 WR
-# push D0 on top of return stack
-Forthword_ RPUSHD0, INLINE_OPT, "rpush.d0"
-	rpushd0_
-	ret
-
-# ( n3 n2 n1 -- n3 n2 n1 ) (R: -- n3 )
-#   d1 d0 WR
-# push D1 on top of return stack
-Forthword_ RPUSHD1, INLINE_OPT, "rpush.d1"
-	rpushd1_
-	ret
-
-# ( n4 n3 n2 n1 -- n4 n3 n2 n1 ) (R: -- n4 )
-#   d2 d1 d0 WR
-# push D2 on top of return stack
-Forthword_ RPUSHD2, INLINE_OPT, "rpush.d2"
-	rpushd2_
 	ret
 
 # ( -- n) (R: n -- n )
@@ -795,25 +774,25 @@ Forthword_ MINUSB, INLINE_OPT, "-b"
 
 # ( n1 -- n1 Y:Y+n1 )
 # y=y+n1
-Forthword_ YADDW, INLINE_OPT, "y+w"
+Forthword_ YADDW, INLINE_OPT, "y+"
   yaddw_
   ret
 
 # ( n1 -- n1 X:X+n1 )
 # x=x+n1
-Forthword_ XADDW, INLINE_OPT, "x+w"
+Forthword_ XADDW, INLINE_OPT, "x+"
   xaddw_
   ret
 
 # ( n1 -- n1 A:A+n1 )
 # a=a+n1
-Forthword_ AADDW, INLINE_OPT, "a+w"
+Forthword_ AADDW, INLINE_OPT, "a+"
   aaddw_
   ret
 
 # ( n1 -- n1 B:B+n1 )
 # b=b+n1
-Forthword_ BADDW, INLINE_OPT, "b+w"
+Forthword_ BADDW, INLINE_OPT, "b+"
   baddw_
   ret
 

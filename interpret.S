@@ -35,18 +35,18 @@ Forthword_ G_IN, 0, ">in"
   user_ user_g_in
   ret
 
-# ( -- pauseaddr )
-# get ram address of pause defer
-Forthword_ PAUSEADDR, 0, "pause#"
-  user_ USER_PAUSE
-  ret
-  
 # ( -- keyaddr )
 # get ram address of key defer
 Forthword_ KEYADDR, 0, "key#"
   user_ USER_KEY
   ret
-  
+
+# ( -- pauseaddr )
+# get ram address of pause defer
+Forthword_ PAUSEADDR, 0, "pause#"
+  user_ USER_PAUSE
+  ret
+    
 # ( -- emitaddr )
 # get ram address of emit defer
 Forthword_ EMITADDR, 0, "emit#"
@@ -119,7 +119,7 @@ Forthword_ BL, INLINE_OPT, "bl"
 
 # ( -- )
 # ignore remaining text to end of line
-Forthword_ COMMENt, IMMEDIATE_EN, "\\"
+Forthword_ COMMENT, IMMEDIATE_EN, "\\"
   push_      # preserve WR
   call STIB
   str_y_
@@ -480,16 +480,15 @@ FINDNFA_CHECK:
   call MCMP                   # ( c-addr len flag )
   # <if>
   iszero_
+  rpop_                       # ( c-addr len nfa )
   je FINDNFA_NEXT
     # we found the string
-    pop2_                     # ( c-addr )
-    rpop_                     # ( nfa )
+    nip2_                     # ( nfa )
     ret
     
   # <then>
 FINDNFA_NEXT:
     # next try
-    rpop_                     # ( c-addr len nfa )
     call NFA2LFA              # ( c-addr len lfa )
     # <repeat>
     jmp FINDNFA_BEGIN
@@ -597,7 +596,8 @@ Forthword_ BLIT_INTERP, IMMEDIATE_EN, "[b=]"
 # recognizer for integer numbers
 Forthword_ REC_NUM, 0, "rec#"
   rpush_            # ( addr len ) (R: len )
-  rpushd0_          # ( addr len ) (R: len addr )
+  d0_str_y_         # ( addr len Y:addr )
+  rpushy_           # ( addr len ) (R: len addr )
   # try converting to a number
   call NUMBER              # ( [n] f )
   iszero_
@@ -630,7 +630,8 @@ REC_NONUMBER:
 # recognize a word in the dictionary
 Forthword_ REC_WORD, 0, "recw"
   rpush_            # ( addr len ) (R: len )
-  rpushd0_          # ( addr len ) (R: len addr )
+  d0_str_y_         # ( addr len Y:addr )
+  rpushy_           # ( addr len ) (R: len addr )
   call FINDW        # ( 0 | nfa )
   iszero_
   jne REC_WORD_FOUND
@@ -650,7 +651,8 @@ REC_WORD_FOUND:
 
 CHECK_COMPILE_ONLY:
 #    bl STATE
-#    zerosense_
+#    iszero_
+#    pop_
 #    bne.n CHECK_IMMEDIATE
         # word can only be used in compile state
         #jmp THROW

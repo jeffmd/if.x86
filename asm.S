@@ -129,35 +129,35 @@ Forthword_ DOLIT, 0, "(lit,)"
 
 # compile top of stack as inlinned immediate 32 bit constant
 # ( n -- )
-Forthword_ WLIT_C, 0, "lit,"
+Forthword_ WLIT_C, 0, "w=,"
   push_
   lit_ 0xb8
   jmp DOLIT
 
 # compile Y register load inlinned immediate 32 bit constant
 # ( n -- )
-Forthword_ YLIT_C, 0, "lit.y,"
+Forthword_ YLIT_C, 0, "y=,"
   push_
   lit_ 0xba
   jmp DOLIT
 
 # compile X register load inlinned immediate 32 bit constant
 # ( n -- )
-Forthword_ XLIT_C, 0, "lit.x,"
+Forthword_ XLIT_C, 0, "x=,"
   push_
   lit_ 0xb9
   jmp DOLIT
 
 # compile A register load inlinned immediate 32 bit constant
 # ( n -- )
-Forthword_ ALIT_C, 0, "lit.a,"
+Forthword_ ALIT_C, 0, "a=,"
   push_
   lit_ 0xbe
   jmp DOLIT
 
 # compile B register load inlinned immediate 32 bit constant
 # ( n -- )
-Forthword_ BLIT_C, 0, "lit.b,"
+Forthword_ BLIT_C, 0, "b=,"
   push_
   lit_ 0xbf
   jmp DOLIT

@@ -17,7 +17,7 @@
 
 \ save wordlist id in context array at context index
 : context! ( wid -- addr )
-  push context# d0!y nip y.!
+  push context# pop.y y.!
 ;
 
 \ get a valid wid from the context
@@ -97,7 +97,7 @@
   ?if
     0 context! ( contidx idx-1 addr ) 
     d0!y d1    ( contidx idx-1 contidx Y:idx-1 )
-    y.h!       ( contidx )
+    y.h!       ( contidx idx-1 contidx )
   else
     [compile] only
   then
@@ -194,7 +194,7 @@ dcell+ 0! ( )
 
 \ list the root words
 : rwords ( -- )
-  [ find WIPE lit, ]
+  [ find WIPE w=, ]
   lwords
 ;
 

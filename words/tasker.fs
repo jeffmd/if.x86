@@ -54,7 +54,7 @@ maxtask dcell* allot
 ( n idx -- )
 \ set tcnt array element using idx as index
 : cnt!
-  d0!x nip cnt& x.!
+  pop.x cnt& x.!
 ;
 
 \ array of task slots in ram : max 31 tasks 62 bytes
@@ -75,8 +75,8 @@ maxtask dcell* allot
   tidx@ 2* 1+ 
   \ if slot count is odd then 1+
   !x count 
-  y= 1 and.y +x !y
-  tidx y.c!
+  y= 1 and.y x+ 
+  tidx x.c!
 ;
 
 ( idx -- taskaddr )
@@ -96,7 +96,7 @@ maxtask dcell* allot
 \ idx is the slot index range: 0 to 62
 \ addr is xt of word to be executed
 : task!
-  !x d0 task& nip x.!
+  !x pop task& x.!
 ;
 
 \ store a task in a slot

@@ -4,10 +4,10 @@
 ( n min max -- f )
 \ check if n is within min..max
 : within
-    d0!y       \ n min max Y: min
+    pop.y      \ n min max Y: min
     -y !x      \ n min diff X: diff
-    d1 -y !d1  \ n-min min n-min 
-    nip x      \ n-min diff
+    d0 -y !d0  \ n-min min n-min 
+    x          \ n-min diff
     u<         \ flag
 ;
 

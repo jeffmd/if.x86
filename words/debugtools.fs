@@ -28,17 +28,16 @@ only
 ( bbb reg -- )
 \ tools
 \ set the bits of reg defined by bit pattern in bbb
-: rbs d0!y nip !x c@ or.y xc! ;
+: rbs pop.y !x c@ or.y xc! ;
 
 ( bbb reg -- )
 \ tools
 \ clear the bits of reg defined by bit pattern in bbb
-: rbc !x d0!y nip not.y xc@ and.y xc! ;
+: rbc !x pop.y not.y xc@ and.y xc! ;
 
 \ modify bits of reg defined by mask
 : rbm ( val mask reg -- )
-    !x d0!y nip xc@ and.y d0!y or.y nip
-    xc!
+    !x pop.y xc@ and.y pop.y or.y xc!
 ;
 
 

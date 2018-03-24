@@ -222,8 +222,7 @@ PRAEFIX:             # ( addr len -- addr' len' )
 PFA_PRAEFIX0:
   call SETBASE     # ( addr len c )
   one_             # ( addr len 1 )
-  call SLASHSTRING # ( addr' len' )
-  ret
+  jmp SLASHSTRING # ( addr' len' )
 
 # (addr len -- addr len flag) Numeric IO
 # check for - sign
@@ -433,15 +432,14 @@ Forthword_ HANDLER, 0, "handler"
 # setup handler to catch exceptions and then EXEC XT.
 Forthword_ CATCH, 0, "catch"
   # sp@ >r
-  rpushsp_            # ( xt sp ) (R: ret -- callerret SP )
+  rpushsp_            # ( xt ) (R: ret -- callerret SP )
   # handler @ >r
   push_               # ( xt xt )
   call HANDLER        # ( xt haddr )
   fetch_              # ( xt hxt )
   rpush_              # ( xt hxt ) (R: callerret SP hxt )
   # rp@ handler !
-  rp_                 # ( xt RP ) (R: callerret SP hxt)
-  str_y_              # ( xt RP Y:RP )
+  rp_str_y_           # ( xt Y:RP ) (R: callerret SP hxt)
   call HANDLER        # ( xt haddr )
   yw_str_             # ( xt haddr )
   pop_                # ( xt )
@@ -464,10 +462,9 @@ Forthword_ THROW, 0, "throw"
   str_x_             # ( haddr X:haddr )
   fetch_             # ( RP_handler )
   str_rp_            # ( RP_handler ) (R: callerret SP hxt)
-  rpopy_             # ( RP_handler Y:hxt ) (R: callerret SP )
-  x_str_             # ( RP_handler )
-  rpop_              # ( SP ) (R: callerret )
-  str_sp_            # ( ... )
+  rpop_              # ( hxt ) (R: callerret SP )
+  x_str_             # ( hxt )
+  rpop_sp_           # ( SP ) (R: callerret )
   one_               # ( ... 1 )
   ret
 

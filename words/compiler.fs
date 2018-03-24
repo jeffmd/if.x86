@@ -45,7 +45,7 @@
 \ of the word on the stack
 : [char]
     char
-    lit,
+    w=,
 ; immediate
 
 
@@ -258,14 +258,14 @@
 
 \ allocate or release n bytes of memory in RAM
 : allot ( n -- )
-    !y here y+w here# y.!
+    !y here y+ here# y.!
 ;
 
 ( x -- ) ( C: x "<spaces>name" -- )
 \ create a constant in the dictionary
 : con
     push rword pop
-    lit,
+    w=,
     ret,
 ;
 

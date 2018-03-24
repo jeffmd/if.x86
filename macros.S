@@ -76,18 +76,6 @@
   pushl %ebx
 .endm
 
-.macro rpushd0_
-  pushl (%ebx)
-.endm
-
-.macro rpushd1_
-  pushl 4(%ebx)
-.endm
-
-.macro rpushd2_
-  pushl 8(%ebx)
-.endm
-
 .macro rpop_
   popl %eax
 .endm
@@ -108,6 +96,10 @@
   popl %edx
 .endm
 
+.macro rpop_sp_ 
+  popl %ebx
+.endm
+
 .macro rnip_
   leal 4(%esp), %esp
 .endm
@@ -120,11 +112,11 @@
   leal 12(%esp), %esp
 .endm
 
-.macro rtop1_
+.macro rtop1__
   leal -4(%esp), %esp
 .endm
 
-.macro rtop2_
+.macro rtop2__
   leal -8(%esp), %esp
 .endm
 
@@ -242,6 +234,22 @@
 
 .macro rp_
   movl %esp, %eax
+.endm
+
+.macro rp_str_x_
+  movl %esp, %edx
+.endm
+
+.macro rp_str_y_
+  movl %esp, %edx
+.endm
+
+.macro rp_str_a_
+  movl %esp, %esi
+.endm
+
+.macro rp_str_b_
+  movl %esp, %edi
 .endm
 
 .macro str_rp_
