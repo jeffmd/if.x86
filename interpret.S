@@ -144,7 +144,7 @@ Forthword_ KEYFILE, 0, "keyfile"
   push_                    # ( 0 0 )
   one_                     # ( 0 1 )
   rpush_                   # ( 0 1 ) (R: 1 )
-  rpushsp_                 # ( 0 ebx ) (R: 1 ebx )
+  rpush_sp_                # ( 0 ebx ) (R: 1 ebx )
   call KEYFILEADDR         # ( 0 keyfile# )
   fetch_                   # ( 0 filedes )
   rpush_                   # ( 0 filedes ) (R: 1 ebx filedes )
@@ -180,7 +180,7 @@ Forthword_ REFILL, 0, "refill"
 # ( addr n -- )
 # print a counted string
 Forthword_ TYPE, 0, "type"
-  rpusha_
+  rpush_a_
   iszero_
   jz TYPE_END
 
@@ -197,13 +197,13 @@ TYPE1:
   jnz TYPE1
 TYPE_END:
   pop_
-  rpopa_
+  rpop_a_
   ret
 
 # ( xtc xti -- )
 # Select register for literal
 Forthword_ REGSET, IMMEDIATE_EN, "regset"
-  rpushy_
+  rpush_y_
   str_y_
   user_ Lit_Interpret
   yw_str_
@@ -211,7 +211,7 @@ Forthword_ REGSET, IMMEDIATE_EN, "regset"
   user_ Lit_Compile
   yw_str_
   pop2_
-  rpopy_
+  rpop_y_
   ret
 
 # ( -- )
@@ -282,8 +282,8 @@ Forthword_ MCMP, 0, "mcmp"
 # compare two strings of same length
 # flag is true if strings match
 Forthword_ CMPSB, 0, "cmpsb"
-  rpusha_
-  rpushb_
+  rpush_a_
+  rpush_b_
   str_a_                   # ( r-addr len f-addr ) A: f-addr
   d0_str_x_                # ( r-addr len f-addr ) C: len
   d1_str_b_                # ( r-addr len f-addr ) B: r-addr
@@ -291,8 +291,8 @@ Forthword_ CMPSB, 0, "cmpsb"
   cld
   repe cmpsb
   # while
-  rpopb_
-  rpopa_
+  rpop_b_
+  rpop_a_
   je MCMP_DONE
 
   # strings don't match
@@ -332,8 +332,8 @@ Forthword_ STRINGLEN, 0, "$l"
 # pointing to the 1st non-c character
 # n1 is max number of characters to search
 Forthword_ CSKIP, 0, "cskip"
-  rpusha_
-  rpushb_
+  rpush_a_
+  rpush_b_
   str_b_               # ( addr1 n1 c ) B: c
   d1_str_a_            # ( addr1 n1 c ) A: addr1
   d0_                  # ( addr1 n1 n1 )
@@ -353,8 +353,8 @@ PFA_CSKIP2:
   jne PFA_CSKIP1
 
 PFA_CSKIP3:
-  rpopb_
-  rpopa_
+  rpop_b_
+  rpop_a_
   x_                   # ( n1 )
   minusy_              # ( n1-n' )
   ret
@@ -364,8 +364,8 @@ PFA_CSKIP3:
 # n1 is max number of characters to search
 # char at n2 is first c character
 Forthword_ CSCAN, 0, "cscan"
-  rpusha_
-  rpushb_
+  rpush_a_
+  rpush_b_
   str_b_               # ( addr1 n1 c ) B: c
   d1_str_a_            # ( addr1 n1 c ) A: addr1
   d0_                  # ( addr1 n1 n1 )
@@ -385,8 +385,8 @@ PFA_CSCAN2:
   jne PFA_CSCAN1
 
 PFA_CSCAN3:
-  rpopb_
-  rpopa_
+  rpop_b_
+  rpop_a_
   x_                   # ( addr1 n1 )
   minusy_              # ( addr1 n1-n' )
   ret
@@ -597,7 +597,7 @@ Forthword_ BLIT_INTERP, IMMEDIATE_EN, "[b=]"
 Forthword_ REC_NUM, 0, "rec#"
   rpush_            # ( addr len ) (R: len )
   d0_str_y_         # ( addr len Y:addr )
-  rpushy_           # ( addr len ) (R: len addr )
+  rpush_y_          # ( addr len ) (R: len addr )
   # try converting to a number
   call NUMBER              # ( [n] f )
   iszero_
@@ -631,7 +631,7 @@ REC_NONUMBER:
 Forthword_ REC_WORD, 0, "recw"
   rpush_            # ( addr len ) (R: len )
   d0_str_y_         # ( addr len Y:addr )
-  rpushy_           # ( addr len ) (R: len addr )
+  rpush_y_          # ( addr len ) (R: len addr )
   call FINDW        # ( 0 | nfa )
   iszero_
   jne REC_WORD_FOUND

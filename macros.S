@@ -56,23 +56,23 @@
   pushl %eax
 .endm
 
-.macro rpusha_ 
+.macro rpush_a_ 
   pushl %esi
 .endm
 
-.macro rpushb_
+.macro rpush_b_
   pushl %edi
 .endm
 
-.macro rpushx_
+.macro rpush_x_
   pushl %ecx
 .endm
 
-.macro rpushy_
+.macro rpush_y_
   pushl %edx
 .endm
 
-.macro rpushsp_
+.macro rpush_sp_
   pushl %ebx
 .endm
 
@@ -80,19 +80,19 @@
   popl %eax
 .endm
 
-.macro rpopa_ 
+.macro rpop_a_ 
   popl %esi
 .endm
 
-.macro rpopb_ 
+.macro rpop_b_ 
   popl %edi
 .endm
 
-.macro rpopx_ 
+.macro rpop_x_ 
   popl %ecx
 .endm
 
-.macro rpopy_ 
+.macro rpop_y_ 
   popl %edx
 .endm
 
@@ -112,17 +112,17 @@
   leal 12(%esp), %esp
 .endm
 
-.macro rtop1__
-  leal -4(%esp), %esp
-.endm
+#.macro rtop1__
+#  leal -4(%esp), %esp
+#.endm
 
-.macro rtop2__
-  leal -8(%esp), %esp
-.endm
+#.macro rtop2__
+#  leal -8(%esp), %esp
+#.endm
 
-.macro rtop3_
-  leal -12(%esp), %esp
-.endm
+#.macro rtop3_
+#  leal -12(%esp), %esp
+#.endm
 
 .macro r0_str_a_
   movl (%esp), %esi
@@ -411,22 +411,22 @@
   str_d1_
 .endm
 
-.macro pusha_ # save a on data stack
+.macro push_a_ # save a on data stack
   top1_
   a_str_d0_
 .endm
 
-.macro pushb_ # save b on data stack
+.macro push_b_ # save b on data stack
   top1_
   b_str_d0_
 .endm
 
-.macro pushx_ # save x on data stack
+.macro push_x_ # save x on data stack
   top1_
   x_str_d0_
 .endm
 
-.macro pushy_ # save y on data stack
+.macro push_y_ # save y on data stack
   top1_
   y_str_d0_
 .endm
@@ -448,22 +448,22 @@
   nip_
 .endm
 
-.macro popa_
+.macro pop_a_
   d0_str_a_
   nip_
 .endm
 
-.macro popb_
+.macro pop_b_
   d0_str_b_
   nip_
 .endm
 
-.macro popx_
+.macro pop_x_
   d0_str_x_
   nip_
 .endm
 
-.macro popy_
+.macro pop_y_
   d0_str_y_
   nip_
 .endm

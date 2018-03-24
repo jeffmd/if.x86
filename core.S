@@ -32,28 +32,28 @@ Forthword_ DPUSH2, INLINE_OPT, "push2"
 #   d0 WR    d1 d0 WR
 # push register A onto top of data stack
 Forthword_ DPUSHA, INLINE_OPT, "push.a"
-  pusha_
+  push_a_
   ret  
   
 # ( n1 n2 -- n1 b  n2 )
 #   d0 WR    d1 d0 WR
 # push register B onto top of data stack
 Forthword_ DPUSHB, INLINE_OPT, "push.b"
-  pushb_
+  push_b_
   ret  
   
 # ( n1 n2 -- n1 x  n2 )
 #   d0 WR    d1 d0 WR
 # push register X onto top of data stack
 Forthword_ DPUSHX, INLINE_OPT, "push.x"
-  pushx_
+  push_x_
   ret  
   
 # ( n1 n2 -- n1 y  n2 )
 #   d0 WR    d1 d0 WR
 # push register Y onto top of data stack
 Forthword_ DPUSHY, INLINE_OPT, "push.y"
-  pushy_
+  push_y_
   ret  
   
 # ( n1 -- [ n1 n1 ] | 0)
@@ -336,28 +336,28 @@ Forthword_ DPOP, INLINE_OPT, "pop"
 #   d1 d0 WR    d0 WR
 # pop top of data stack into register A
 Forthword_ DPOPA, INLINE_OPT, "pop.a"
-  popa_
+  pop_a_
   ret
 
 # ( n1 n2 n3 -- n1 n3 ) B: n2
 #   d1 d0 WR    d0 WR
 # pop top of data stack into register B
 Forthword_ DPOPB, INLINE_OPT, "pop.b"
-  popb_
+  pop_b_
   ret
 
 # ( n1 n2 n3 -- n1 n3 ) X: n2
 #   d1 d0 WR    d0 WR
 # pop top of data stack into register X
 Forthword_ DPOPX, INLINE_OPT, "pop.x"
-  popx_
+  pop_x_
   ret
 
 # ( n1 n2 n3 -- n1 n3 ) Y: n2
 #   d1 d0 WR    d0 WR
 # pop top of data stack into register Y
 Forthword_ DPOPY, INLINE_OPT, "pop.y"
-  popy_
+  pop_y_
   ret
 
 # ( n n -- )
@@ -390,25 +390,25 @@ Forthword_ RPOP, INLINE_OPT, "rpop"
 # ( -- ) (R: n2 --) A: n2
 # pop top of return stack into A
 Forthword_ RPOPA, INLINE_OPT, "rpop.a"
-	rpopa_
+	rpop_a_
 	ret
 
 # ( -- ) (R: n2 --) B: n2
 # pop top of return stack into B
 Forthword_ RPOPB, INLINE_OPT, "rpop.b"
-	rpopb_
+	rpop_b_
 	ret
 
 # ( -- ) (R: n2 --) X: n2
 # pop top of return stack into X
 Forthword_ RPOPX, INLINE_OPT, "rpop.x"
-	rpopx_
+	rpop_x_
 	ret
 
 # ( -- ) (R: n2 --) Y: n2
 # pop top of return stack into Y
 Forthword_ RPOPY, INLINE_OPT, "rpop.y"
-	rpopy_
+	rpop_y_
 	ret
 
 # ( -- ) (R: n -- )
@@ -437,7 +437,7 @@ Forthword_ RNIP3, INLINE_OPT, "rnip3"
 
 # ( -- ) (R: -- ? ? )
 # add 2 cells to return stack
-Forthword_ RTOP2, INLINE_OPT, "rtop2"
+#Forthword_ RTOP2, INLINE_OPT, "rtop2"
 #	rtop2_
 #	ret
 
@@ -456,31 +456,31 @@ Forthword_ RPUSH, INLINE_OPT, "rpush"
 # ( -- ) (R: -- a)
 # push A on top of return stack
 Forthword_ RPUSHA, INLINE_OPT, "rpush.a"
-	rpusha_
+	rpush_a_
 	ret
 
 # ( -- ) (R: -- b)
 # push B on top of return stack
 Forthword_ RPUSHB, INLINE_OPT, "rpush.b"
-	rpushb_
+	rpush_b_
 	ret
 
 # ( -- ) (R: -- x)
 # push X on top of return stack
 Forthword_ RPUSHX, INLINE_OPT, "rpush.x"
-	rpushx_
+	rpush_x_
 	ret
 
 # ( -- ) (R: -- y)
 # push Y on top of return stack
 Forthword_ RPUSHY, INLINE_OPT, "rpush.y"
-	rpushy_
+	rpush_y_
 	ret
 
 # ( -- ) (R: -- sp)
 # push datastack pointer on top of return stack
 Forthword_ RPUSHSP, INLINE_OPT, "rpush.sp"
-	rpushsp_
+	rpush_sp_
 	ret
 
 # ( -- n) (R: n -- n )
@@ -799,7 +799,7 @@ Forthword_ BADDW, INLINE_OPT, "b+"
 # ( u1|n1 u2|n2 -- u3|n3 )
 # signed multiply 32b x 32b = 32b
 Forthword_ MULU, INLINE_OPT,  "*"
-  popy_
+  pop_y_
   imul %edx, %eax 
   ret
 
@@ -1046,7 +1046,7 @@ Forthword_ ZEROGREATER, 0, "0>"
 # ( u1 u2 -- flag )
 # flag is true if u1 > u2 (unsigned)
 Forthword_ UGREATER, 0, "u>"
-  popy_
+  pop_y_
   sub %edx, %eax
   sbb %eax, %eax
   ret
@@ -1054,7 +1054,7 @@ Forthword_ UGREATER, 0, "u>"
 # ( u1 u2 -- flag)
 # flag is true if u1 < u2 (unsigned)
 Forthword_ ULESS, 0, "u<"
-  popy_
+  pop_y_
   sub %eax, %edx
 # WR = a-b  -- carry set if a is less than b
   sbb %edx, %edx
@@ -1663,15 +1663,15 @@ Forthword_ MCPY, 0, "mcpy"
 	iszero_         # ( start dest count )
 	je MCPY_END
 
-  rpusha_
-  rpushb_
+  rpush_a_
+  rpush_b_
 	d0_str_b_          # ( start dest count ) B: dest
 	mov %eax, %ecx
 	d1_str_a_          # (  start dest count ) A: start
 	cld
 	rep movsb
-  rpopb_
-  rpopa_
+  rpop_b_
+  rpop_a_
 MCPY_END:
   nip2_
   ret

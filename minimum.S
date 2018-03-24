@@ -432,7 +432,7 @@ Forthword_ HANDLER, 0, "handler"
 # setup handler to catch exceptions and then EXEC XT.
 Forthword_ CATCH, 0, "catch"
   # sp@ >r
-  rpushsp_            # ( xt ) (R: ret -- callerret SP )
+  rpush_sp_           # ( xt ) (R: ret -- callerret SP )
   # handler @ >r
   push_               # ( xt xt )
   call HANDLER        # ( xt haddr )
@@ -446,7 +446,7 @@ Forthword_ CATCH, 0, "catch"
   call EXEC
   # restore handler
   # r> handler !
-  rpopy_              # ( hxt ) (R: callerret SP )
+  rpop_y_             # ( hxt ) (R: callerret SP )
   call HANDLER        # ( haddr )
   yw_str_             # ( haddr )
   rnip_               # ( haddr ) (R: callerret)
@@ -507,7 +507,7 @@ Forthword_ DOINCLUDE, 0, "(include)"
   str_y_                # ( caddr ) Y: caddr
   zero_                 # ( 0 )
   rpush_                # ( 0 ) (R: 0 )
-  rpushy_               # ( 0 ) (R: 0 caddr )
+  rpush_y_              # ( 0 ) (R: 0 caddr )
   call open             # ( filedes )
   rnip2_                # ( filedes ) (R:  )
   # if file descriptor > 0 then open is success
@@ -548,15 +548,15 @@ Forthword_ DOINCLUDE, 0, "(include)"
   call close            # ( ? )
   rnip_                 # ( ? ) (R: oitime offlags oKEY oKEYFILE )
   # pop tor into keyfile
-  rpopy_                # ( ? Y: KEYFILE ) ( R: itime fflags KEY )
+  rpop_y_               # ( ? Y: KEYFILE ) ( R: itime fflags KEY )
   call KEYFILEADDR      # ( KEYFILEADDR )
   yw_str_               # ( KEYFILEADDR )
   # pop top of return into defer key
-  rpopy_                # ( KEYFILEADDR Y:KEY ) ( R: itime fflags )
+  rpop_y_               # ( KEYFILEADDR Y:KEY ) ( R: itime fflags )
   call KEYADDR          # ( KEYADDR )
   yw_str_               # ( KEYADDR )
   # restore FFLAGS
-  rpopy_                # ( KEYADDR Y:fflags ) ( R: itime )
+  rpop_y_               # ( KEYADDR Y:fflags ) ( R: itime )
   call FFLAGS           # ( FFLAGS )
   yw_hstr_              # ( FFLAGS )
   rpop_                 # ( itime ) ( R: )
@@ -607,7 +607,7 @@ Forthword_ TIME, 0, "time"
     push_
     push_
     rpush_
-    rpushsp_
+    rpush_sp_
     call gettimeofday
     rnip2_
     pop_

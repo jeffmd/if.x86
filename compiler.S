@@ -229,8 +229,8 @@ Forthword_ DPSTORE, 0, "dp!"
 # copies a counted string with flags from s-addr to d-addr
 # returns destination address + len
 Forthword_ COPYSTRING, 0, "copy$"
-  rpusha_
-  rpushb_
+  rpush_a_
+  rpush_b_
   str_b_             # ( s-addr len len' d-addr ) B: d-addr
   d0_                # ( s-addr len len' len')
   b_hstr_
@@ -241,8 +241,8 @@ Forthword_ COPYSTRING, 0, "copy$"
   rep movsb
   b_                 # ( s-addr+len )
   nip3_
-  rpopb_
-  rpopa_
+  rpop_b_
+  rpop_a_
   ret
 
 # ( addr len len' -- )
@@ -276,8 +276,8 @@ Forthword_ STRINGDICTSTORE, 0, "$dp!"
 # count is the number of bytes copied
 Forthword_ COPY_BYTE_UNTIL, 0, "copy.byte.until"
   # fetch from ram and check if equal to match byte
-  rpusha_
-  rpushb_
+  rpush_a_
+  rpush_b_
   str_x_             # ( source destination term ) X: term
   d0_str_b_          # ( source destination match ) B: destination
   d1_str_a_          # ( source destination match ) A: source
@@ -298,8 +298,8 @@ CBU_DONE:
   nip2_              # ( byte )
   b_                 # ( destination+count )
   minusy_            # ( count )
-  rpopb_
-  rpopa_
+  rpop_b_
+  rpop_a_
   ret
 
 # ( start -- )
