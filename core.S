@@ -295,6 +295,12 @@ Forthword_ DNIP2, INLINE_OPT, "nip2"
   nip2_ 
   ret
   
+# ( n1 n2 n3 n4 -- n4 )
+# drop top 2 items from datastack.
+Forthword_ DNIP3, INLINE_OPT, "nip3"
+  nip3_
+  ret
+  
 # ( x1 x2 -- x1 x2 x1 )
 #   do WR
 # push WR on data stack and place D1 in WR
