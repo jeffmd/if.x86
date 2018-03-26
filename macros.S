@@ -7,7 +7,6 @@
 # xreg -> %ecx # X register used for general purpose operations 
 # yreg -> %edx # Y register used as a temp register
 # sysvar -> %ebp # system variables base pointer
-# temporary registers %ecx, %edx,
 
 # header flags
 .set HFLAGS, 0xFF
