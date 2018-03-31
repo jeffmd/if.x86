@@ -204,7 +204,7 @@ PFA_SETBASE1:
 
 PFA_SETBASE2:        # ( error)
   call EMIT
-  $lit_ " Bad Base!"
+  slit_ " Bad Base!"
   call THROW
 
 # ( addr len -- addr' len' )
@@ -415,7 +415,7 @@ Forthword_ QSTACK, 0, "?sp"
   zeroless_        # ( flag )
   iszero_
   je QSTACKFIN
-    $lit_ " Stack Underflow!"
+    slit_ " Stack Underflow!"
     call THROW
 
 QSTACKFIN:

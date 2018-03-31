@@ -34,19 +34,6 @@ Forthword_ RBRACKET, 0, "]"
 
 
 # ( -- addr )
-# current vocabulary for new words
-Forthword_ CURRENT, 0, "current"
-  user_ ram_CURRENT
-  ret
-
-# ( -- addr )
-# context vocabulary for searching
-# array of wordlists
-Forthword_ CONTEXT, 0, "context"
-  user_ ram_CONTEXT
-  ret
-
-# ( -- addr )
 # system SMUDGE. Get flash program address of latest word being compiled.
 Forthword_ SMUDGE, 0, "smudge"
   user_ COLON_SMUDGE
@@ -313,54 +300,3 @@ Forthword_ INLINE, 0, "inline"
   lit_ 0xc3                # ( start cp 0xc3 )
   call COPY_BYTE_UNTIL     # ( count )
   jmp CPPLUS
-
-# ( nfa -- lfa )
-# get the link field address from the name field address
-Forthword_ NFA2LFA, 0, "nfa>lfa"
-  call STRINGLEN               # ( nfa+2 len+flags )
-  # mask out flags in len, allow up to 31 characters
-  and $31, %eax                # ( nfa+2 len )
-  d0_str_y_                    # ( nfa+2 len ) Y: nfa+2
-  addy_                        # ( nfa+2 nfa+2+len )
-  nip_                         # ( nfa+2+len )
-  ret
-
-# ( nfa -- [ 0 ] | [ xt xtflags] )
-# convert name field address to xt and xtflags
-Forthword_ NFATOXTF, 0, "nfa>xtf"
-  iszero_                     # ( n )
-  je NFATOXTF_EXIT
-
-  push_                       # ( nfa nfa )
-  hfetch_                     # ( nfa xtflags )
-  rpush_                      # ( nfa xtflags) (R: xtflags)
-  pop_                        # ( nfa )
-  call NFA2LFA                # ( lfa )
-  fourplus_   # lfa>xtlink    # ( xtlink )
-  fetch_                      # ( xt )
-  push_                       # ( xt xt )
-  rpop_                       # ( xt xtflags )
-
-NFATOXTF_EXIT:
-  ret
-
-# ( -- )
-# set the context and current to root forth vocabulary and remove
-# other vocabularies
-Forthword_ ONLY, IMMEDIATE_EN, "only"
-  # forth vocab always takes slot 0
-  lit_y_ EE_FORTHWORDLIST     # ( ? ) Y:FLIST
-  call CURRENT                # ( CURRENT )
-  yw_str_                     # ( CURRENT )
-  # make current also forth vocab
-  call CONTEXT                # ( CONTEXT )
-  yw_str_                     # ( CONTEXT )
-  # move index to next slot
-  twominus_                   # ( CONTEXT-2 )
-  lit_y_ 1                    # ( CONTEXT-2 Y:1 )
-  yw_hstr_                    # ( CONTEXT-2 )
-  # make second slot have no vocab
-  twoplus_                    # ( CONTEXT )
-  fourplus_                   # ( CONTEXT+4 )
-  zero_str_
-  ret

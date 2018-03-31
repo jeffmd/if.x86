@@ -1117,13 +1117,13 @@
   #.p2align 1
 .endm
 
-.macro $lit_ str
+.macro slit_ str
     call DOSLIT
     ascii_ "\str"
 .endm
 
 .macro type_ str
-    $lit_ "\str"
+    slit_ "\str"
     call TYPE
 .endm
 

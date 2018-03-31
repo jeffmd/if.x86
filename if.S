@@ -81,6 +81,7 @@ CPSTART:
 
 .include "core.S"
 #.include "defer.S"
+.include "dictionary.S"
 .include "compiler.S"
 .include "interpret.S"
 .include "asm.S"
