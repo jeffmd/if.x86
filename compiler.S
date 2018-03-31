@@ -1,38 +1,5 @@
 # compiler.S
 
-# dictionary structure:
-# length | flags : word: highbyte is flags, lowbyte is string length
-# name : string
-# previouse word: 32 bit pointer to previousely defined word
-# code: 32 bit pointer to executable code
-
-# ( -- state )
-# system state variable. 0 is interpret mode. Not 0 is compile mode
-Forthword_ STATE, 0, "state"
-  user_ state
-  hfetch_
-  ret
-
-# ( val -- )
-Forthword_ STATESTORE, 0, "state!"
-  str_y_
-  user_ state
-  yw_hstr_
-  ret
-
-# ( -- )
-# enter interpreter mode
-Forthword_ LBRACKET, IMMEDIATE_EN, "["
-  user_ state
-  jmp ZERO_HSTR
-
-# ( -- )
-# enter compile mode
-Forthword_ RBRACKET, 0, "]"
-  one_
-  jmp STATESTORE
-
-
 # ( -- addr )
 # system SMUDGE. Get flash program address of latest word being compiled.
 Forthword_ SMUDGE, 0, "smudge"

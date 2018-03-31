@@ -1,5 +1,12 @@
 # dictionary.S
 
+# dictionary structure:
+# length | flags : word: highbyte is flags, lowbyte is string length
+# name : string
+# previouse word: 32 bit pointer to previousely defined word
+# code: 32 bit pointer to executable code
+
+
 # ( -- addr )
 # current vocabulary for new words
 Forthword_ CURRENT, 0, "current"
@@ -108,7 +115,7 @@ FINDLAST:
 Forthword_ FINDROOT, 0, "froot"
   # put root wid on stack
   push_              # ( addr len len )
-  lit_ VE_COLD     # ( addr len VE_COLD )
+  lit_ VE_WIPE       # ( addr len VE_COLD )
   jmp FINDNFA_BEGIN1
 
 # ( addr len --  0 | nfa )

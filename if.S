@@ -80,13 +80,21 @@ CPSTART:
 .set VE_HEAD, 0
 
 .include "core.S"
+.include "cin.S"
+.include "cout.S"
+.include "string.S"
+.include "include.S"
+.include "math.S"
+.include "mathadv.S"
+.include "kernel.S"
+
 #.include "defer.S"
 .include "dictionary.S"
 .include "compiler.S"
+.include "number.S"
 .include "interpret.S"
 .include "asm.S"
 .include "file.S"
-.include "minimum.S"
 
 # ( nx* -- ) (R: ny* -- )
 # initialize if further. EXECs turnkey operation and go to quit
@@ -139,3 +147,5 @@ Forthword_ COLD, 0, "cold"
   call WARM
   pop %ebp
   ret
+
+.include "minimum.S"
