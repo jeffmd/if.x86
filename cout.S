@@ -39,22 +39,23 @@ Forthword_ BL, INLINE_OPT, "bl"
 # ( addr n -- )
 # print a counted string
 Forthword_ TYPE, 0, "type"
-  rpush_a_
   iszero_
   jz TYPE_END
 
-  d0_str_a_           # Address of string
-  str_d0_
+  rpush_a_
+  rpush_b_
+  pop_a_           # Address of string
+  str_b_
 
 TYPE1:
   a_cfetch_
   aplus1_
   call EMIT
-  d0_
-  oneminus_
-  str_d0_
+  bminus1_
   jnz TYPE1
-TYPE_END:
-  pop_
+
+  rpop_b_
   rpop_a_
+
+TYPE_END:
   ret
