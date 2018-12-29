@@ -1,5 +1,6 @@
 # if.S
-.set FULLBUILD, 1
+
+.set FULLBUILD, 0
 # if FULLBUILD is 0 then a minimum kernel is built but with no interpreter
 # minimum kernel build has minimum word set needed to be up and running without interpreter
 
@@ -82,7 +83,7 @@ CPSTART:
 
 .set VE_HEAD, 0
 
-.include "core.S"
+.include "core-base.S"
 .include "cin.S"
 .include "cout.S"
 .include "math.S"
@@ -90,6 +91,7 @@ CPSTART:
 .include "kernel-base.S"
 
 .if FULLBUILD
+  .include "core.S"
   .include "kernel.S"
   .include "include.S"
   .include "mathadv.S"

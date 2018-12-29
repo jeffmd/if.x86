@@ -1,19 +1,5 @@
 # core.S
 
-# ( xt -- )
-# execute XT
-Forthword_ EXEC, 0, "exec"
-  rpush_
-  pop_
-  ret
-
-# ( xt -- )
-# Don't do anything, just chew up a few cycles
-Forthword_ NOOP, INLINE_OPT, "noop"
-  nop
-  ret
-
-
 #@@@@@@@@@@@@@ Parameter Stack  Manipulation @@@@@@@@@@@@@@
 
 # ( n -- n n )
@@ -308,16 +294,6 @@ Forthword_ OVER, INLINE_OPT, "over"
   over_
   ret
 
-# ( x1 x2 -- x1 x2 x1 x2)
-# Place a copy of x1 and x2 on top of the stack
-Forthword_ TWOOVER, 0, "2over"
-  top2_
-  str_d1_
-  d2_
-  str_d0_
-  d1_
-  ret
-  
 # ( x1 x2 x3 -- x1 x2 x3 x1 x2 x3 )
 # Place a copy of x1, x2, x3 on top of the stack
 Forthword_ THREEOVER, 0, "3over"
@@ -1049,35 +1025,11 @@ Forthword_ ZEROGREATER, 0, "0>"
   sub $0, %eax
   jmp GREATER_CHK
 
-# ( u1 u2 -- flag )
-# flag is true if u1 > u2 (unsigned)
-Forthword_ UGREATER, 0, "u>"
-  pop_y_
-  sub %edx, %eax
-  sbb %eax, %eax
-  ret
-
-# ( u1 u2 -- flag)
-# flag is true if u1 < u2 (unsigned)
-Forthword_ ULESS, 0, "u<"
-  pop_y_
-  sub %eax, %edx
-# WR = a-b  -- carry set if a is less than b
-  sbb %edx, %edx
-  mov %edx, %eax
-  ret
-
 # ( n1 -- flag)
 # flag is true if WR is less than zero
 forthword_ ZEROLESS, INLINE_OPT, "0<"
   zeroless_
   ret
-
-# ( -- 0 )
-# set WR to 0
-Forthword_ ZERO, INLINE_OPT, "0"
-	zero_
-	ret
 
 # ( -- ) A: 0
 # set A to 0
@@ -1133,12 +1085,6 @@ Forthword_ YISZERO, INLINE_OPT, "y0?"
 	y_iszero_
 	ret
   
-# ( -- -1 )
-# leaves the value -1 (true) in WR
-Forthword_ TRUE, INLINE_OPT, "true"
-  true_
-  ret
-
 # ( n1 n2 -- n3)
 # logically shift n1 left n2 times
 forthword_ LSHIFT, INLINE_OPT, "<<"
@@ -1330,12 +1276,6 @@ Forthword_ AWHSTORE, INLINE_OPT, "a.h!"
 # store a half word (16 bits) in B register to RAM address
 Forthword_ BWHSTORE, INLINE_OPT, "b.h!"
   bw_hstr_
-  ret
-
-# ( a-addr -- )
-# store 0 (16 bits) to RAM address
-Forthword_ ZERO_HSTR, INLINE_OPT, "0h!"
-  zero_hstr_
   ret
 
 # ( a-addr -- a-addr )
