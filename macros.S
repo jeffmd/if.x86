@@ -50,7 +50,7 @@
 # 100 : A
 
 # Inline macros
-
+# push registers on return stack
 .macro rpush_ 
   pushl %eax
 .endm
@@ -74,6 +74,8 @@
 .macro rpush_sp_
   pushl %ebx
 .endm
+
+# pop value from return stack into register
 
 .macro rpop_
   popl %eax
@@ -111,17 +113,8 @@
   leal 12(%esp), %esp
 .endm
 
-#.macro rtop1__
-#  leal -4(%esp), %esp
-#.endm
 
-#.macro rtop2__
-#  leal -8(%esp), %esp
-#.endm
-
-#.macro rtop3_
-#  leal -12(%esp), %esp
-#.endm
+# load value from return stack into register
 
 .macro r0_str_a_
   movl (%esp), %esi
@@ -174,6 +167,8 @@
 .macro str_r0_
   movl %eax, (%esp)
 .endm
+
+# store register value in return stack
 
 .macro a_str_r0_
   movl %esi, (%esp)
@@ -231,6 +226,8 @@
   movl %edx, 8(%esp)
 .endm
 
+# store return stack register in register
+ 
 .macro rp_
   movl %esp, %eax
 .endm
@@ -254,6 +251,8 @@
 .macro str_rp_
   movl %eax, %esp
 .endm
+
+# load working register with value from return stack location
 
 .macro r0_ # load tos from stack
   movl (%esp), %eax
@@ -387,6 +386,8 @@
   movl 8(%ebx), %edx
 .endm
 
+# make space on data stack
+
 .macro top1_ # move stack pointer down one cell
   leal -4(%ebx), %ebx
 .endm
@@ -398,6 +399,8 @@
 .macro top3_ # move stack pointer down three cells
   leal -12(%ebx), %ebx
 .endm
+
+# push register on data stack
 
 .macro push_ # save WR on data stack
   top1_
@@ -441,6 +444,8 @@
 .macro nip3_
   leal 12(%ebx), %ebx
 .endm
+
+# pop value from data stack into register
 
 .macro pop_ # load WR from stack, increment stack pointer
   d0_
@@ -770,9 +775,70 @@
   shr %cl, %eax
 .endm
 
+# fetch value from memory pointed to by working register and store in register
+
 .macro fetch_
   movl (%eax), %eax
 .endm
+
+.macro fetch_str_a_
+  movl (%eax), %esi
+.endm
+
+.macro fetch_str_b_
+  movl (%eax), %edi
+.endm
+
+.macro fetch_str_x_
+  movl (%eax), %ecx
+.endm
+
+.macro fetch_str_y_
+  movl (%eax), %edx
+.endm
+
+.macro hfetch_
+  movsxw (%eax), %eax
+.endm
+
+.macro hfetch_str_a_
+  movsxw (%eax), %esi
+.endm
+
+.macro hfetch_str_b_
+  movsxw (%eax), %edi
+.endm
+
+.macro hfetch_str_x_
+  movsxw (%eax), %ecx
+.endm
+
+.macro hfetch_str_y_
+  movsxw (%eax), %edx
+.endm
+
+.macro cfetch_
+  movsxb (%eax), %eax
+.endm
+
+.macro cfetch_str_a_
+  movsxb (%eax), %esi
+.endm
+
+.macro cfetch_str_b_
+  movsxb (%eax), %edi
+.endm
+
+.macro cfetch_str_x_
+  movsxb (%eax), %ecx
+.endm
+
+.macro cfetch_str_y_
+  movsxb (%eax), %edx
+.endm
+
+
+# store register in memory pointed to by working register
 
 .macro yw_str_
   movl %edx, (%eax)
@@ -819,9 +885,7 @@
   addl  $1, (%eax)
 .endm
 
-.macro hfetch_
-  movsxw (%eax), %eax
-.endm
+# store register in memory pointed to by working register
 
 .macro yw_hstr_
   movw %dx, (%eax)     
@@ -865,10 +929,6 @@
 
 .macro oneminus_hstr_
   subw  $1, (%eax)
-.endm
-
-.macro cfetch_
-  movsxb (%eax), %eax
 .endm
 
 .macro yw_cstr_

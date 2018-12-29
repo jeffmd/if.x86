@@ -1158,6 +1158,90 @@ Forthword_ FETCH, INLINE_OPT, "@"
   fetch_
   ret
 
+# ( a-addr -- a-addr A:n32 )
+# read 1 cell (32 bits) from RAM address and put in A register
+Forthword_ FETCH_STR_A, INLINE_OPT, "@!a"
+  fetch_str_a_
+  ret
+
+# ( a-addr -- a-addr B:n32 )
+# read 1 cell (32 bits) from RAM address and put in B register
+Forthword_ FETCH_STR_B, INLINE_OPT, "@!b"
+  fetch_str_b_
+  ret
+
+# ( a-addr -- a-addr X:n32 )
+# read 1 cell (32 bits) from RAM address and put in X register
+Forthword_ FETCH_STR_X, INLINE_OPT, "@!x"
+  fetch_str_x_
+  ret
+
+# ( a-addr -- a-addr Y:n32 )
+# read 1 cell (32 bits) from RAM address and put in Y register
+Forthword_ FETCH_STR_Y, INLINE_OPT, "@!y"
+  fetch_str_y_
+  ret
+
+# ( a-addr -- n16 )
+# read half cell (16 bits) from RAM address
+Forthword_ HFETCH, INLINE_OPT, "h@"
+  hfetch_
+  ret
+
+# ( a-addr -- a-addr A:n16 )
+# read 1 cell (16 bits) from RAM address and put in A register
+Forthword_ HFETCH_STR_A, INLINE_OPT, "h@!a"
+  hfetch_str_a_
+  ret
+
+# ( a-addr -- a-addr B:n16 )
+# read 1 cell (16 bits) from RAM address and put in B register
+Forthword_ HFETCH_STR_B, INLINE_OPT, "h@!b"
+  hfetch_str_b_
+  ret
+
+# ( a-addr -- a-addr X:n16 )
+# read 1 cell (16 bits) from RAM address and put in X register
+Forthword_ HFETCH_STR_X, INLINE_OPT, "h@!x"
+  hfetch_str_x_
+  ret
+
+# ( a-addr -- a-addr Y:n16 )
+# read 1 cell (16 bits) from RAM address and put in Y register
+Forthword_ HFETCH_STR_Y, INLINE_OPT, "h@!y"
+  hfetch_str_y_
+  ret
+
+# ( a-addr -- n8 )
+# read byte (8 bits) from RAM address
+Forthword_ CFETCH, INLINE_OPT, "c@"
+  cfetch_
+  ret
+
+# ( a-addr -- a-addr A:n8 )
+# read 1 cell (8 bits) from RAM address and put in A register
+Forthword_ CFETCH_STR_A, INLINE_OPT, "c@!a"
+  cfetch_str_a_
+  ret
+
+# ( a-addr -- a-addr B:n8 )
+# read 1 cell (8 bits) from RAM address and put in B register
+Forthword_ CFETCH_STR_B, INLINE_OPT, "c@!b"
+  cfetch_str_b_
+  ret
+
+# ( a-addr -- a-addr X:n8 )
+# read 1 cell (8 bits) from RAM address and put in X register
+Forthword_ CFETCH_STR_X, INLINE_OPT, "c@!x"
+  cfetch_str_x_
+  ret
+
+# ( a-addr -- a-addr Y:n8 )
+# read 1 cell (8 bits) from RAM address and put in Y register
+Forthword_ CFETCH_STR_Y, INLINE_OPT, "c@!y"
+  cfetch_str_y_
+  ret
+
 # ( addr Y:n -- )
 # store a word from Y (32 bits) to RAM address
 Forthword_ YWSTORE, INLINE_OPT, "y.!"
@@ -1224,12 +1308,6 @@ Forthword_ ONEPLUS_STR, INLINE_OPT, "1+!"
   oneplus_str_
   ret
 
-# ( a-addr -- n16 )
-# read half cell (16 bits) from RAM address
-Forthword_ HFETCH, INLINE_OPT, "h@"
-  hfetch_
-  ret
-
 # ( a-addr -- a-addr Y:n16 )
 # store a half word (16 bits) in Y register to RAM address
 Forthword_ YWHSTORE, INLINE_OPT, "y.h!"
@@ -1294,12 +1372,6 @@ Forthword_ ONEPLUS_HSTR, INLINE_OPT, "1+h!"
 # subtract 1 from content of half cell RAM address a-addr
 Forthword_ ONEMINUS_HSTR, INLINE_OPT, "1-h!"
   oneminus_hstr_
-  ret
-
-# ( a-addr -- n8 )
-# read byte (8 bits) from RAM address
-Forthword_ CFETCH, INLINE_OPT, "c@"
-  cfetch_
   ret
 
 # ( a-addr -- )
