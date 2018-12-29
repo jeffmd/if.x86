@@ -1,4 +1,7 @@
 # if.S
+.set FULLBUILD, 1
+# if FULLBUILD is 0 then a minimum kernel is built but with no interpreter
+# minimum kernel build has minimum word set needed to be up and running without interpreter
 
 .include "macros.S"
 
@@ -82,29 +85,36 @@ CPSTART:
 .include "core.S"
 .include "cin.S"
 .include "cout.S"
-.include "string.S"
-.include "include.S"
 .include "math.S"
-.include "mathadv.S"
-.include "kernel.S"
+.include "string.S"
+.include "kernel-base.S"
 
-#.include "defer.S"
-.include "dictionary.S"
-.include "compiler.S"
-.include "number.S"
-.include "interpret.S"
-.include "asm.S"
-.include "file.S"
+.if FULLBUILD
+  .include "kernel.S"
+  .include "include.S"
+  .include "mathadv.S"
+  #.include "defer.S"
+  .include "dictionary.S"
+  .include "compiler.S"
+  .include "number.S"
+  .include "interpret.S"
+  .include "asm.S"
+  .include "file.S"
+.endif
 
 # ( nx* -- ) (R: ny* -- )
 # initialize if further. EXECs turnkey operation and go to quit
 Forthword_ WARM, 0, "warm"
-	call ONLY
   call RESET
+.if FULLBUILD
+	call ONLY
   call DECIMAL           # default to decimal base
+.endif
   type_ "if 0.1\n"
   # check if command line args need to be loaded
+.if FULLBUILD
 	call DOCMDARG
+.endif
 	jmp QUIT
 
 # ( -- addr)
@@ -122,9 +132,11 @@ Forthword_ RECOVER, 0, "recover"
   push %ebp
   movl $topdatastack, %ebx
   movl $sysvar_base, %ebp
-	call ONLY
   call RESET
+.if FULLBUILD
+	call ONLY
   call DECIMAL           # default to decimal base
+.endif
   type_ "recovering...\n"
 	call QUIT
 	pop %ebp
@@ -143,9 +155,13 @@ Forthword_ COLD, 0, "cold"
 	str_y_
 	call RP0
 	yw_str_
+.if FULLBUILD
   call WIPE
+.endif
   call WARM
   pop %ebp
   ret
 
+.if FULLBUILD
 .include "minimum.S"
+.endif

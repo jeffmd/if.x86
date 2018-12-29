@@ -14,6 +14,24 @@ Forthword_ PUTCHAR, 0, "putchar"
   rnip_
   ret
 
+# ( -- )
+# turn emit off
+Forthword_ EMIT_OFF, 0, "emit.off"
+  # reset output source for emit
+  lit_y_ NOOP
+  call EMITADDR
+  yw_str_
+  ret
+
+# ( -- )
+# turn emit on for default output
+Forthword_ EMIT_ON, 0, "emit.on"
+  # reset output source for emit
+  lit_y_ PUTCHAR
+  call EMITADDR
+  yw_str_
+  ret
+
 # ( c -- )
 # fetch the emit vector and EXEC it. Will emit a character from WR
 Forthword_ EMIT, 0, "emit"
