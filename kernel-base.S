@@ -94,8 +94,7 @@ PHEX_BEGIN:
 Forthword_ BYE, 0, "bye"
   call FFLAGS
   str_x_
-  one_
-  str_y_
+  lit_y_ 1
   x_hfetch_
   ory_
   x_hstr_
