@@ -1,6 +1,6 @@
 # if.S
 
-.set FULLBUILD, 0
+.set FULLBUILD, 1
 # if FULLBUILD is 0 then a minimum kernel is built but with no interpreter
 # minimum kernel build has minimum word set needed to be up and running without interpreter
 

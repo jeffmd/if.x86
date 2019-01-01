@@ -1023,6 +1023,14 @@
   mov %eax, (%ecx)
 .endm
 
+.macro y_fetch_
+  movl (%edx), %eax
+.endm
+
+.macro y_str_
+  mov %eax, (%edx)
+.endm
+
 .macro a_hfetch_
   movsxw (%esi), %eax
 .endm
@@ -1047,6 +1055,14 @@
   movw %ax, (%ecx)
 .endm
 
+.macro y_hfetch_
+  movsxw (%edx), %eax
+.endm
+
+.macro y_hstr_
+  movw %ax, (%edx)
+.endm
+
 .macro a_cfetch_
   movsxb (%esi), %eax
 .endm
@@ -1069,6 +1085,14 @@
 
 .macro x_cstr_
   movb %al, (%ecx)
+.endm
+
+.macro y_cfetch_
+  movsxb (%edx), %eax
+.endm
+
+.macro y_cstr_
+  movb %al, (%edx)
 .endm
 
 .macro aplus4_

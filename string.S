@@ -30,19 +30,14 @@ Forthword_ SLASHSTRING, 0, "/$"
 Forthword_ DOSLIT, 0, "(slit)"
   # get return address to get string length, calculate string address start,
   # and calculate return address
-  r0_            # ( raddr )  (R: raddr)
-  push_          # ( raddr raddr )
+  r0_str_y_      # ( Y:raddr )  (R: raddr)
   # get the string length
-  hfetch_        # ( raddr slength )
-  push_          # ( raddr slength slength )
+  y_hfetch_      # ( slength Y:raddr )
   # calculate string address
-  d1_            # ( raddr slength raddr )
-  twoplus_       # ( raddr slength straddr )
+  yplus2_        # ( slength Y:straddr )
   # calculate the number of words to skip over for return address
-  str_d1_        # ( straddr slength straddr )
-  d0_str_y_      # ( straddr slength straddr ) Y: slength
-  addy_          # ( straddr slength straddr+slength )
+  push_y_        # ( straddr slength Y:straddr )
+  yaddw_         # ( straddr slength straddr+slength )
   # also skip string length
-  str_r0_        # ( straddr slength straddr+k ) (R: straddr+k )
-  pop_           # ( straddr slength )
+  y_str_r0_      # ( straddr slength ) (R: straddr+k )
   ret

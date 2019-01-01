@@ -1637,6 +1637,42 @@ Forthword_ XMINUS1, INLINE_OPT, "x-1"
   xminus1_
   ret
 
+# ( -- n )
+# Read a word (32bit) from memory pointed to by register Y
+Forthword_ Y_FETCH, INLINE_OPT, "y@"
+  y_fetch_
+  ret
+
+# ( n -- )
+# store a word to RAM address pointed to by Y register
+Forthword_ Y_STR, INLINE_OPT, "y!"
+  y_str_
+  ret
+
+# ( -- n )
+# Read a half word (32bit) from memory pointed to by register Y
+Forthword_ Y_HFETCH, INLINE_OPT, "yh@"
+  y_hfetch_
+  ret
+
+# ( h -- )
+# store a half word to RAM address pointed to by Y reg
+Forthword_ Y_HSTR, INLINE_OPT, "yh!"
+  y_hstr_
+  ret
+
+# ( -- n )
+# Read a byte from memory pointed to by register Y
+Forthword_ Y_CFETCH, INLINE_OPT, "yc@"
+  y_cfetch_
+  ret
+
+# ( c -- )
+# store a single byte to RAM address pointed to by Y reg
+Forthword_ Y_CSTORE, INLINE_OPT, "yc!"
+  y_cstr_
+  ret
+  
 # ( -- )
 # update register Y with post increment 4+ from last memory operation
 Forthword_ YPLUS4, INLINE_OPT, "y+4"
