@@ -27,7 +27,7 @@ Forthword_ NFA2LFA, 0, "nfa>lfa"
   # mask out flags in len, allow up to 31 characters
   and $31, %eax                # ( nfa+2 len )
   d0_str_y_                    # ( nfa+2 len ) Y: nfa+2
-  addy_                        # ( nfa+2 nfa+2+len )
+  plus_y_                      # ( nfa+2 nfa+2+len )
   nip_                         # ( nfa+2+len )
   ret
 
@@ -55,7 +55,7 @@ FINDWI:
   fourstar_          # ( addr len idx*4 )
   str_y_             # ( addr len idx*4 ) Y: idx*4
   call CONTEXT       # ( addr len context )
-  addy_              # ( addr len context' )
+  plus_y_            # ( addr len context' )
   fetch_             # ( addr len wid )
 
 # ( c-addr len wid -- [ 0 | nfa ] )

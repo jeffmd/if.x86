@@ -411,24 +411,6 @@ Forthword_ RNIP3, INLINE_OPT, "rnip3"
 	rnip3_
 	ret
 
-# ( -- ) (R: -- ? )
-# add 1 cell to return stack
-#Forthword_ RTOP1, INLINE_OPT, "rtop1"
-#	rtop1_
-#	ret
-
-# ( -- ) (R: -- ? ? )
-# add 2 cells to return stack
-#Forthword_ RTOP2, INLINE_OPT, "rtop2"
-#	rtop2_
-#	ret
-
-# ( -- ) (R: -- ? ? ? )
-# add 3 cells to return stack
-#Forthword_ RTOP3, INLINE_OPT, "rtop3"
-#	rtop3_
-#	ret
-
 # ( n -- ) (R: -- n)
 # push WR on top of return stack
 Forthword_ RPUSH, INLINE_OPT, "rpush"
@@ -708,74 +690,74 @@ Forthword_ RTORPLUS, INLINE_OPT, "r0+"
 
 # ( n1 -- n1+y )
 # add n1 and y
-Forthword_ ADDY, INLINE_OPT, "+y"
-  addy_
+Forthword_ PLUS_Y, INLINE_OPT, "+y"
+  plus_y_
   ret
 
 # ( n1 -- n1+x )
 # add n1 and x
-Forthword_ ADDX, INLINE_OPT, "+x"
-  addx_
+Forthword_ PLUS_X, INLINE_OPT, "+x"
+  plus_x_
   ret
 
 # ( n1 -- n1+a )
 # add n1 and a
-Forthword_ ADDA, INLINE_OPT, "+a"
-  adda_
+Forthword_ PLUS_A, INLINE_OPT, "+a"
+  plus_a_
   ret
 
 # ( n1 -- n1+b )
 # add n1 and b
-Forthword_ ADDB, INLINE_OPT, "+b"
-  addb_
+Forthword_ PLUS_B, INLINE_OPT, "+b"
+  plus_b_
   ret
 
 # ( n1|u1 -- n1-y|u1-y )
 # subtract y from n1
-Forthword_ MINUSY, INLINE_OPT, "-y"
-  minusy_
+Forthword_ MINUS_Y, INLINE_OPT, "-y"
+  minus_y_
   ret
 
 # ( n1|u1 -- n1-x|u1-x )
 # subtract x from n1
-Forthword_ MINUSX, INLINE_OPT, "-x"
-  minusx_
+Forthword_ MINUS_X, INLINE_OPT, "-x"
+  minus_x_
   ret
 
 # ( n1|u1 -- n1-a|u1-a )
 # subtract a from n1
-Forthword_ MINUSA, INLINE_OPT, "-a"
-  minusa_
+Forthword_ MINUS_A, INLINE_OPT, "-a"
+  minus_a_
   ret
 
 # ( n1|u1 -- n1-b|u1-b )
 # subtract b from n1
-Forthword_ MINUSB, INLINE_OPT, "-b"
-  minusb_
+Forthword_ MINUS_B, INLINE_OPT, "-b"
+  minus_b_
   ret
 
 # ( n1 -- n1 Y:Y+n1 )
 # y=y+n1
-Forthword_ YADDW, INLINE_OPT, "y+"
-  yaddw_
+Forthword_ Y_PLUS, INLINE_OPT, "y+"
+  y_plus_
   ret
 
 # ( n1 -- n1 X:X+n1 )
 # x=x+n1
-Forthword_ XADDW, INLINE_OPT, "x+"
-  xaddw_
+Forthword_ X_PLUS, INLINE_OPT, "x+"
+  x_plus_
   ret
 
 # ( n1 -- n1 A:A+n1 )
 # a=a+n1
-Forthword_ AADDW, INLINE_OPT, "a+"
-  aaddw_
+Forthword_ A_PLUS, INLINE_OPT, "a+"
+  a_plus_
   ret
 
 # ( n1 -- n1 B:B+n1 )
 # b=b+n1
-Forthword_ BADDW, INLINE_OPT, "b+"
-  baddw_
+Forthword_ B_PLUS, INLINE_OPT, "b+"
+  b_plus_
   ret
 
 # ( u1|n1 u2|n2 -- u3|n3 )
@@ -787,93 +769,93 @@ Forthword_ MULU, INLINE_OPT,  "*"
 
 # ( n1 -- -n1 )
 # 2-compliment of n1
-Forthword_ NEGATE, INLINE_OPT, "neg"
+Forthword_ NEG, INLINE_OPT, "neg"
   neg_
   ret
 
 # ( Y:n1 -- Y:-n1 )
 # 2-compliment of Y
-Forthword_ NEGATEY, INLINE_OPT, "neg.y"
-  negy_
+Forthword_ NEG_Y, INLINE_OPT, "neg.y"
+  neg_y_
   ret
 
 # ( X:n1 -- X:-n1 )
 # 2-compliment of X
-Forthword_ NEGATEX, INLINE_OPT, "neg.x"
-  negx_
+Forthword_ NEG_X, INLINE_OPT, "neg.x"
+  neg_x_
   ret
 
 
-# ( n1 -- n1andy )
+# ( n1 -- n1 and Y )
 # bitwise and
-Forthword_ ANDY_, INLINE_OPT, "and.y"
-  andy_
+Forthword_ AND_Y, INLINE_OPT, "and.y"
+  and_y_
   ret
 
-# ( n1 -- n1andx )
+# ( n1 -- n1 and X )
 # bitwise and
-Forthword_ ANDX_, INLINE_OPT, "and.x"
-  andx_
+Forthword_ AND_X, INLINE_OPT, "and.x"
+  and_x_
   ret
 
-# ( n1 -- n1anda )
+# ( n1 -- n1 and A )
 # bitwise and
-Forthword_ ANDA_, INLINE_OPT, "and.a"
-  anda_
+Forthword_ AND_A, INLINE_OPT, "and.a"
+  and_a_
   ret
 
-# ( n1 -- n1andb )
+# ( n1 -- n1 and B )
 # bitwise and
-Forthword_ ANDB_, INLINE_OPT, "and.b"
-  andb_
+Forthword_ AND_B, INLINE_OPT, "and.b"
+  and_b_
   ret
 
-# ( n1 -- n1.or.y )
+# ( n1 -- n1.or.Y )
 # logical or
-Forthword_ ORY, INLINE_OPT, "or.y"
-  ory_
+Forthword_ OR_Y, INLINE_OPT, "or.y"
+  or_y_
   ret
 
-# ( n1 -- n1.or.x )
+# ( n1 -- n1.or.X )
 # logical or
-Forthword_ ORX, INLINE_OPT, "or.x"
-  orx_
+Forthword_ OR_X, INLINE_OPT, "or.x"
+  or_x_
   ret
 
-# ( n1 -- n1.or.a )
+# ( n1 -- n1.or.A )
 # logical or
-Forthword_ ORA, INLINE_OPT, "or.a"
-  ora_
+Forthword_ OR_A, INLINE_OPT, "or.a"
+  or_a_
   ret
 
-# ( n1 -- n1.or.b )
+# ( n1 -- n1.or.B )
 # logical or
-Forthword_ ORB, INLINE_OPT, "or.b"
-  orb_
+Forthword_ OR_B, INLINE_OPT, "or.b"
+  or_b_
   ret
 
-# ( n1 -- n1.xor.y)
+# ( n1 -- n1.xor.Y)
 # exclusive or
-Forthword_ XORY, INLINE_OPT, "xor.y"
-  xory_
+Forthword_ XOR_Y, INLINE_OPT, "xor.y"
+  xor_y_
   ret
 
-# ( n1 -- n1.xor.x)
+# ( n1 -- n1.xor.X)
 # exclusive or
-Forthword_ XORX, INLINE_OPT, "xor.x"
-  xorx_
+Forthword_ XOR_X, INLINE_OPT, "xor.x"
+  xor_x_
   ret
 
-# ( n1 -- n1.xor.a)
+# ( n1 -- n1.xor.A)
 # exclusive or
-Forthword_ XORA, INLINE_OPT, "xor.a"
-  xora_
+Forthword_ XOR_A, INLINE_OPT, "xor.a"
+  xor_a_
   ret
 
-# ( n1 -- n1.xor.b)
+# ( n1 -- n1.xor.B)
 # exclusive or
-Forthword_ XORB, INLINE_OPT, "xor.b"
-  xorb_
+Forthword_ XOR_B, INLINE_OPT, "xor.b"
+  xor_b_
   ret
 
 # ( n1 -- n2)
@@ -884,26 +866,26 @@ Forthword_ NOT, INLINE_OPT, "not"
 
 # ( n1 -- n2)
 # 1-complement of y
-Forthword_ NOTY, INLINE_OPT, "not.y"
-  noty_
+Forthword_ NOT_Y, INLINE_OPT, "not.y"
+  not_y_
   ret
 
 # ( n1 -- n2)
 # 1-complement of x
-Forthword_ NOTX, INLINE_OPT, "not.x"
-  notx_
+Forthword_ NOT_X, INLINE_OPT, "not.x"
+  not_x_
   ret
 
 # ( n1 -- n2)
 # 1-complement of a
-Forthword_ NOTA, INLINE_OPT, "not.a"
-  nota_
+Forthword_ NOT_A, INLINE_OPT, "not.a"
+  not_a_
   ret
 
 # ( n1 -- n2)
 # 1-complement of b
-Forthword_ NOTB, INLINE_OPT, "not.b"
-  notb_
+Forthword_ NOT_B, INLINE_OPT, "not.b"
+  not_b_
   ret
 
 # ( n1 n2 -- flag)
@@ -911,7 +893,7 @@ Forthword_ NOTB, INLINE_OPT, "not.b"
 Forthword_ NOTEQUAL, INLINE_OPT, "<>"
   d0_str_y_
   nip_
-  xory_
+  xor_y_
   ret
 
 # ( n1 n2 -- flag )
@@ -1220,26 +1202,26 @@ Forthword_ ZERO_STR, INLINE_OPT, "0!"
 
 # ( addr -- addr )
 # add Y to content of cell RAM address a-addr
-Forthword_ YPLUS_STR, INLINE_OPT, "y+!"
-  yplus_str_
+Forthword_ Y_PLUS_STR, INLINE_OPT, "y+!"
+  y_plus_str_
   ret
 
 # ( addr -- addr )
 # add X to content of cell RAM address a-addr
-Forthword_ XPLUS_STR, INLINE_OPT, "x+!"
-  xplus_str_
+Forthword_ X_PLUS_STR, INLINE_OPT, "x+!"
+  x_plus_str_
   ret
 
 # ( addr -- addr )
 # add A to content of cell RAM address a-addr
-Forthword_ APLUS_STR, INLINE_OPT, "a+!"
-  aplus_str_
+Forthword_ A_PLUS_STR, INLINE_OPT, "a+!"
+  a_plus_str_
   ret
 
 # ( addr -- addr )
 # add B to content of cell RAM address a-addr
-Forthword_ BPLUS_STR, INLINE_OPT, "b+!"
-  bplus_str_
+Forthword_ B_PLUS_STR, INLINE_OPT, "b+!"
+  b_plus_str_
   ret
 
 # ( a-addr -- )
@@ -1256,50 +1238,50 @@ Forthword_ ONEPLUS_STR, INLINE_OPT, "1+!"
 
 # ( a-addr -- a-addr Y:n16 )
 # store a half word (16 bits) in Y register to RAM address
-Forthword_ YWHSTORE, INLINE_OPT, "y.h!"
+Forthword_ YW_HSTORE, INLINE_OPT, "y.h!"
   yw_hstr_
   ret
 
 # ( a-addr -- a-addr X:n16 )
 # store a half word (16 bits) in X register to RAM address
-Forthword_ XWHSTORE, INLINE_OPT, "x.h!"
+Forthword_ XW_HSTORE, INLINE_OPT, "x.h!"
   xw_hstr_
   ret
 
 # ( a-addr -- a-addr A:n16 )
 # store a half word (16 bits) in A register to RAM address
-Forthword_ AWHSTORE, INLINE_OPT, "a.h!"
+Forthword_ AW_HSTORE, INLINE_OPT, "a.h!"
   aw_hstr_
   ret
 
 # ( a-addr -- a-addr B:n16 )
 # store a half word (16 bits) in B register to RAM address
-Forthword_ BWHSTORE, INLINE_OPT, "b.h!"
+Forthword_ BW_HSTORE, INLINE_OPT, "b.h!"
   bw_hstr_
   ret
 
 # ( a-addr -- a-addr )
 # add n16 in Y register to content of half cell RAM address a-addr
-Forthword_ YPLUS_HSTR, INLINE_OPT, "y+h!"
-  yplus_hstr_
+Forthword_ Y_PLUS_HSTR, INLINE_OPT, "y+h!"
+  y_plus_hstr_
   ret
 
 # ( a-addr -- a-addr )
 # add n16 in X register to content of half cell RAM address a-addr
-Forthword_ XPLUS_HSTR, INLINE_OPT, "x+h!"
-  xplus_hstr_
+Forthword_ X_PLUS_HSTR, INLINE_OPT, "x+h!"
+  x_plus_hstr_
   ret
 
 # ( a-addr -- a-addr )
 # add n16 in A register to content of half cell RAM address a-addr
-Forthword_ APLUS_HSTR, INLINE_OPT, "a+h!"
-  aplus_hstr_
+Forthword_ A_PLUS_HSTR, INLINE_OPT, "a+h!"
+  a_plus_hstr_
   ret
 
 # ( a-addr -- a-addr )
 # add n16 in B register to content of half cell RAM address a-addr
-Forthword_ BPLUS_HSTR, INLINE_OPT, "b+h!"
-  bplus_hstr_
+Forthword_ B_PLUS_HSTR, INLINE_OPT, "b+h!"
+  b_plus_hstr_
   ret
 
 # ( a-addr -- )
@@ -1334,26 +1316,26 @@ Forthword_ ZERO_CSTR, INLINE_OPT, "0c!"
 
 # ( a-addr -- )
 # add c byte in Y register to content of byte RAM address a-addr
-Forthword_ YPLUS_CSTR, INLINE_OPT, "y+c!"
-  yplus_cstr_
+Forthword_ Y_PLUS_CSTR, INLINE_OPT, "y+c!"
+  y_plus_cstr_
   ret
 
 # ( a-addr -- )
 # add c byte in X register to content of byte RAM address a-addr
-Forthword_ XPLUS_CSTR, INLINE_OPT, "x+c!"
-  xplus_cstr_
+Forthword_ X_PLUS_CSTR, INLINE_OPT, "x+c!"
+  x_plus_cstr_
   ret
 
 # ( a-addr -- )
 # subtract byte in Y register from content of byte RAM address a-addr
-Forthword_ YMINUS_CSTR, INLINE_OPT, "y-c!"
-  yminus_cstr_
+Forthword_ Y_MINUS_CSTR, INLINE_OPT, "y-c!"
+  y_minus_cstr_
   ret
 
 # ( a-addr -- )
 # subtract byte in X register from content of byte RAM address a-addr
-Forthword_ XMINUS_CSTR, INLINE_OPT, "x-c!"
-  xminus_cstr_
+Forthword_ X_MINUS_CSTR, INLINE_OPT, "x-c!"
+  x_minus_cstr_
   ret
 
 # ( a-addr -- )
@@ -1457,39 +1439,39 @@ Forthword_ A_CSTORE, INLINE_OPT, "ac!"
 
 # ( -- )
 # update register A with post increment 4+ from last memory operation
-Forthword_ APLUS4, INLINE_OPT, "a+4"
-  aplus4_
+Forthword_ A_PLUS4, INLINE_OPT, "a+4"
+  a_plus4_
   ret
 
 # ( -- )
 # update register A with post increment 2+ from last memory operation
-Forthword_ APLUS2, INLINE_OPT, "a+2"
-  aplus2_
+Forthword_ A_PLUS2, INLINE_OPT, "a+2"
+  a_plus2_
   ret
 
 
 # ( -- )
 # update register A with post increment 1+ from last memory operation
-Forthword_ APLUS1, INLINE_OPT, "a+1"
-  aplus1_
+Forthword_ A_PLUS1, INLINE_OPT, "a+1"
+  a_plus1_
   ret
 
 # ( -- )
 # update register A with decrement 4
-Forthword_ AMINUS4, INLINE_OPT, "a-4"
-  aminus4_
+Forthword_ A_MINUS4, INLINE_OPT, "a-4"
+  a_minus4_
   ret
 
 # ( -- )
 # update register A with decrement 2
-Forthword_ AMINUS2, INLINE_OPT, "a-2"
-  aminus2_
+Forthword_ A_MINUS2, INLINE_OPT, "a-2"
+  a_minus2_
   ret
 
 # ( -- )
 # update register A with decrement 1
-Forthword_ AMINUS1, INLINE_OPT, "a-1"
-  aminus1_
+Forthword_ A_MINUS1, INLINE_OPT, "a-1"
+  a_minus1_
   ret
 
 # ( -- n )
@@ -1530,38 +1512,38 @@ Forthword_ B_CSTORE, INLINE_OPT, "bc!"
 
 # ( -- )
 # update register B with post increment 4+ from last memory operation
-Forthword_ BPLUS4, INLINE_OPT, "b+4"
-  bplus4_
+Forthword_ B_PLUS4, INLINE_OPT, "b+4"
+  b_plus4_
   ret
 
 # ( -- )
 # update register B with post increment 2+ from last memory operation
-Forthword_ BPLUS2, INLINE_OPT, "b+2"
-  bplus2_
+Forthword_ B_PLUS2, INLINE_OPT, "b+2"
+  b_plus2_
   ret
 
 # ( -- )
 # update register B with post increment 1+ from last memory operation
-Forthword_ BPLUS1, INLINE_OPT, "b+1"
-  bplus1_
+Forthword_ B_PLUS1, INLINE_OPT, "b+1"
+  b_plus1_
   ret
 
 # ( -- )
 # update register B with decrement 4
-Forthword_ BMINUS4, INLINE_OPT, "b-4"
-  bminus4_
+Forthword_ B_MINUS4, INLINE_OPT, "b-4"
+  b_minus4_
   ret
 
 # ( -- )
 # update register B with decrement 2
-Forthword_ BMINUS2, INLINE_OPT, "b-2"
-  bminus2_
+Forthword_ B_MINUS2, INLINE_OPT, "b-2"
+  b_minus2_
   ret
 
 # ( -- )
 # update register B with decrement 1
-Forthword_ BMINUS1, INLINE_OPT, "b-1"
-  bminus1_
+Forthword_ B_MINUS1, INLINE_OPT, "b-1"
+  b_minus1_
   ret
 
 # ( -- n )
@@ -1602,39 +1584,39 @@ Forthword_ X_CSTORE, INLINE_OPT, "xc!"
 
 # ( -- )
 # update register X with post increment 4+ from last memory operation
-Forthword_ XPLUS4, INLINE_OPT, "x+4"
-  xplus4_
+Forthword_ X_PLUS4, INLINE_OPT, "x+4"
+  x_plus4_
   ret
 
 # ( -- )
 # update register X with post increment 2+ from last memory operation
-Forthword_ XPLUS2, INLINE_OPT, "x+2"
-  xplus2_
+Forthword_ X_PLUS2, INLINE_OPT, "x+2"
+  x_plus2_
   ret
 
 
 # ( -- )
 # update register X with post increment 1+ from last memory operation
-Forthword_ XPLUS1, INLINE_OPT, "x+1"
-  xplus1_
+Forthword_ X_PLUS1, INLINE_OPT, "x+1"
+  x_plus1_
   ret
 
 # ( -- )
 # update register X with decrement 4
-Forthword_ XMINUS4, INLINE_OPT, "x-4"
-  xminus4_
+Forthword_ X_MINUS4, INLINE_OPT, "x-4"
+  x_minus4_
   ret
 
 # ( -- )
 # update register X with decrement 2
-Forthword_ XMINUS2, INLINE_OPT, "x-2"
-  xminus2_
+Forthword_ X_MINUS2, INLINE_OPT, "x-2"
+  x_minus2_
   ret
 
 # ( -- )
 # update register X with decrement 1
-Forthword_ XMINUS1, INLINE_OPT, "x-1"
-  xminus1_
+Forthword_ X_MINUS1, INLINE_OPT, "x-1"
+  x_minus1_
   ret
 
 # ( -- n )
@@ -1675,39 +1657,39 @@ Forthword_ Y_CSTORE, INLINE_OPT, "yc!"
   
 # ( -- )
 # update register Y with post increment 4+ from last memory operation
-Forthword_ YPLUS4, INLINE_OPT, "y+4"
-  yplus4_
+Forthword_ Y_PLUS4, INLINE_OPT, "y+4"
+  y_plus4_
   ret
 
 # ( -- )
 # update register Y with post increment 2+ from last memory operation
-Forthword_ YPLUS2, INLINE_OPT, "y+2"
-  yplus2_
+Forthword_ Y_PLUS2, INLINE_OPT, "y+2"
+  y_plus2_
   ret
 
 
 # ( -- )
 # update register Y with post increment 1+ from last memory operation
-Forthword_ YPLUS1, INLINE_OPT, "y+1"
-  yplus1_
+Forthword_ Y_PLUS1, INLINE_OPT, "y+1"
+  y_plus1_
   ret
 
 # ( -- )
 # update register Y with decrement 4
-Forthword_ YMINUS4, INLINE_OPT, "y-4"
-  yminus4_
+Forthword_ Y_MINUS4, INLINE_OPT, "y-4"
+  y_minus4_
   ret
 
 # ( -- )
 # update register Y with decrement 2
-Forthword_ YMINUS2, INLINE_OPT, "y-2"
-  yminus2_
+Forthword_ Y_MINUS2, INLINE_OPT, "y-2"
+  y_minus2_
   ret
 
 # ( -- )
 # update register Y with decrement 1
-Forthword_ YMINUS1, INLINE_OPT, "y-1"
-  yminus1_
+Forthword_ Y_MINUS1, INLINE_OPT, "y-1"
+  y_minus1_
   ret
 
 # (start dest count -- )

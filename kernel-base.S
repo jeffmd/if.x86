@@ -73,9 +73,9 @@ Forthword_ PNIB, 0, ".h"
 # simple 32 bit hex print
 Forthword_ PHEX, 0, ".$"
   push_        # ( n n )
-  lit_ '$    # ( n $ )
+  lit_ '$      # ( n $ )
   call EMIT    # ( n ? )
-  lit_ 28    # ( n 28 )
+  lit_ 28      # ( n 28 )
 PHEX_BEGIN:
   call TWOOVER # ( n x n x )
   rshift_      # ( n x n' )
@@ -86,7 +86,7 @@ PHEX_BEGIN:
 
   pop_         # ( n )
   call PNIB
-  lit_ 32    # ( 32 )
+  lit_ 32      # ( 32 )
   jmp EMIT
   
 # ( -- )
@@ -96,7 +96,7 @@ Forthword_ BYE, 0, "bye"
   str_x_
   lit_y_ 1
   x_hfetch_
-  ory_
+  or_y_
   x_hstr_
   ret
 

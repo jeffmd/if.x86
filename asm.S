@@ -21,7 +21,7 @@ Forthword_ RELDST, 0, "reldst"
   # rel dist = dest - start
   str_y_                # ( dest start ) Y: start
   pop_                  # ( dest )
-  minusy_               # ( dest-start )
+  minus_y_              # ( dest-start )
   ret
 
 # build assembler instruction jmp - unconditional long jump

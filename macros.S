@@ -501,51 +501,51 @@
   pop_
 .endm
 
-.macro addy_
+.macro plus_y_
   addl %edx, %eax
 .endm
 
-.macro addx_
+.macro plus_x_
   addl %ecx, %eax
 .endm
 
-.macro adda_
+.macro plus_a_
   addl %esi, %eax
 .endm
 
-.macro addb_
+.macro plus_b_
   addl %edi, %eax
 .endm
 
-.macro yaddw_
+.macro y_plus_
   addl %eax, %edx
 .endm
 
-.macro xaddw_
+.macro x_plus_
   addl %eax, %ecx
 .endm
 
-.macro aaddw_
+.macro a_plus_
   addl %eax, %esi
 .endm
 
-.macro baddw_
+.macro b_plus_
   addl %eax, %edi
 .endm
 
-.macro minusy_
+.macro minus_y_
   sub %edx, %eax
 .endm
 
-.macro minusx_
+.macro minus_x_
   sub %ecx, %eax
 .endm
 
-.macro minusa_
+.macro minus_a_
   sub %esi, %eax
 .endm
 
-.macro minusb_
+.macro minus_b_
   sub %edi, %eax
 .endm
 
@@ -553,67 +553,67 @@
   neg %eax
 .endm
 
-.macro negy_
+.macro neg_y_
   neg %edx
 .endm
 
-.macro negx_
+.macro neg_x_
   neg %ecx
 .endm
 
-.macro nega_
+.macro neg_a_
   neg %esi
 .endm
 
-.macro negb_
+.macro neg_b_
   neg %edi
 .endm
 
-.macro andy_
+.macro and_y_
   and %edx, %eax
 .endm
 
-.macro andx_
+.macro and_x_
   and %ecx, %eax
 .endm
 
-.macro anda_
+.macro and_a_
   and %esi, %eax
 .endm
 
-.macro andb_
+.macro and_b_
   and %edi, %eax
 .endm
 
-.macro ory_
+.macro or_y_
   or %edx, %eax
 .endm
 
-.macro orx_
+.macro or_x_
   or %ecx, %eax
 .endm
 
-.macro ora_
+.macro or_a_
   or %esi, %eax
 .endm
 
-.macro orb_
+.macro or_b_
   or %edi, %eax
 .endm
 
-.macro xory_
+.macro xor_y_
   xor %edx, %eax
 .endm
 
-.macro xorx_
+.macro xor_x_
   xor %ecx, %eax
 .endm
 
-.macro xora_
+.macro xor_a_
   xor %esi, %eax
 .endm
 
-.macro xorb_
+.macro xor_b_
   xor %edi, %eax
 .endm
 
@@ -621,19 +621,19 @@
   not %eax
 .endm
 
-.macro noty_
+.macro not_y_
   not %edx
 .endm
 
-.macro notx_
+.macro not_x_
   not %ecx
 .endm
 
-.macro nota_
+.macro not_a_
   not %esi
 .endm
 
-.macro notb_
+.macro not_b_
   not %edi
 .endm
 
@@ -641,9 +641,21 @@
   leal (\sym-sysvar_base)(%ebp), %eax
 .endm
 
-# Push constant on datastack
+# load constant into register
 .macro lit_ val
   movl $\val, %eax
+.endm
+
+.macro lit_a_ val
+  movl $\val, %esi
+.endm
+
+.macro lit_b_ val
+  movl $\val, %edi
+.endm
+
+.macro lit_x_ val
+  movl $\val, %ecx
 .endm
 
 .macro lit_y_ val
@@ -861,19 +873,19 @@
   movl %edx, (%eax)
 .endm
 
-.macro yplus_str_
+.macro y_plus_str_
   addl  %edx, (%eax)   
 .endm
 
-.macro xplus_str_
+.macro x_plus_str_
   addl  %ecx, (%eax)   
 .endm
 
-.macro aplus_str_
+.macro a_plus_str_
   addl  %esi, (%eax)   
 .endm
 
-.macro bplus_str_
+.macro b_plus_str_
   addl  %edi, (%eax)   
 .endm
 
@@ -907,19 +919,19 @@
   movw $0, (%eax)
 .endm
 
-.macro yplus_hstr_
+.macro y_plus_hstr_
   addw %dx, (%eax)
 .endm
 
-.macro xplus_hstr_
+.macro x_plus_hstr_
   addw %cx, (%eax)
 .endm
 
-.macro aplus_hstr_
+.macro a_plus_hstr_
   addw %si, (%eax)
 .endm
 
-.macro bplus_hstr_
+.macro b_plus_hstr_
   addw %di, (%eax)
 .endm
 
@@ -943,19 +955,19 @@
   movb $0, (%eax)
 .endm
 
-.macro yplus_cstr_
+.macro y_plus_cstr_
   addb %dl, (%eax)
 .endm
 
-.macro xplus_cstr_
+.macro x_plus_cstr_
   addb %cl, (%eax)
 .endm
 
-.macro yminus_cstr_
+.macro y_minus_cstr_
   subb %dl, (%eax)
 .endm
 
-.macro xminus_cstr_
+.macro x_minus_cstr_
   subb %cl, (%eax)
 .endm
 
@@ -1095,99 +1107,99 @@
   movb %al, (%edx)
 .endm
 
-.macro aplus4_
+.macro a_plus4_
   add $4, %esi
 .endm
 
-.macro bplus4_
+.macro b_plus4_
   add $4, %edi
 .endm
 
-.macro xplus4_
+.macro x_plus4_
   add $4, %ecx
 .endm
 
-.macro yplus4_
+.macro y_plus4_
   add $4, %edx
 .endm
 
-.macro aminus4_
+.macro a_minus4_
   sub $4, %esi
 .endm
 
-.macro bminus4_
+.macro b_minus4_
   sub $4, %edi
 .endm
 
-.macro xminus4_
+.macro x_minus4_
   sub $4, %ecx
 .endm
 
-.macro yminus4_
+.macro y_minus4_
   sub $4, %edx
 .endm
 
-.macro aplus2_
+.macro a_plus2_
   add $2, %esi
 .endm
 
-.macro bplus2_
+.macro b_plus2_
   add $2, %edi
 .endm
 
-.macro xplus2_
+.macro x_plus2_
   add $2, %ecx
 .endm
 
-.macro yplus2_
+.macro y_plus2_
   add $2, %edx
 .endm
 
-.macro aminus2_
+.macro a_minus2_
   sub $2, %esi
 .endm
 
-.macro bminus2_
+.macro b_minus2_
   sub $2, %edi
 .endm
 
-.macro xminus2_
+.macro x_minus2_
   sub $2, %ecx
 .endm
 
-.macro yminus2_
+.macro y_minus2_
   sub $2, %edx
 .endm
 
-.macro aplus1_
+.macro a_plus1_
   inc %esi
 .endm
 
-.macro bplus1_
+.macro b_plus1_
   inc %edi
 .endm
 
-.macro xplus1_
+.macro x_plus1_
   inc %ecx
 .endm
 
-.macro yplus1_
+.macro y_plus1_
   inc %edx
 .endm
 
-.macro aminus1_
+.macro a_minus1_
   dec %esi
 .endm
 
-.macro bminus1_
+.macro b_minus1_
   dec %edi
 .endm
 
-.macro xminus1_
+.macro x_minus1_
   dec %ecx
 .endm
 
-.macro yminus1_
+.macro y_minus1_
   dec %edx
 .endm
 

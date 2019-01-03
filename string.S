@@ -16,10 +16,10 @@ Forthword_ SLASHSTRING, 0, "/$"
   call MIN      # ( addr1 u1 n|u1 )
   str_y_        # ( addr1 u1 n ) Y: n
   d1_           # ( addr1 u1 addr1 )
-  addy_         # ( addr1 u1 addr2 )
+  plus_y_       # ( addr1 u1 addr2 )
   str_d1_       # ( addr2 u1 addr2 )
   pop_          # ( addr2 u1 )
-  minusy_       # ( addr2 u2 )
+  minus_y_      # ( addr2 u2 )
   ret
 
 # ( -- addr len )
@@ -34,10 +34,10 @@ Forthword_ DOSLIT, 0, "(slit)"
   # get the string length
   y_hfetch_      # ( slength Y:raddr )
   # calculate string address
-  yplus2_        # ( slength Y:straddr )
+  y_plus2_       # ( slength Y:straddr )
   # calculate the number of words to skip over for return address
   push_y_        # ( straddr slength Y:straddr )
-  yaddw_         # ( straddr slength straddr+slength )
+  y_plus_        # ( straddr slength straddr+slength )
   # also skip string length
   y_str_r0_      # ( straddr slength ) (R: straddr+k )
   ret

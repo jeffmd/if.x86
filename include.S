@@ -108,7 +108,7 @@ Forthword_ INCLUDEF, 0, "include"
   call PNAME     # ( addr len )
   # add null to end of string
   d0_str_y_      # ( addr len ) Y: addr
-  addy_          # ( addr addr' )
+  plus_y_        # ( addr addr' )
   zero_cstr_     # ( addr addr' )
   pop_           # ( addr )
   jmp DOINCLUDE

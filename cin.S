@@ -117,7 +117,7 @@ ACCEPT_dodelete:
   call TRUE           # ( true )
   str_y_              # ( true Y:true )
   call SHARPTIB       # ( #tibaddr )
-  yplus_hstr_         # ( #tibaddr )
+  y_plus_hstr_         # ( #tibaddr )
   jmp ACCEPT_checkmaxinput
 
 
@@ -135,7 +135,7 @@ ACCEPT_echo:
   # now store the key in the input buffer
   call STIB              # ( k tibaddr #tib)
   d0_str_y_              # ( k tibaddr #tib) Y: tibaddr
-  addy_                  # ( k tibaddr tibaddr+#tib )
+  plus_y_                  # ( k tibaddr tibaddr+#tib )
   d1_str_y_              # ( k tibaddr tibaddr+#tib ) Y: k
   yw_cstr_               # ( k tibaddr tibaddr+#tib )
   nip2_                  # ( tibaddr+#tib )
@@ -149,7 +149,7 @@ ACCEPT_checkmaxinput:
   hfetch_                # ( #tib )
   str_y_                 # ( #tib ) Y: #tib
   lit_ TIBSIZE           # ( tibsize )
-  minusy_                # ( tibsize-#tib )
+  minus_y_                # ( tibsize-#tib )
   # <if>
   iszero_                # ( tibsize-#tib )
   je ACCEPT_atmaxinput

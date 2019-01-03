@@ -150,19 +150,19 @@ Forthword_ CSKIP, 0, "cskip"
   
 PFA_CSKIP1:
   a_cfetch_            # ( c' )
-  aplus1_
+  a_plus1_
   cmp %edi, %eax       # ( c' )
   jne PFA_CSKIP3
-  yminus1_           # ( c' ) Y-1
+  y_minus1_            # ( c' ) Y-1
 PFA_CSKIP2:
-  y_iszero_             # ( c' )
+  y_iszero_            # ( c' )
   jne PFA_CSKIP1
 
 PFA_CSKIP3:
   rpop_b_
   rpop_a_
   x_                   # ( n1 )
-  minusy_              # ( n1-n' )
+  minus_y_             # ( n1-n' )
   ret
 
 # ( addr1 n1 c -- addr1 n2 )
@@ -182,10 +182,10 @@ Forthword_ CSCAN, 0, "cscan"
   
 PFA_CSCAN1:
   a_cfetch_            # ( addr1 c' )
-  aplus1_
+  a_plus1_
   cmp %edi, %eax       # ( addr1 c' )
   je PFA_CSCAN3
-  yminus1_             # ( addr1 c' ) Y-1
+  y_minus1_            # ( addr1 c' ) Y-1
 PFA_CSCAN2:
   y_iszero_            # ( addr1 c' )
   jne PFA_CSCAN1
@@ -194,7 +194,7 @@ PFA_CSCAN3:
   rpop_b_
   rpop_a_
   x_                   # ( addr1 n1 )
-  minusy_              # ( addr1 n1-n' )
+  minus_y_             # ( addr1 n1-n' )
   ret
 
 # ( -- srcaddr len  )
@@ -217,7 +217,7 @@ Forthword_ SKIPBL, 0, "skipbl"
   # adjust >IN
   str_y_              # ( n2 Y:n2 )
   call G_IN           # ( ginaddr )
-  yplus_hstr_         # ( ginaddr )
+  y_plus_hstr_        # ( ginaddr )
   ret
 
 # ( char "ccc<char>" -- c-addr u )
@@ -231,9 +231,9 @@ Forthword_ PARSE, 0, "parse"
   str_y_             # ( addr' len'' Y:len'')
   str_x_             # ( addr' len'' X:len'')
   # skip terminating delimeter
-  yplus1_            # ( addr' len'' Y:len''+1 )
+  y_plus1_           # ( addr' len'' Y:len''+1 )
   call G_IN          # ( addr' >in )
-  yplus_hstr_        # ( addr' >in )
+  y_plus_hstr_       # ( addr' >in )
   x_                 # ( addr' len'' )
   ret
 

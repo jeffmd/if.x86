@@ -67,9 +67,9 @@ Forthword_ TYPE, 0, "type"
 
 TYPE1:
   a_cfetch_
-  aplus1_
+  a_plus1_
   call EMIT
-  bminus1_
+  b_minus1_
   jnz TYPE1
 
   rpop_b_

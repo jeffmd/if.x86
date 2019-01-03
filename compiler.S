@@ -40,7 +40,7 @@ Forthword_ DP, 0, "dp"
 Forthword_ DPPLUS, 0, "dp+"
   str_y_
   call DPSHARP
-  yplus_str_
+  y_plus_str_
   ret
 
 # ( -- )
@@ -67,7 +67,7 @@ Forthword_ CP, 0, "cp"
 Forthword_ CPPLUS, 0, "cp+"
   str_y_
   call CPSHARP
-  yplus_str_
+  y_plus_str_
   ret
 
 # ( -- )
@@ -188,7 +188,7 @@ Forthword_ COPYSTRING, 0, "copy$"
   str_b_             # ( s-addr len len' d-addr ) B: d-addr
   d0_                # ( s-addr len len' len')
   b_hstr_
-  bplus2_
+  b_plus2_
   d1_str_x_
   d2_str_a_          # ( s-addr ) A: addr
   cld
@@ -238,20 +238,20 @@ Forthword_ COPY_BYTE_UNTIL, 0, "copy.byte.until"
   # begin
 CBU_BEGIN:
     a_cfetch_        # ( source destination byte )
-    aplus1_
+    a_plus1_
     and $0xFF, %eax
     cmp %eax, %ecx    
     # until
     je CBU_DONE
     b_cstr_          # ( source destination byte ) [B]: byte
-    bplus1_          # ( source destination byte ) B+1
+    b_plus1_         # ( source destination byte ) B+1
     jmp CBU_BEGIN
 
 CBU_DONE:
   d0_str_y_          # ( source destination byte ) Y: destination
   nip2_              # ( byte )
   b_                 # ( destination+count )
-  minusy_            # ( count )
+  minus_y_           # ( count )
   rpop_b_
   rpop_a_
   ret

@@ -145,7 +145,7 @@ TO_NUMBER_CONV:
   str_x_               # ( u adr len digit ) X: digit
   call BASEFETCH       # ( u adr len base )
   imul %edx, %eax      # ( u adr len u*base )
-  addx_                # ( u adr len u'' )
+  plus_x_              # ( u adr len u'' )
   str_d2_              # ( u'' adr len u'' )
   one_                 # ( u'' adr len 1 )
   call SLASHSTRING     # ( u'' adr' len' )
@@ -167,7 +167,7 @@ Forthword_ NUMBER, 0, "num"
   call PRAEFIX            # ( addr' len' )
   call NUMBERSIGN         # ( addr len flagsign2 )
   r0_str_y_               # ( addr len flagsign2 Y:flagsign ) (R: base flagsign)
-  ory_                    # ( addr len flagsign' )
+  or_y_                   # ( addr len flagsign' )
   str_r0_                 # ( addr len flagsign' ) (R: base flagsign')
   d0_str_x_               # ( addr len flagsign' ) X: len
   d1_str_y_               # ( addr len flagsign' ) Y: addr
