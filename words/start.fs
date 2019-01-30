@@ -1,4 +1,4 @@
-\ emit.off
+ emit.off
 include words/boot.fs
 include words/core.fs 
 include words/compiler.fs 
