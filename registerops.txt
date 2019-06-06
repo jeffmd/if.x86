@@ -1,0 +1,70 @@
+IF Register Ops
+
+ data stack       registers      return stack
+ d0               w              r0
+ d1               a              r1
+ d2               b              r2
+                  x
+                  y
+                  dp
+                  rp
+
+r=a,b,w,x,y
+    1    2    3    4    5    6    7    8  9  10 11  12  13   14   15   16    17   18   19   20   21   22    23  24   25   26   27   28   29   30   31   32   33   34   35   36   37  
+                            chw  chw                                                                                           
+   r=r r+=r r-=r r|=r r^=r r&=r @r=r r=@r  ~r -r r=0 r++ r-- r+=2 r-=2 r+=4 r-=4  r*=2 r/=2 r*=4 r/=4 rpop rpush pop push d0=r d1=r d2=r r=d0 r=d1 r=d2 r0=r r1=r r2=r r=r0 r=r1 r=r2 r==0 total
+w   4    4    4    4    4    4   12   15    1  1  1    1  1    1    1    1    1     1    1    1    1    1    1    1   1     1    1    1   1    1    1     1    1    1   1    1    1     1
+a   4    4    4    4    4    4   12   15    1  1  1    1  1    1
+b   4    4    4    4    4    4   12   15    1  1  1    1  1    1
+x   4    4    4    4    4    4   12   15    1  1  1    1  1    1
+y   4    4    4    4    4    4   12   15    1  1  1    1  1    1
+
+{1 * 31 * 5} = 155
+{4 * 6 * 5} = 120
+{27 * 5} = 135
+(atmega) data + instruction bytes {2 4 2 2 6} = 16
+(arm thumb)                       {2 4 2 2 4} = 14
+410 * 16 = 6560
+
+@ register ops
+@ w+=#
+@ w=x+y
+@ w=y+x
+@ w=a+b
+@ w=b+a
+@ w=a+x
+@ w=a+y
+@ a=w+x
+@ w=b-a
+@ w=a-b
+@ a+=w
+@ x=@b
+
+@ b=@x
+@ a=@x
+@ y=@x
+@ w=@x
+@ x=@x
+
+@ b=h@x
+@ a=h@x
+@ y=h@x
+@ w=h@x
+@ x=h@x
+
+@ b=c@x
+@ a=c@x
+@ y=c@x
+@ w=c@x
+@ x=c@x
+
+@x=0
+h@x=0
+c@x=0
+
+@ b+=x
+@ a+=x
+@ x+=x
+@ y+=x
+@ w+=x
+
