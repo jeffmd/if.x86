@@ -1,7 +1,7 @@
 # if.S
 
-.set FULLBUILD, 1
-# if FULLBUILD is 0 then a minimum kernel is built but with no interpreter
+.set BUILD_LEVEL, 2
+# if BUILD_LEVEL is 0 then a minimum kernel is built but with no interpreter
 # minimum kernel build has minimum word set needed to be up and running without interpreter
 
 .include "macros.S"
@@ -90,38 +90,47 @@ CPSTART:
 .include "string.S"
 .include "kernel-base.S"
 
-.if FULLBUILD
+.if BUILD_LEVEL
   .include "core.S"
   .include "kernel.S"
-  .include "include.S"
-  .include "mathadv.S"
-  #.include "defer.S"
-  .include "dictionary.S"
-  .include "compiler.S"
-  .include "number.S"
-  .include "interpret.S"
-  .include "asm.S"
-  .include "file.S"
+  
+  .if BUILD_LEVEL > 1
+    .include "interpret.S"
+    .include "dictionary.S"
+    .if BUILD_LEVEL > 2
+      .include "number.S"
+      .include "compiler.S"
+      .include "asm.S"
+      .include "interpret_number.S"
+      .include "include.S"
+      .include "mathadv.S"
+      #.include "defer.S"
+      #.include "file.S"
+    .endif
+  .endif
+  
 .endif
 
 # ( nx* -- ) (R: ny* -- )
 # initialize if further. EXECs turnkey operation and go to quit
 Forthword_ WARM, 0, "warm"
   call RESET
-.if FULLBUILD
+.if BUILD_LEVEL > 1
 	call ONLY
+.if BUILD_LEVEL > 2
   call DECIMAL           # default to decimal base
 .endif
-  type_ "if 0.1\n"
+.endif
+  type_ "if.x86 0.2\n"
   # check if command line args need to be loaded
-.if FULLBUILD
+.if BUILD_LEVEL > 1
 	call DOCMDARG
 .endif
 	jmp QUIT
 
 # ( -- addr)
 # start address of the data stack
-Forthword_ SP0, 0, "sp0"
+Forthword_ DP0, 0, "dp0"
   movl $topdatastack, %eax
   ret
 
@@ -135,7 +144,7 @@ Forthword_ RECOVER, 0, "recover"
   movl $topdatastack, %ebx
   movl $sysvar_base, %ebp
   call RESET
-.if FULLBUILD
+.if BUILD_LEVEL > 2
 	call ONLY
   call DECIMAL           # default to decimal base
 .endif
@@ -154,16 +163,16 @@ Forthword_ COLD, 0, "cold"
   movl $topdatastack, %ebx
   movl $sysvar_base, %ebp
 	rp_
-	str_y_
+	y_w_
 	call RP0
-	yw_str_
-.if FULLBUILD
+	mw_y_
+.if BUILD_LEVEL > 2
   call WIPE
 .endif
   call WARM
   pop %ebp
   ret
 
-.if FULLBUILD
+.if BUILD_LEVEL > 1
 .include "minimum.S"
 .endif

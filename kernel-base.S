@@ -10,21 +10,21 @@ Forthword_ FFLAGS, 0, "fflags"
 # system state variable. 0 is interpret mode. Not 0 is compile mode
 Forthword_ STATE, 0, "state"
   user_ state
-  hfetch_
+  hmw_
   ret
 
 # ( val -- )
 Forthword_ STATESTORE, 0, "state!"
-  str_y_
+  y_w_
   user_ state
-  yw_hstr_
+  hmw_y_
   ret
 
 # ( -- )
 # enter interpreter mode
 Forthword_ LBRACKET, IMMEDIATE_EN, "["
-  user_ state
-  jmp ZERO_HSTR
+  zero_
+  jmp STATESTORE
 
 # ( -- )
 # enter compile mode
@@ -42,7 +42,7 @@ Forthword_ PAUSE_RESET, 0, "pause.reset"
   # init pause to noop
   lit_y_ NOOP
   call PAUSEADDR
-  yw_str_
+  mw_y_
   ret
 
 # ( -- addr)
@@ -93,11 +93,11 @@ PHEX_BEGIN:
 # set terminate flag which indicates request to exit forth interpreter
 Forthword_ BYE, 0, "bye"
   call FFLAGS
-  str_x_
+  x_w_
   lit_y_ 1
-  x_hfetch_
-  or_y_
-  x_hstr_
+  hmx_
+  w_or_y_
+  hmx_w_
   ret
 
 # ( -- )
@@ -144,7 +144,7 @@ QP_RD_exit:
 Forthword_ DOREFILL, 0, "(refill)"
   # if just starting new input line then check prompt and reset input position
   call G_IN                # ( >inaddr )
-  hfetch_                  # ( >in )
+  hmw_                     # ( >in )
   iszero_                  # ( >in )
   je DOREFILL_do
     call INRESET
@@ -159,7 +159,7 @@ Forthword_ DOPAUSE, 0, "(pause)"
   push_
   call SLEEP ## temp fix for cpu hogging
   call PAUSEADDR
-  fetch_
+  mw_
   jmp EXEC
 
 # ( -- )
@@ -170,7 +170,7 @@ Forthword_ DOTASKS, 0, "(tasks)"
   iszero_
   je DOTASKS_N1
     # there is something in the input buffer, try interpreting it
-.if FULLBUILD
+.if BUILD_LEVEL > 1
     call DOINTERPRET
 .endif
 DOTASKS_N1:
@@ -178,7 +178,7 @@ DOTASKS_N1:
 
   # check to see if tasks should be terminated
   call FFLAGS
-  hfetch_
+  hmw_
   bittest_ TERMINATE_F
   # <again>
   je DOTASKS
@@ -194,16 +194,16 @@ Forthword_ IDLETIMEADDR, 0, "idletime#"
 # ( n -- )
 # set idletime
 Forthword_ IDLETIMESTORE, 0, "idletime!"
-  str_y_
+  y_w_
   user_ USER_IDLETIME
-  yw_str_
+  mw_y_
   ret
 
 # ( -- n )
 # get idletime
 Forthword_ IDLETIMEFETCH, 0, "idletime@"
   user_ USER_IDLETIME
-  fetch_
+  mw_
   ret
 
 # ( n -- )
@@ -242,14 +242,14 @@ Forthword_ RESET, 0, "reset"
   # reset input source for key
   lit_y_ STDIN
   call KEYADDR
-  yw_str_
+  mw_y_
 
   call EMIT_ON
   # reset input buffer
   call INRESET
   call SLEEPON
 
-.if FULLBUILD
+.if BUILD_LEVEL > 2
   call WSET
   call ZERO_SMUDGE_STR
 .endif
@@ -261,8 +261,8 @@ Forthword_ RESET, 0, "reset"
 # reset stacks and start over again
 Forthword_ QUIT, 0, "quit"
   # reset data stack
-  call SP0
-  str_sp_
+  call DP0
+  dp_w_
   # reset return stack pointer
   #call RP0
   #fetch_

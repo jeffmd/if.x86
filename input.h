@@ -5,6 +5,7 @@
 #ifndef _INPUT_H_
   #define _INPUT_H_
   
-  extern void set_input_mode (void);
+  void set_input_mode(void);
+  int getchr(void);
   
 #endif

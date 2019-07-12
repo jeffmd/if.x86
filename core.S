@@ -17,260 +17,243 @@ Forthword_ DPUSH2, INLINE_OPT, "push2"
 # ( n1 n2 -- n1 a  n2 )
 #   d0 WR    d1 d0 WR
 # push register A onto top of data stack
-Forthword_ DPUSHA, INLINE_OPT, "push.a"
-  push_a_
+Forthword_ DPUSHA, INLINE_OPT, "pusha"
+  pusha_
   ret  
   
 # ( n1 n2 -- n1 b  n2 )
 #   d0 WR    d1 d0 WR
 # push register B onto top of data stack
-Forthword_ DPUSHB, INLINE_OPT, "push.b"
-  push_b_
+Forthword_ DPUSHB, INLINE_OPT, "pushb"
+  pushb_
   ret  
   
 # ( n1 n2 -- n1 x  n2 )
 #   d0 WR    d1 d0 WR
 # push register X onto top of data stack
-Forthword_ DPUSHX, INLINE_OPT, "push.x"
-  push_x_
+Forthword_ DPUSHX, INLINE_OPT, "pushx"
+  pushx_
   ret  
   
 # ( n1 n2 -- n1 y  n2 )
 #   d0 WR    d1 d0 WR
 # push register Y onto top of data stack
-Forthword_ DPUSHY, INLINE_OPT, "push.y"
-  push_y_
+Forthword_ DPUSHY, INLINE_OPT, "pushy"
+  pushy_
   ret  
   
-# ( n1 -- [ n1 n1 ] | 0)
-# duplicate WR if non-zero
-Forthword_ QPUSH, 0, "?push"
-	iszero_
-	je PFA_QDUP1	
-	push_
-PFA_QDUP1:
-	ret
-
 # ( n2 n1 -- n2 n2 )
 #   d0 WR
-# fetch datastack[0] and place in WR register
+# w=d0
 Forthword_ D0, INLINE_OPT, "d0"
   d0_
   ret
   
 # ( n3 n2 n1 -- n3 n2 n3 )
 #   d1 d0 WR
-# fetch datastack[1] and place in WR register
+# w=d1
 Forthword_ D1, INLINE_OPT, "d1"
   d1_
   ret
   
 # ( n4 n3 n2 n1 -- n4 n3 n2 n4 )
 #   d2 d1 d0 WR
-# fetch datastack[2] and place in WR register
+# w=d2
 Forthword_ D2, INLINE_OPT, "d2"
   d2_
   ret
 
 # ( n2 n1 -- n1 n1 )
 #   d0 WR
-# fetch WR register and place in datastack[0] 
-Forthword_ STR_D0, INLINE_OPT, "!d0"
-  str_d0_
+# d0=w
+Forthword_ D0_W, INLINE_OPT, "d0=w"
+  d0_w_
   ret
     
 # ( n3 n2 n1 -- n1 n2 n1 )
 #   d1 d0 WR
-# fetch WR register and place in datastack[1] 
-Forthword_ STR_D1, INLINE_OPT, "!d1"
-  str_d1_
+# d1=w
+Forthword_ D1_W, INLINE_OPT, "d1=w"
+  d1_w_
   ret
     
 # ( n4 n3 n2 n1 -- n1 n3 n2 n1 )
 #   d2 d1 d0 WR
-# fetch WR register and place in datastack[2] 
-Forthword_ STR_D2, INLINE_OPT, "!d2"
-  str_d2_
+# d2=w
+Forthword_ D2_W, INLINE_OPT, "d2=w"
+  d2_w_
   ret
     
 # ( n2 n1 -- n2 n1 ) A: n2
 #   d0 WR
-# fetch datastack[0] and store in A register
-Forthword_ D0_STR_A, INLINE_OPT, "d0!a"
-  d0_str_a_
+# a=d0
+Forthword_ A_D0, INLINE_OPT, "a=d0"
+  a_d0_
   ret
   
 # ( n2 n1 -- n2 n1 ) B: n2
 #   d0 WR
-# fetch datastack[0] and store in B register
-Forthword_ D0_STR_B, INLINE_OPT, "d0!b"
-  d0_str_b_
+# b=d0
+Forthword_ B_D0, INLINE_OPT, "b=d0"
+  b_d0_
   ret
   
 # ( n2 n1 -- n2 n1 ) X: n2
 #   d0 WR
-# fetch datastack[0] and store in X register
-Forthword_ D0_STR_X, INLINE_OPT, "d0!x"
-  d0_str_x_
+# x=d0
+Forthword_ X_D0, INLINE_OPT, "x=d0"
+  x_d0_
   ret
   
 # ( n2 n1 -- n2 n1 ) Y: n2
 #   d0 WR
-# fetch datastack[0] and store in Y register
-Forthword_ D0_STR_Y, INLINE_OPT, "d0!y"
-  d0_str_y_
+# y=d0
+Forthword_ Y_D0, INLINE_OPT, "y=d0"
+  y_d0_
   ret
    
 # ( n3 n2 n1 -- n3 n2 n1 ) A: n3
 #   d1 d0 WR
-# fetch datastack[1] and store in A register
-Forthword_ D1_STR_A, INLINE_OPT, "d1!a"
-  d1_str_a_
+# a=d1
+Forthword_ A_D1, INLINE_OPT, "a=d1"
+  a_d1_
   ret
   
 # ( n3 n2 n1 -- n3 n2 n1 ) B: n3
 #   d1 d0 WR
-# fetch datastack[1] and store in B register
-Forthword_ D1_STR_B, INLINE_OPT, "d1!b"
-  d1_str_b_
+# b=d1
+Forthword_ B_D1, INLINE_OPT, "b=d1"
+  b_d1_
   ret
   
 # ( n3 n2 n1 -- n3 n2 n1 ) X: n3
 #   d1 d0 WR
-# fetch datastack[1] and store in X register
-Forthword_ D1_STR_X, INLINE_OPT, "d1!x"
-  d1_str_x_
+# x=d1
+Forthword_ X_D1, INLINE_OPT, "x=d1"
+  x_d1_
   ret
   
 # ( n3 n2 n1 -- n3 n2 n1 ) Y: n3
 #   d1 d0 WR
-# fetch datastack[1] and store in Y register
-Forthword_ D1_STR_Y, INLINE_OPT, "d1!y"
-  d1_str_y_
+# y=d1
+Forthword_ Y_D1, INLINE_OPT, "y=d1"
+  y_d1_
   ret
   
 # ( n4 n3 n2 n1 -- n4 n3 n2 n1 ) A: n4
 #   d2 d1 d0 WR
-# fetch datastack[2] and store in A register
-Forthword_ D2_STR_A, INLINE_OPT, "d2!a"
-  d2_str_a_
+# a=d2
+Forthword_ A_D2, INLINE_OPT, "a=d2"
+  a_d2_
   ret
   
 # ( n4 n3 n2 n1 -- n4 n3 n2 n1 ) B: n4
 #   d2 d1 d0 WR
-# fetch datastack[2] and store in B register
-Forthword_ D2_STR_B, INLINE_OPT, "d2!b"
-  d2_str_b_
+# b=d2
+Forthword_ B_D2, INLINE_OPT, "b=d2"
+  b_d2_
   ret
   
 # ( n4 n3 n2 n1 -- n4 n3 n2 n1 ) X: n4
 #   d2 d1 d0 WR
-# fetch datastack[2] and store in X register
-Forthword_ D2_STR_X, INLINE_OPT, "d2!x"
-  d2_str_x_
+# x=d2
+Forthword_ X_D2, INLINE_OPT, "x=d2"
+  x_d2_
   ret
   
 # ( n4 n3 n2 n1 -- n4 n3 n2 n1 ) Y: n4
 #   d2 d1 d0 WR
-# fetch datastack[2] and store in Y register
-Forthword_ D2_STR_Y, INLINE_OPT, "d2!y"
-  d2_str_y_
+# y=d2
+Forthword_ Y_D2, INLINE_OPT, "y=d2"
+  y_d2_
   ret
   
 # ( ?  n2 -- n1 n2 ) A: n1
 #   d0 WR
-# fetch A register and store in d0 stack position
-Forthword_ A_STR_D0, INLINE_OPT, "a!d0"
-  a_str_d0_
+# d0=a
+Forthword_ D0_A, INLINE_OPT, "d0=a"
+  d0_a_
   ret
   
 # ( ?  n2 -- n1 n2 ) B: n1
 #   d0 WR
-# fetch B register and store in d0 stack position
-Forthword_ B_STR_D0, INLINE_OPT, "b!d0"
-  b_str_d0_
+# d0=b
+Forthword_ D0_B, INLINE_OPT, "d0=b"
+  d0_b_
   ret
   
 # ( ?  n2 -- n1 n2 ) X: n1
 #   d0 WR
-# fetch X register and store in d0 stack position
-Forthword_ X_STR_D0, INLINE_OPT, "x!d0"
-  x_str_d0_
+# d0=x
+Forthword_ D0_X, INLINE_OPT, "d0=x"
+  d0_x_
   ret
   
 # ( ?  n2 -- n1 n2 ) Y: n1
 #   d0 WR
-# fetch y register and store in d0 stack position
-Forthword_ Y_STR_D0, INLINE_OPT, "y!d0"
-  y_str_d0_
+# d0=y
+Forthword_ D0_Y, INLINE_OPT, "d0=y"
+  d0_y_
   ret
   
 # ( ?  ?  n1 -- n2 ? n1 ) A: n2
 #   d1 d0 WR
-# fetch A register and store in d1 stack position
-Forthword_ A_STR_D1, INLINE_OPT, "a!d1"
-  a_str_d1_
+# d1=a
+Forthword_ D1_A, INLINE_OPT, "d1=a"
+  d1_a_
   ret
   
 # ( ?  ?  n1 -- n2 ?  n1 ) B: n2
 #   d1 d0 WR
-# fetch B register and store in d1 stack position
-Forthword_ B_STR_D1, INLINE_OPT, "b!d1"
-  b_str_d1_
+# d1=b
+Forthword_ D1_B, INLINE_OPT, "d1=b"
+  d1_b_
   ret
   
 # ( ?  ?  n1 -- n2 ?  n1 ) X: n2
 #   d1 d0 WR
-# fetch X register and store in d1 stack position
-Forthword_ X_STR_D1, INLINE_OPT, "x!d1"
-  x_str_d1_
+# d1=x
+Forthword_ D1_X, INLINE_OPT, "d1=x"
+  d1_x_
   ret
   
 # ( ?  ?  n1 -- n2 ?  n1 ) Y: n2
 #   d1 d0 WR
-# fetch y register and store in d1 stack position
-Forthword_ Y_STR_D1, INLINE_OPT, "y!d1"
-  y_str_d1_
+# d1=y
+Forthword_ D1_Y, INLINE_OPT, "d1=y"
+  d1_y_
   ret
   
 # ( ?  ?  ?  n1 -- n2 ?  ? n1 ) A: n2
 #   d2 d1 d0 WR
-# fetch A register and store in d2 stack position
-Forthword_ A_STR_D2, INLINE_OPT, "a!d2"
-  a_str_d2_
+# d2=a
+Forthword_ D2_A, INLINE_OPT, "d2=a"
+  d2_a_
   ret
   
 # ( ?  ?  ?  n1 -- n2 ?  ? n1 ) B: n2
 #   d2 d1 d0 WR
-# fetch B register and store in d2 stack position
-Forthword_ B_STR_D2, INLINE_OPT, "b!d2"
-  b_str_d2_
+# d2=b
+Forthword_ D2_B, INLINE_OPT, "d2=b"
+  d2_b_
   ret
   
 # ( ?  ?  ?  n1 -- n2 ?  ? n1 ) X: n2
 #   d2 d1 d0 WR
-# fetch X register and store in d2 stack position
-Forthword_ X_STR_D2, INLINE_OPT, "x!d2"
-  x_str_d2_
+# d2=x
+Forthword_ D2_X, INLINE_OPT, "d2=x"
+  d2_x_
   ret
   
 # ( ?  ?  ?  n1 -- n2 ?  ? n1 ) Y: n2
-#   d2 d1 d0 WR
-# fetch y register and store in d2 stack position
-Forthword_ Y_STR_D2, INLINE_OPT, "y!d2"
-  y_str_d2_
+#   d2 d1 d0 WR    d2 d1 d0 WR
+# d2=y
+Forthword_ D2_Y, INLINE_OPT, "d2=y"
+  d2_y_
   ret
   
-# ( n1 n2 -- n2 n1 ) Y: d0
-#   d0 WR
-# swaps D0 with WR
-Forthword_ SWAP, INLINE_OPT, "swap"
-  swap_
-  ret
-
-# ( n1 n2 -- n2)
-# drop NOS, one before WR.
-# same as SWAP DROP
+# ( n1 n2 n3 -- n1 n3)
+#   d1 d0 WR    d0 WR
 Forthword_ DNIP, INLINE_OPT, "nip"
   nip_ 
   ret
@@ -287,26 +270,6 @@ Forthword_ DNIP3, INLINE_OPT, "nip3"
   nip3_
   ret
   
-# ( x1 x2 -- x1 x2 x1 )
-#   do WR
-# push WR on data stack and place D1 in WR
-Forthword_ OVER, INLINE_OPT, "over"
-  over_
-  ret
-
-# ( x1 x2 x3 -- x1 x2 x3 x1 x2 x3 )
-# Place a copy of x1, x2, x3 on top of the stack
-Forthword_ THREEOVER, 0, "3over"
-  top3_
-  str_d2_
-  mov 16(%ebx), %eax
-  str_d1_
-  mov 12(%ebx), %eax
-  str_d0_
-  d2_
-  ret
-
-
 # ( n1 n2 -- n1)
 #   d0 WR    WR
 # pop top of data stack into WR
@@ -317,48 +280,41 @@ Forthword_ DPOP, INLINE_OPT, "pop"
 # ( n1 n2 n3 -- n1 n3 ) A: n2
 #   d1 d0 WR    d0 WR
 # pop top of data stack into register A
-Forthword_ DPOPA, INLINE_OPT, "pop.a"
-  pop_a_
+Forthword_ DPOPA, INLINE_OPT, "popa"
+  popa_
   ret
 
 # ( n1 n2 n3 -- n1 n3 ) B: n2
 #   d1 d0 WR    d0 WR
 # pop top of data stack into register B
-Forthword_ DPOPB, INLINE_OPT, "pop.b"
-  pop_b_
+Forthword_ DPOPB, INLINE_OPT, "popb"
+  popb_
   ret
 
 # ( n1 n2 n3 -- n1 n3 ) X: n2
 #   d1 d0 WR    d0 WR
 # pop top of data stack into register X
-Forthword_ DPOPX, INLINE_OPT, "pop.x"
-  pop_x_
+Forthword_ DPOPX, INLINE_OPT, "popx"
+  popx_
   ret
 
 # ( n1 n2 n3 -- n1 n3 ) Y: n2
 #   d1 d0 WR    d0 WR
 # pop top of data stack into register Y
-Forthword_ DPOPY, INLINE_OPT, "pop.y"
-  pop_y_
+Forthword_ DPOPY, INLINE_OPT, "popy"
+  popy_
   ret
-
-# ( n n -- )
-# drop WR twice
-Forthword_ DPOP2, INLINE_OPT, "pop2"
-  pop2_
-  ret
-
 
 # (  -- addr )
 # current data stack pointer
-Forthword_ SP_FETCH, INLINE_OPT, "sp"
-  sp_
+Forthword_ DP_FETCH, INLINE_OPT, "dp"
+  dp_
   ret
   
 # ( addr -- i*x)
 # set data stack pointer to addr
-Forthword_ SP_STORE, INLINE_OPT, "!sp"
-  str_sp_
+Forthword_ DP_W, INLINE_OPT, "dp=w"
+  dp_w_
   ret
 
 #@@@@@@@@@@@@@ Return Stack @@@@@@@@@@@@@
@@ -371,26 +327,26 @@ Forthword_ RPOP, INLINE_OPT, "rpop"
 
 # ( -- ) (R: n2 --) A: n2
 # pop top of return stack into A
-Forthword_ RPOPA, INLINE_OPT, "rpop.a"
-	rpop_a_
+Forthword_ RPOPA, INLINE_OPT, "rpopa"
+	rpopa_
 	ret
 
 # ( -- ) (R: n2 --) B: n2
 # pop top of return stack into B
-Forthword_ RPOPB, INLINE_OPT, "rpop.b"
-	rpop_b_
+Forthword_ RPOPB, INLINE_OPT, "rpopb"
+	rpopb_
 	ret
 
 # ( -- ) (R: n2 --) X: n2
 # pop top of return stack into X
-Forthword_ RPOPX, INLINE_OPT, "rpop.x"
-	rpop_x_
+Forthword_ RPOPX, INLINE_OPT, "rpopx"
+	rpopx_
 	ret
 
 # ( -- ) (R: n2 --) Y: n2
 # pop top of return stack into Y
-Forthword_ RPOPY, INLINE_OPT, "rpop.y"
-	rpop_y_
+Forthword_ RPOPY, INLINE_OPT, "rpopy"
+	rpopy_
 	ret
 
 # ( -- ) (R: n -- )
@@ -419,42 +375,42 @@ Forthword_ RPUSH, INLINE_OPT, "rpush"
 
 # ( -- ) (R: -- a)
 # push A on top of return stack
-Forthword_ RPUSHA, INLINE_OPT, "rpush.a"
-	rpush_a_
+Forthword_ RPUSHA, INLINE_OPT, "rpusha"
+	rpusha_
 	ret
 
 # ( -- ) (R: -- b)
 # push B on top of return stack
-Forthword_ RPUSHB, INLINE_OPT, "rpush.b"
-	rpush_b_
+Forthword_ RPUSHB, INLINE_OPT, "rpushb"
+	rpushb_
 	ret
 
 # ( -- ) (R: -- x)
 # push X on top of return stack
-Forthword_ RPUSHX, INLINE_OPT, "rpush.x"
-	rpush_x_
+Forthword_ RPUSHX, INLINE_OPT, "rpushx"
+	rpushx_
 	ret
 
 # ( -- ) (R: -- y)
 # push Y on top of return stack
-Forthword_ RPUSHY, INLINE_OPT, "rpush.y"
-	rpush_y_
+Forthword_ RPUSHY, INLINE_OPT, "rpushy"
+	rpushy_
 	ret
 
 # ( -- ) (R: -- sp)
 # push datastack pointer on top of return stack
-Forthword_ RPUSHSP, INLINE_OPT, "rpush.sp"
-	rpush_sp_
+Forthword_ RPUSHDP, INLINE_OPT, "rpushdp"
+	rpushdp_
 	ret
 
 # ( -- n) (R: n -- n )
-# put a copy of TOR in WR
+# r0
 Forthword_ R0, INLINE_OPT, "r0"
 	r0_
 	ret
 
 # ( -- n1 ) (R: n1 n2 -- n1 n2 )
-# put a copy of R1 in WR
+# r1
 Forthword_ R1, INLINE_OPT, "r1"
 	r1_
 	ret
@@ -467,191 +423,191 @@ Forthword_ R2, INLINE_OPT, "r2"
 
 # ( n1 -- n1) (R: n2 -- n1 )
 #   WR            R0
-# put a copy of WR register into R0 on return stack
-Forthword_ STR_R0, INLINE_OPT, "!r0"
-	str_r0_
+# r0=w
+Forthword_ R0_W, INLINE_OPT, "r0=w"
+	r0_w_
 	ret
 
 # ( n1 -- n1) (R: n3 n2 -- n1 n2 )
 #   WR            R1 R0
-# put a copy of WR register into R1 on return stack
-Forthword_ STR_R1, INLINE_OPT, "!r1"
-	str_r1_
+# r1=w
+Forthword_ R1_W, INLINE_OPT, "r1=w"
+	r1_w_
 	ret
 
 # ( n1 -- n1) (R: n4 n3 n2 -- n1 n3 n2 )
 #   WR            R2 R1 R0
-# put a copy of WR register into R2 on return stack
-Forthword_ STR_R2, INLINE_OPT, "!r2"
-	str_r2_
+# r2=w
+Forthword_ R2_W, INLINE_OPT, "r2=w"
+	r2_w_
 	ret
 
 # ( -- ) (R: n1 -- n1 ) A: n1
 #            R0
-# put a copy of R0 into A register
-Forthword_ R0_STR_A, INLINE_OPT, "r0!a"
-	r0_str_a_
+# a=r0
+Forthword_ A_R0, INLINE_OPT, "a=r0"
+	a_r0_
 	ret
 
 # ( -- ) (R: n1 -- n1 ) B: n1
 #            R0
-# put a copy of R0 into B register
-Forthword_ R0_STR_B, INLINE_OPT, "r0!b"
-	r0_str_b_
+# b=r0
+Forthword_ B_R0, INLINE_OPT, "b=r0"
+	b_r0_
 	ret
 
 # ( -- ) (R: n1 -- n1 ) X: n1
 #            R0
 # put a copy of R0 into X register
-Forthword_ R0_STR_X, INLINE_OPT, "r0!x"
-	r0_str_x_
+Forthword_ X_R0, INLINE_OPT, "x=r0"
+	x_r0_
 	ret
 
 # ( -- ) (R: n1 -- n1 ) Y: n1
 #            R0
 # put a copy of R0 into Y register
-Forthword_ R0_STR_Y, INLINE_OPT, "r0!y"
-	r0_str_y_
+Forthword_ Y_R0, INLINE_OPT, "y=r0"
+	y_r0_
 	ret
 
 # ( -- ) (R: n2 n1 -- n2 n1 ) A: n2
 #            R1 R0
-# put a copy of R1 into A register
-Forthword_ R1_STR_A, INLINE_OPT, "r1!a"
-	r1_str_a_
+# a=r1
+Forthword_ A_R1, INLINE_OPT, "a=r1"
+	a_r1_
 	ret
 
 # ( -- ) (R: n2 n1 -- n2 n1 ) B: n2
 #            R1 R0
-# put a copy of R0 into B register
-Forthword_ R1_STR_B, INLINE_OPT, "r1!b"
-	r1_str_b_
+# b=r1
+Forthword_ B_R1, INLINE_OPT, "b=r1"
+	b_r1_
 	ret
 
 # ( -- ) (R: n2 n1 -- n2 n1 ) X: n2
 #            R1 R0
-# put a copy of R1 into X register
-Forthword_ R1_STR_X, INLINE_OPT, "r1!x"
-	r1_str_x_
+# x=r1
+Forthword_ X_R1, INLINE_OPT, "x=r1"
+	x_r1_
 	ret
 
 # ( -- ) (R: n2 n1 -- n2 n1 ) Y: n2
 #            R1 R0
-# put a copy of R1 into Y register
-Forthword_ R1_STR_Y, INLINE_OPT, "r1!y"
-	r1_str_y_
+# y=r1
+Forthword_ Y_R1, INLINE_OPT, "y=r1"
+	y_r1_
 	ret
 
 # ( -- ) (R: n3 n2 n1 -- n3 n2 n1 ) A: n3
 #            R2 R1 R0
-# put a copy of R2 into A register
-Forthword_ R2_STR_A, INLINE_OPT, "r2!a"
-	r2_str_a_
+# a=r2
+Forthword_ A_R2, INLINE_OPT, "a=r2"
+	a_r2_
 	ret
 
 # ( -- ) (R: n3 n2 n1 -- n3 n2 n1 ) B: n3
 #            R2 R1 R0
-# put a copy of R2 into B register
-Forthword_ R2_STR_B, INLINE_OPT, "r2!b"
-	r2_str_b_
+# b=r2
+Forthword_ B_R2, INLINE_OPT, "b=r2"
+	b_r2_
 	ret
 
 # ( -- ) (R: n3 n2 n1 -- n3 n2 n1 ) X: n3
 #            R2 R1 R0
-# put a copy of R2 into X register
-Forthword_ R2_STR_X, INLINE_OPT, "r2!x"
-	r2_str_x_
+# x=r2
+Forthword_ X_R2, INLINE_OPT, "x=r2"
+	x_r2_
 	ret
 
 # ( -- ) (R: n3 n2 n1 -- n3 n2 n1 ) Y: n3
 #            R2 R1 R0
-# put a copy of R2 into Y register
-Forthword_ R2_STR_Y, INLINE_OPT, "r2!y"
-	r2_str_y_
+# y=r2
+Forthword_ Y_R2, INLINE_OPT, "y=r2"
+	y_r2_
 	ret
 
 # (R: n2 -- n1 ) A: n1
 #     r0
-# fetch A register and store in r0 return stack position
-Forthword_ A_STR_R0, INLINE_OPT, "a!r0"
-  a_str_r0_
+# r0=a
+Forthword_ R0_A, INLINE_OPT, "r0=a"
+  r0_a_
   ret
   
 # (R: n2 -- n1 ) B: n1
 #     r0
-# fetch B register and store in r0 return stack position
-Forthword_ B_STR_R0, INLINE_OPT, "b!r0"
-  b_str_r0_
+# r0=b
+Forthword_ R0_B, INLINE_OPT, "r0=b"
+  r0_b_
   ret
   
 # (R: n2 -- n1 ) X: n1
 #     r0
-# fetch X register and store in r0 return stack position
-Forthword_ X_STR_R0, INLINE_OPT, "x!r0"
-  x_str_r0_
+# r0=x
+Forthword_ R0_X, INLINE_OPT, "r0=x"
+  r0_x_
   ret
   
 # (R: n2 -- n1 ) Y: n1
 #     r0
-# fetch y register and store in r0 return stack position
-Forthword_ Y_STR_R0, INLINE_OPT, "y!r0"
-  y_str_r0_
+# r0=y
+Forthword_ R0_Y, INLINE_OPT, "r0=y"
+  r0_y_
   ret
   
 # (R: ?  n1 -- n2 n1 ) A: n2
 #     r1 r0
-# fetch A register and store in r1 return stack position
-Forthword_ A_STR_R1, INLINE_OPT, "a!r1"
-  a_str_r1_
+# r1=a
+Forthword_ R1_A, INLINE_OPT, "r1=a"
+  r1_a_
   ret
   
 # (R: ?  n1 -- n2 n1 ) B: n2
 #     r1 r0
-# fetch B register and store in r1 return stack position
-Forthword_ B_STR_R1, INLINE_OPT, "b!r1"
-  b_str_r1_
+# r1=b
+Forthword_ R1_B, INLINE_OPT, "r1=b"
+  r1_b_
   ret
   
 # (R: ?  n1 -- n2 n1 ) X: n2
 #     r1 r0
-# fetch X register and store in r1 return stack position
-Forthword_ X_STR_R1, INLINE_OPT, "x!r1"
-  x_str_r1_
+# r1=x
+Forthword_ R1_X, INLINE_OPT, "r1=x"
+  r1_x_
   ret
   
 # (R: ?  n1 -- n2 n1 ) Y: n2
 #     r1 r0
-# fetch y register and store in r1 return stack position
-Forthword_ Y_STR_R1, INLINE_OPT, "y!r1"
-  y_str_r1_
+# r1=y
+Forthword_ R1_Y, INLINE_OPT, "r1=y"
+  r1_y_
   ret
   
 # (R: ?  ?  n1 -- n2 ?  n1 ) A: n2
 #     r2 r1 r0
-# fetch A register and store in r2 return stack position
-Forthword_ A_STR_R2, INLINE_OPT, "a!r2"
-  a_str_r2_
+# r2=a
+Forthword_ R2_A, INLINE_OPT, "r2=a"
+  r2_a_
   ret
   
 # (R: ?  ?  n1 -- n2 ?  n1 ) B: n2
 #     r2 r1 r0
-# fetch B register and store in r2 return stack position
-Forthword_ B_STR_R2, INLINE_OPT, "b!r2"
-  b_str_r2_
+# r2=b
+Forthword_ R2_B, INLINE_OPT, "r2=b"
+  r2_b_
   ret
   
 # (R: ?  ?  n1 -- n2 ?  n1 ) X: n2
 #     r2 r1 r0
-# fetch X register and store in r2 return stack position
-Forthword_ X_STR_R2, INLINE_OPT, "x!R2"
-  x_str_r2_
+# r2=x
+Forthword_ R2_X, INLINE_OPT, "R2=x"
+  r2_x_
   ret
   
 # (R: ?  ?  n1 -- n2 ?  n1 ) Y: n2
 #     r2 r1 r0
-# fetch y register and store in r2 return stack position
-Forthword_ Y_STR_R2, INLINE_OPT, "y!r2"
-  y_str_r2_
+# r2=y
+Forthword_ R2_Y, INLINE_OPT, "r2=y"
+  r2_y_
   ret
   
 # (  -- n)
@@ -662,9 +618,9 @@ Forthword_ RP, INLINE_OPT, "rp"
 
 # ( addr  -- ) (R: -- x*y)
 # set return stack pointer
-Forthword_ STORE_RP, INLINE_OPT, "!rp"
+Forthword_ STORE_RP, INLINE_OPT, "rp=w"
 	# keep the return address
-	str_rp_
+	rp_w_
 	ret
 
 # ( -- retaddr )
@@ -689,81 +645,81 @@ Forthword_ RTORPLUS, INLINE_OPT, "r0+"
 #@@@@@@@@@@@@@ Arithmatic @@@@@@@@@@@@@
 
 # ( n1 -- n1+y )
-# add n1 and y
-Forthword_ PLUS_Y, INLINE_OPT, "+y"
-  plus_y_
+# w = w + y
+Forthword_ W_PLUS_Y, INLINE_OPT, "w+=y"
+  w_plus_y_
   ret
 
 # ( n1 -- n1+x )
-# add n1 and x
-Forthword_ PLUS_X, INLINE_OPT, "+x"
-  plus_x_
+# w = w + x
+Forthword_ W_PLUS_X, INLINE_OPT, "w+=x"
+  w_plus_x_
   ret
 
 # ( n1 -- n1+a )
-# add n1 and a
-Forthword_ PLUS_A, INLINE_OPT, "+a"
-  plus_a_
+# w = w + a
+Forthword_ W_PLUS_A, INLINE_OPT, "w+=a"
+  w_plus_a_
   ret
 
 # ( n1 -- n1+b )
-# add n1 and b
-Forthword_ PLUS_B, INLINE_OPT, "+b"
-  plus_b_
+# w = w + b
+Forthword_ W_PLUS_B, INLINE_OPT, "w+=b"
+  w_plus_b_
   ret
 
 # ( n1|u1 -- n1-y|u1-y )
-# subtract y from n1
-Forthword_ MINUS_Y, INLINE_OPT, "-y"
-  minus_y_
+# w = w - y
+Forthword_ W_MINUS_Y, INLINE_OPT, "w-=y"
+  w_minus_y_
   ret
 
 # ( n1|u1 -- n1-x|u1-x )
-# subtract x from n1
-Forthword_ MINUS_X, INLINE_OPT, "-x"
-  minus_x_
+# w = w - x
+Forthword_ W_MINUS_X, INLINE_OPT, "w-=x"
+  w_minus_x_
   ret
 
 # ( n1|u1 -- n1-a|u1-a )
-# subtract a from n1
-Forthword_ MINUS_A, INLINE_OPT, "-a"
-  minus_a_
+# w = w - a
+Forthword_ W_MINUS_A, INLINE_OPT, "w-=a"
+  w_minus_a_
   ret
 
 # ( n1|u1 -- n1-b|u1-b )
-# subtract b from n1
-Forthword_ MINUS_B, INLINE_OPT, "-b"
-  minus_b_
+# w = w - b
+Forthword_ W_MINUS_B, INLINE_OPT, "w-=b"
+  w_minus_b_
   ret
 
 # ( n1 -- n1 Y:Y+n1 )
-# y=y+n1
-Forthword_ Y_PLUS, INLINE_OPT, "y+"
-  y_plus_
+# y = y + w
+Forthword_ Y_PLUS_W, INLINE_OPT, "y+=w"
+  y_plus_w_
   ret
 
 # ( n1 -- n1 X:X+n1 )
-# x=x+n1
-Forthword_ X_PLUS, INLINE_OPT, "x+"
-  x_plus_
+# x = x + w
+Forthword_ X_PLUS_W, INLINE_OPT, "x+=w"
+  x_plus_w_
   ret
 
 # ( n1 -- n1 A:A+n1 )
-# a=a+n1
-Forthword_ A_PLUS, INLINE_OPT, "a+"
-  a_plus_
+# a = a + n1
+Forthword_ A_PLUS_W, INLINE_OPT, "a+=w"
+  a_plus_w_
   ret
 
 # ( n1 -- n1 B:B+n1 )
-# b=b+n1
-Forthword_ B_PLUS, INLINE_OPT, "b+"
-  b_plus_
+# b = b + w
+Forthword_ B_PLUS_W, INLINE_OPT, "b+=w"
+  b_plus_w_
   ret
 
 # ( u1|n1 u2|n2 -- u3|n3 )
 # signed multiply 32b x 32b = 32b
 Forthword_ MULU, INLINE_OPT,  "*"
-  pop_y_
+  popy_
   imul %edx, %eax 
   ret
 
@@ -775,125 +731,125 @@ Forthword_ NEG, INLINE_OPT, "neg"
 
 # ( Y:n1 -- Y:-n1 )
 # 2-compliment of Y
-Forthword_ NEG_Y, INLINE_OPT, "neg.y"
+Forthword_ NEG_Y, INLINE_OPT, "-y"
   neg_y_
   ret
 
 # ( X:n1 -- X:-n1 )
 # 2-compliment of X
-Forthword_ NEG_X, INLINE_OPT, "neg.x"
+Forthword_ NEG_X, INLINE_OPT, "-x"
   neg_x_
   ret
 
 
 # ( n1 -- n1 and Y )
-# bitwise and
-Forthword_ AND_Y, INLINE_OPT, "and.y"
-  and_y_
+# w = w and y
+Forthword_ W_AND_Y, INLINE_OPT, "w&=y"
+  w_and_y_
   ret
 
 # ( n1 -- n1 and X )
-# bitwise and
-Forthword_ AND_X, INLINE_OPT, "and.x"
-  and_x_
+# w = w and x
+Forthword_ W_AND_X, INLINE_OPT, "w&=x"
+  w_and_x_
   ret
 
 # ( n1 -- n1 and A )
-# bitwise and
-Forthword_ AND_A, INLINE_OPT, "and.a"
-  and_a_
+# w = w and a
+Forthword_ W_AND_A, INLINE_OPT, "w&=a"
+  w_and_a_
   ret
 
 # ( n1 -- n1 and B )
-# bitwise and
-Forthword_ AND_B, INLINE_OPT, "and.b"
-  and_b_
+# w = w and b
+Forthword_ W_AND_B, INLINE_OPT, "w&=b"
+  w_and_b_
   ret
 
 # ( n1 -- n1.or.Y )
-# logical or
-Forthword_ OR_Y, INLINE_OPT, "or.y"
-  or_y_
+# w = w or y
+Forthword_ W_OR_Y, INLINE_OPT, "w|=y"
+  w_or_y_
   ret
 
 # ( n1 -- n1.or.X )
-# logical or
-Forthword_ OR_X, INLINE_OPT, "or.x"
-  or_x_
+# w = w or x
+Forthword_ W_OR_X, INLINE_OPT, "w|=x"
+  w_or_x_
   ret
 
 # ( n1 -- n1.or.A )
-# logical or
-Forthword_ OR_A, INLINE_OPT, "or.a"
-  or_a_
+# w = w or a
+Forthword_ W_OR_A, INLINE_OPT, "w|=a"
+  w_or_a_
   ret
 
 # ( n1 -- n1.or.B )
-# logical or
-Forthword_ OR_B, INLINE_OPT, "or.b"
-  or_b_
+# w = w or b
+Forthword_ W_OR_B, INLINE_OPT, "w|=b"
+  w_or_b_
   ret
 
 # ( n1 -- n1.xor.Y)
-# exclusive or
-Forthword_ XOR_Y, INLINE_OPT, "xor.y"
-  xor_y_
+# w = w xor y
+Forthword_ W_XOR_Y, INLINE_OPT, "w^=y"
+  w_xor_y_
   ret
 
 # ( n1 -- n1.xor.X)
-# exclusive or
-Forthword_ XOR_X, INLINE_OPT, "xor.x"
-  xor_x_
+# w = w xor x
+Forthword_ W_XOR_X, INLINE_OPT, "w^=x"
+  w_xor_x_
   ret
 
 # ( n1 -- n1.xor.A)
-# exclusive or
-Forthword_ XOR_A, INLINE_OPT, "xor.a"
-  xor_a_
+# w = w xor a
+Forthword_ W_XOR_A, INLINE_OPT, "w^=a"
+  w_xor_a_
   ret
 
 # ( n1 -- n1.xor.B)
-# exclusive or
-Forthword_ XOR_B, INLINE_OPT, "xor.b"
-  xor_b_
+# w = w xor b
+Forthword_ W_XOR_B, INLINE_OPT, "w^=b"
+  w_xor_b_
   ret
 
 # ( n1 -- n2)
 # 1-complement of WR
-Forthword_ NOT, INLINE_OPT, "not"
+Forthword_ NOT, INLINE_OPT, "~"
   not_
   ret
 
 # ( n1 -- n2)
 # 1-complement of y
-Forthword_ NOT_Y, INLINE_OPT, "not.y"
+Forthword_ NOT_Y, INLINE_OPT, "~y"
   not_y_
   ret
 
 # ( n1 -- n2)
 # 1-complement of x
-Forthword_ NOT_X, INLINE_OPT, "not.x"
+Forthword_ NOT_X, INLINE_OPT, "~x"
   not_x_
   ret
 
 # ( n1 -- n2)
 # 1-complement of a
-Forthword_ NOT_A, INLINE_OPT, "not.a"
+Forthword_ NOT_A, INLINE_OPT, "~a"
   not_a_
   ret
 
 # ( n1 -- n2)
 # 1-complement of b
-Forthword_ NOT_B, INLINE_OPT, "not.b"
+Forthword_ NOT_B, INLINE_OPT, "~b"
   not_b_
   ret
 
 # ( n1 n2 -- flag)
 # flag is true if n1 is not equal to n2
 Forthword_ NOTEQUAL, INLINE_OPT, "<>"
-  d0_str_y_
+  y_d0_
   nip_
-  xor_y_
+  w_xor_y_
   ret
 
 # ( n1 n2 -- flag )
@@ -1014,27 +970,27 @@ forthword_ ZEROLESS, INLINE_OPT, "0<"
   ret
 
 # ( -- ) A: 0
-# set A to 0
-Forthword_ ZEROA, INLINE_OPT, "0!a"
-	zero_a_
+# a = 0
+Forthword_ A_0, INLINE_OPT, "a=0"
+	a_0_
 	ret
 
 # ( -- ) B: 0
-# set B to 0
-Forthword_ ZEROB, INLINE_OPT, "0!b"
-	zero_b_
+# b = 0
+Forthword_ B_0, INLINE_OPT, "b=0"
+	b_0_
 	ret
 
 # ( -- ) X: 0
-# set X to 0
-Forthword_ ZEROX, INLINE_OPT, "0!x"
-	zero_x_
+# x = 0
+Forthword_ X_0, INLINE_OPT, "x=0"
+	x_0_
 	ret
 
 # ( -- ) Y: 0
-# set Y to 0
-Forthword_ ZEROY, INLINE_OPT, "0!y"
-	zero_y_
+# y = 0
+Forthword_ Y_0, INLINE_OPT, "y=0"
+	y_0_
 	ret
 
 # ( n -- n )
@@ -1083,297 +1039,177 @@ forthword_ RSHIFT, INLINE_OPT, ">>"
 # ( a-addr -- n32 )
 # read 1 cell (32 bits) from RAM address
 Forthword_ FETCH, INLINE_OPT, "@"
-  fetch_
+  mw_
   ret
 
 # ( a-addr -- a-addr A:n32 )
 # read 1 cell (32 bits) from RAM address and put in A register
-Forthword_ FETCH_STR_A, INLINE_OPT, "@!a"
-  fetch_str_a_
+Forthword_ A_MW, INLINE_OPT, "a=@w"
+  a_mw_
   ret
 
 # ( a-addr -- a-addr B:n32 )
 # read 1 cell (32 bits) from RAM address and put in B register
-Forthword_ FETCH_STR_B, INLINE_OPT, "@!b"
-  fetch_str_b_
+Forthword_ B_MW, INLINE_OPT, "b=@w"
+  b_mw_
   ret
 
 # ( a-addr -- a-addr X:n32 )
 # read 1 cell (32 bits) from RAM address and put in X register
-Forthword_ FETCH_STR_X, INLINE_OPT, "@!x"
-  fetch_str_x_
+Forthword_ X_MW, INLINE_OPT, "x=@w"
+  x_mw_
   ret
 
 # ( a-addr -- a-addr Y:n32 )
 # read 1 cell (32 bits) from RAM address and put in Y register
-Forthword_ FETCH_STR_Y, INLINE_OPT, "@!y"
-  fetch_str_y_
+Forthword_ Y_MW, INLINE_OPT, "y=@w"
+  y_mw_
   ret
 
 # ( a-addr -- n16 )
 # read half cell (16 bits) from RAM address
-Forthword_ HFETCH, INLINE_OPT, "h@"
-  hfetch_
+Forthword_ HMW, INLINE_OPT, "h@"
+  hmw_
   ret
 
 # ( a-addr -- a-addr A:n16 )
 # read 1 cell (16 bits) from RAM address and put in A register
-Forthword_ HFETCH_STR_A, INLINE_OPT, "h@!a"
-  hfetch_str_a_
+Forthword_ A_HMW, INLINE_OPT, "a=h@w"
+  a_hmw_
   ret
 
 # ( a-addr -- a-addr B:n16 )
 # read 1 cell (16 bits) from RAM address and put in B register
-Forthword_ HFETCH_STR_B, INLINE_OPT, "h@!b"
-  hfetch_str_b_
+Forthword_ B_HMW, INLINE_OPT, "b=h@w"
+  b_hmw_
   ret
 
 # ( a-addr -- a-addr X:n16 )
 # read 1 cell (16 bits) from RAM address and put in X register
-Forthword_ HFETCH_STR_X, INLINE_OPT, "h@!x"
-  hfetch_str_x_
+Forthword_ X_HMW, INLINE_OPT, "x=h@w"
+  x_hmw_
   ret
 
 # ( a-addr -- a-addr Y:n16 )
 # read 1 cell (16 bits) from RAM address and put in Y register
-Forthword_ HFETCH_STR_Y, INLINE_OPT, "h@!y"
-  hfetch_str_y_
+Forthword_ Y_HMW, INLINE_OPT, "y=h@w"
+  y_hmw_
   ret
 
 # ( a-addr -- n8 )
 # read byte (8 bits) from RAM address
-Forthword_ CFETCH, INLINE_OPT, "c@"
-  cfetch_
+Forthword_ CMW, INLINE_OPT, "c@"
+  cmw_
   ret
 
 # ( a-addr -- a-addr A:n8 )
 # read 1 cell (8 bits) from RAM address and put in A register
-Forthword_ CFETCH_STR_A, INLINE_OPT, "c@!a"
-  cfetch_str_a_
+Forthword_ A_CMW, INLINE_OPT, "a=c@w"
+  a_cmw_
   ret
 
 # ( a-addr -- a-addr B:n8 )
 # read 1 cell (8 bits) from RAM address and put in B register
-Forthword_ CFETCH_STR_B, INLINE_OPT, "c@!b"
-  cfetch_str_b_
+Forthword_ B_CMW, INLINE_OPT, "b=c@w"
+  b_cmw_
   ret
 
 # ( a-addr -- a-addr X:n8 )
 # read 1 cell (8 bits) from RAM address and put in X register
-Forthword_ CFETCH_STR_X, INLINE_OPT, "c@!x"
-  cfetch_str_x_
+Forthword_ X_CMW, INLINE_OPT, "x=c@w"
+  x_cmw_
   ret
 
 # ( a-addr -- a-addr Y:n8 )
 # read 1 cell (8 bits) from RAM address and put in Y register
-Forthword_ CFETCH_STR_Y, INLINE_OPT, "c@!y"
-  cfetch_str_y_
+Forthword_ Y_CMW, INLINE_OPT, "y=c@w"
+  y_cmw_
   ret
 
 # ( addr Y:n -- )
 # store a word from Y (32 bits) to RAM address
-Forthword_ YWSTORE, INLINE_OPT, "y.!"
-  yw_str_
+Forthword_ MW_Y, INLINE_OPT, "@w=y"
+  mw_y_
   ret
 
 # ( addr X:n -- )
 # store a word From X (32 bits) to RAM address
-Forthword_ XWSTORE, INLINE_OPT, "x.!"
-  xw_str_
+Forthword_ MW_X, INLINE_OPT, "@w=x"
+  mw_x_
   ret
 
 # ( addr A:n -- )
 # store a word From A (32 bits) to RAM address
-Forthword_ AWSTORE, INLINE_OPT, "a.!"
-  aw_str_
+Forthword_ MW_A, INLINE_OPT, "@w=a"
+  mw_a_
   ret
 
 # ( addr B:n -- )
 # store a word From B (32 bits) to RAM address
-Forthword_ BWSTORE, INLINE_OPT, "b.!"
-  bw_str_
-  ret
-
-# ( a-addr -- )
-# store 0 (32 bits) to RAM address
-Forthword_ ZERO_STR, INLINE_OPT, "0!"
-  zero_str_
-  ret
-
-# ( addr -- addr )
-# add Y to content of cell RAM address a-addr
-Forthword_ Y_PLUS_STR, INLINE_OPT, "y+!"
-  y_plus_str_
-  ret
-
-# ( addr -- addr )
-# add X to content of cell RAM address a-addr
-Forthword_ X_PLUS_STR, INLINE_OPT, "x+!"
-  x_plus_str_
-  ret
-
-# ( addr -- addr )
-# add A to content of cell RAM address a-addr
-Forthword_ A_PLUS_STR, INLINE_OPT, "a+!"
-  a_plus_str_
-  ret
-
-# ( addr -- addr )
-# add B to content of cell RAM address a-addr
-Forthword_ B_PLUS_STR, INLINE_OPT, "b+!"
-  b_plus_str_
-  ret
-
-# ( a-addr -- )
-# subtract 1 from content of cell RAM address a-addr
-Forthword_ ONEMINUS_STR, INLINE_OPT, "1-!"
-  oneminus_str_
-  ret
-
-# ( a-addr -- a-addr )
-# add 1 to content of cell RAM address a-addr
-Forthword_ ONEPLUS_STR, INLINE_OPT, "1+!"
-  oneplus_str_
+Forthword_ MW_B, INLINE_OPT, "@w=b"
+  mw_b_
   ret
 
 # ( a-addr -- a-addr Y:n16 )
 # store a half word (16 bits) in Y register to RAM address
-Forthword_ YW_HSTORE, INLINE_OPT, "y.h!"
-  yw_hstr_
+Forthword_ HMW_Y, INLINE_OPT, "h@w=y"
+  hmw_y_
   ret
 
 # ( a-addr -- a-addr X:n16 )
 # store a half word (16 bits) in X register to RAM address
-Forthword_ XW_HSTORE, INLINE_OPT, "x.h!"
-  xw_hstr_
+Forthword_ HMW_X, INLINE_OPT, "h@w=x"
+  hmw_x_
   ret
 
 # ( a-addr -- a-addr A:n16 )
 # store a half word (16 bits) in A register to RAM address
-Forthword_ AW_HSTORE, INLINE_OPT, "a.h!"
-  aw_hstr_
+Forthword_ HMW_A, INLINE_OPT, "h@w=a"
+  hmw_a_
   ret
 
 # ( a-addr -- a-addr B:n16 )
 # store a half word (16 bits) in B register to RAM address
-Forthword_ BW_HSTORE, INLINE_OPT, "b.h!"
-  bw_hstr_
-  ret
-
-# ( a-addr -- a-addr )
-# add n16 in Y register to content of half cell RAM address a-addr
-Forthword_ Y_PLUS_HSTR, INLINE_OPT, "y+h!"
-  y_plus_hstr_
-  ret
-
-# ( a-addr -- a-addr )
-# add n16 in X register to content of half cell RAM address a-addr
-Forthword_ X_PLUS_HSTR, INLINE_OPT, "x+h!"
-  x_plus_hstr_
-  ret
-
-# ( a-addr -- a-addr )
-# add n16 in A register to content of half cell RAM address a-addr
-Forthword_ A_PLUS_HSTR, INLINE_OPT, "a+h!"
-  a_plus_hstr_
-  ret
-
-# ( a-addr -- a-addr )
-# add n16 in B register to content of half cell RAM address a-addr
-Forthword_ B_PLUS_HSTR, INLINE_OPT, "b+h!"
-  b_plus_hstr_
-  ret
-
-# ( a-addr -- )
-# add 1 to content of half cell RAM address a-addr
-Forthword_ ONEPLUS_HSTR, INLINE_OPT, "1+h!"
-  oneplus_hstr_
-  ret
-
-# ( a-addr -- )
-# subtract 1 from content of half cell RAM address a-addr
-Forthword_ ONEMINUS_HSTR, INLINE_OPT, "1-h!"
-  oneminus_hstr_
+Forthword_ HMW_B, INLINE_OPT, "h@w=b"
+  hmw_b_
   ret
 
 # ( a-addr -- )
 # store a single byte from Y register to RAM address
-Forthword_ YW_CSTR, INLINE_OPT, "y.c!"
-  yw_cstr_
+Forthword_ CMW_Y, INLINE_OPT, "c@w=y"
+  cmw_y_
   ret
 
 # ( a-addr -- )
 # store a single byte from Y register to RAM address
-Forthword_ XW_CSTR, INLINE_OPT, "x.c!"
-  xw_cstr_
-  ret
-
-# ( a-addr -- )
-# store 0 (16 bits) to RAM address
-Forthword_ ZERO_CSTR, INLINE_OPT, "0c!"
-  zero_cstr_
-  ret
-
-# ( a-addr -- )
-# add c byte in Y register to content of byte RAM address a-addr
-Forthword_ Y_PLUS_CSTR, INLINE_OPT, "y+c!"
-  y_plus_cstr_
-  ret
-
-# ( a-addr -- )
-# add c byte in X register to content of byte RAM address a-addr
-Forthword_ X_PLUS_CSTR, INLINE_OPT, "x+c!"
-  x_plus_cstr_
-  ret
-
-# ( a-addr -- )
-# subtract byte in Y register from content of byte RAM address a-addr
-Forthword_ Y_MINUS_CSTR, INLINE_OPT, "y-c!"
-  y_minus_cstr_
-  ret
-
-# ( a-addr -- )
-# subtract byte in X register from content of byte RAM address a-addr
-Forthword_ X_MINUS_CSTR, INLINE_OPT, "x-c!"
-  x_minus_cstr_
-  ret
-
-# ( a-addr -- )
-# add 1 to content of byte cell RAM address a-addr
-Forthword_ ONEPLUS_CSTR, INLINE_OPT, "1+c!"
-  oneplus_cstr_
-  ret
-  
-# ( a-addr -- )
-# subtract 1 from content of byte cell RAM address a-addr
-Forthword_ ONEMINUS_CSTR, INLINE_OPT, "1-c!"
-  oneminus_cstr_
+Forthword_ CMW_X, INLINE_OPT, "c@w=x"
+  cmw_x_
   ret
 
 # ( n -- n ) A: n
 # copy WR to A register
-Forthword_ STR_A, INLINE_OPT, "!a"
-  str_a_
+Forthword_ A_W, INLINE_OPT, "a=w"
+  a_w_
   ret
 
 # ( n -- n ) B: n
 # copy WR to B register
-Forthword_ STR_B, INLINE_OPT, "!b"
-  str_b_
+Forthword_ B_W, INLINE_OPT, "b=w"
+  b_w_
   ret
 
 # ( n1 -- n1 ) X: n1
 #   WR
 # copy WR register to X register
-Forthword_ STR_X, INLINE_OPT, "!x"
-  str_x_
+Forthword_ X_W, INLINE_OPT, "x=w"
+  x_w_
   ret
   
 # ( n1 -- n1 ) Y: n1
 #   WR
 # copy WR register to Y register
-Forthword_ STR_Y, INLINE_OPT, "!y"
-  str_y_
+Forthword_ Y_W, INLINE_OPT, "y=w"
+  y_w_
   ret
   
 
@@ -1403,292 +1239,292 @@ Forthword_ Y_, INLINE_OPT, "y"
 
 # ( -- n )
 # Read a word (32bit) from memory pointed to by register A
-Forthword_ A_FETCH, INLINE_OPT, "a@"
-  a_fetch_
+Forthword_ MA, INLINE_OPT, "@a"
+  ma_
   ret
 
 # ( n -- )
 # store a word to RAM address pointed to by areg
-Forthword_ A_STR, INLINE_OPT, "a!"
-  a_str_
+Forthword_ MA_W, INLINE_OPT, "@a=w"
+  ma_w_
   ret
 
 # ( -- n )
 # Read a half word (32bit) from memory pointed to by register A
-Forthword_ A_HFETCH, INLINE_OPT, "ah@"
-  a_hfetch_
+Forthword_ HMA, INLINE_OPT, "h@a"
+  hma_
   ret
 
-# ( h -- )
+# ( h -- h )
 # store a half word to RAM address pointed to by areg
-Forthword_ A_HSTR, INLINE_OPT, "ah!"
-  a_hstr_
+Forthword_ HMA_W, INLINE_OPT, "h@a=w"
+  hma_w_
   ret
 
 # ( -- n )
 # Read a byte from memory pointed to by register A
-Forthword_ A_CFETCH, INLINE_OPT, "ac@"
-  a_cfetch_
+Forthword_ CMA, INLINE_OPT, "c@a"
+  cma_
   ret
 
 # ( c -- )
 # store a single byte to RAM address pointed to by areg
-Forthword_ A_CSTORE, INLINE_OPT, "ac!"
-  a_cstr_
+Forthword_ CMA_W, INLINE_OPT, "c@a=w"
+  cma_w_
   ret
 
 # ( -- )
-# update register A with post increment 4+ from last memory operation
-Forthword_ A_PLUS4, INLINE_OPT, "a+4"
+# a = a + 4
+Forthword_ A_PLUS4, INLINE_OPT, "a+=4"
   a_plus4_
   ret
 
 # ( -- )
-# update register A with post increment 2+ from last memory operation
-Forthword_ A_PLUS2, INLINE_OPT, "a+2"
+# a = a + 2
+Forthword_ A_PLUS2, INLINE_OPT, "a+=2"
   a_plus2_
   ret
 
 
 # ( -- )
-# update register A with post increment 1+ from last memory operation
-Forthword_ A_PLUS1, INLINE_OPT, "a+1"
+# a = a + 1
+Forthword_ A_PLUS1, INLINE_OPT, "a+=1"
   a_plus1_
   ret
 
 # ( -- )
-# update register A with decrement 4
-Forthword_ A_MINUS4, INLINE_OPT, "a-4"
+# a = a -4
+Forthword_ A_MINUS4, INLINE_OPT, "a-=4"
   a_minus4_
   ret
 
 # ( -- )
-# update register A with decrement 2
-Forthword_ A_MINUS2, INLINE_OPT, "a-2"
+# a = a - 2
+Forthword_ A_MINUS2, INLINE_OPT, "a-=2"
   a_minus2_
   ret
 
 # ( -- )
-# update register A with decrement 1
-Forthword_ A_MINUS1, INLINE_OPT, "a-1"
+# a = a - 1
+Forthword_ A_MINUS1, INLINE_OPT, "a-=1"
   a_minus1_
   ret
 
 # ( -- n )
 # Read a word (32bit) from memory pointed to by register B
-Forthword_ B_FETCH, INLINE_OPT, "b@"
-  b_fetch_
+Forthword_ MB, INLINE_OPT, "@b"
+  mb_
   ret
 
 # ( n -- )
 # store a word to RAM address pointed to by b register
-Forthword_ B_STR, INLINE_OPT, "b!"
-  b_str_
+Forthword_ MB_W, INLINE_OPT, "@b=w"
+  mb_w_
   ret
 
 # ( -- n )
 # Read a half word (32bit) from memory pointed to by register B
-Forthword_ B_HFETCH, INLINE_OPT, "bh@"
-  b_hfetch_
+Forthword_ HMB, INLINE_OPT, "h@b"
+  hmb_
   ret
 
 # ( h -- )
 # store a half word to RAM address pointed to by b reg
-Forthword_ B_HSTR, INLINE_OPT, "bh!"
-  b_hstr_
+Forthword_ HMB_W, INLINE_OPT, "h@b=w"
+  hmb_w_
   ret
 
 # ( -- n )
 # Read a byte from memory pointed to by register B
-Forthword_ B_CFETCH, INLINE_OPT, "bc@"
-  b_cfetch_
+Forthword_ CMB, INLINE_OPT, "c@b"
+  cmb_
   ret
 
 # ( c -- )
 # store a single byte to RAM address pointed to by B reg
-Forthword_ B_CSTORE, INLINE_OPT, "bc!"
-  b_cstr_
+Forthword_ CMB_W, INLINE_OPT, "c@b=w"
+  cmb_w_
   ret
 
 # ( -- )
 # update register B with post increment 4+ from last memory operation
-Forthword_ B_PLUS4, INLINE_OPT, "b+4"
+Forthword_ B_PLUS4, INLINE_OPT, "b+=4"
   b_plus4_
   ret
 
 # ( -- )
 # update register B with post increment 2+ from last memory operation
-Forthword_ B_PLUS2, INLINE_OPT, "b+2"
+Forthword_ B_PLUS2, INLINE_OPT, "b+=2"
   b_plus2_
   ret
 
 # ( -- )
 # update register B with post increment 1+ from last memory operation
-Forthword_ B_PLUS1, INLINE_OPT, "b+1"
+Forthword_ B_PLUS1, INLINE_OPT, "b+=1"
   b_plus1_
   ret
 
 # ( -- )
 # update register B with decrement 4
-Forthword_ B_MINUS4, INLINE_OPT, "b-4"
+Forthword_ B_MINUS4, INLINE_OPT, "b-=4"
   b_minus4_
   ret
 
 # ( -- )
 # update register B with decrement 2
-Forthword_ B_MINUS2, INLINE_OPT, "b-2"
+Forthword_ B_MINUS2, INLINE_OPT, "b-=2"
   b_minus2_
   ret
 
 # ( -- )
 # update register B with decrement 1
-Forthword_ B_MINUS1, INLINE_OPT, "b-1"
+Forthword_ B_MINUS1, INLINE_OPT, "b-=1"
   b_minus1_
   ret
 
 # ( -- n )
 # Read a word (32bit) from memory pointed to by register X
-Forthword_ X_FETCH, INLINE_OPT, "x@"
-  x_fetch_
+Forthword_ MX, INLINE_OPT, "@x"
+  mx_
   ret
 
 # ( n -- )
 # store a word to RAM address pointed to by x register
-Forthword_ X_STR, INLINE_OPT, "x!"
-  x_str_
+Forthword_ MX_W, INLINE_OPT, "@x=w"
+  mx_w_
   ret
 
 # ( -- n )
 # Read a half word (32bit) from memory pointed to by register X
-Forthword_ X_HFETCH, INLINE_OPT, "xh@"
-  x_hfetch_
+Forthword_ HMX, INLINE_OPT, "h@x"
+  hmx_
   ret
 
 # ( h -- )
 # store a half word to RAM address pointed to by x reg
-Forthword_ X_HSTR, INLINE_OPT, "xh!"
-  x_hstr_
+Forthword_ HMX_W, INLINE_OPT, "h@x=w"
+  hmx_w_
   ret
 
 # ( -- n )
 # Read a byte from memory pointed to by register X
-Forthword_ X_CFETCH, INLINE_OPT, "xc@"
-  x_cfetch_
+Forthword_ CMX, INLINE_OPT, "c@x"
+  cmx_
   ret
 
 # ( c -- )
 # store a single byte to RAM address pointed to by X reg
-Forthword_ X_CSTORE, INLINE_OPT, "xc!"
-  x_cstr_
+Forthword_ CMX_W, INLINE_OPT, "c@x=w"
+  cmx_w_
   ret
 
 # ( -- )
 # update register X with post increment 4+ from last memory operation
-Forthword_ X_PLUS4, INLINE_OPT, "x+4"
+Forthword_ X_PLUS4, INLINE_OPT, "x+=4"
   x_plus4_
   ret
 
 # ( -- )
 # update register X with post increment 2+ from last memory operation
-Forthword_ X_PLUS2, INLINE_OPT, "x+2"
+Forthword_ X_PLUS2, INLINE_OPT, "x+=2"
   x_plus2_
   ret
 
 
 # ( -- )
 # update register X with post increment 1+ from last memory operation
-Forthword_ X_PLUS1, INLINE_OPT, "x+1"
+Forthword_ X_PLUS1, INLINE_OPT, "x+=1"
   x_plus1_
   ret
 
 # ( -- )
 # update register X with decrement 4
-Forthword_ X_MINUS4, INLINE_OPT, "x-4"
+Forthword_ X_MINUS4, INLINE_OPT, "x-=4"
   x_minus4_
   ret
 
 # ( -- )
 # update register X with decrement 2
-Forthword_ X_MINUS2, INLINE_OPT, "x-2"
+Forthword_ X_MINUS2, INLINE_OPT, "x-=2"
   x_minus2_
   ret
 
 # ( -- )
 # update register X with decrement 1
-Forthword_ X_MINUS1, INLINE_OPT, "x-1"
+Forthword_ X_MINUS1, INLINE_OPT, "x-=1"
   x_minus1_
   ret
 
 # ( -- n )
 # Read a word (32bit) from memory pointed to by register Y
-Forthword_ Y_FETCH, INLINE_OPT, "y@"
-  y_fetch_
+Forthword_ MY, INLINE_OPT, "@y"
+  my_
   ret
 
 # ( n -- )
 # store a word to RAM address pointed to by Y register
-Forthword_ Y_STR, INLINE_OPT, "y!"
-  y_str_
+Forthword_ MY_W, INLINE_OPT, "@y=w"
+  my_w_
   ret
 
 # ( -- n )
-# Read a half word (32bit) from memory pointed to by register Y
-Forthword_ Y_HFETCH, INLINE_OPT, "yh@"
-  y_hfetch_
+# Read a half word (16bit) from memory pointed to by register Y
+Forthword_ HMY, INLINE_OPT, "h@y"
+  hmy_
   ret
 
 # ( h -- )
 # store a half word to RAM address pointed to by Y reg
-Forthword_ Y_HSTR, INLINE_OPT, "yh!"
-  y_hstr_
+Forthword_ HMY_W, INLINE_OPT, "h@y=w"
+  hmy_w_
   ret
 
 # ( -- n )
 # Read a byte from memory pointed to by register Y
-Forthword_ Y_CFETCH, INLINE_OPT, "yc@"
-  y_cfetch_
+Forthword_ CMY, INLINE_OPT, "c@y"
+  cmy_
   ret
 
 # ( c -- )
 # store a single byte to RAM address pointed to by Y reg
-Forthword_ Y_CSTORE, INLINE_OPT, "yc!"
-  y_cstr_
+Forthword_ CMY_W, INLINE_OPT, "c@y=w"
+  cmy_w_
   ret
   
 # ( -- )
-# update register Y with post increment 4+ from last memory operation
-Forthword_ Y_PLUS4, INLINE_OPT, "y+4"
+# y = y + 4
+Forthword_ Y_PLUS4, INLINE_OPT, "y+=4"
   y_plus4_
   ret
 
 # ( -- )
-# update register Y with post increment 2+ from last memory operation
-Forthword_ Y_PLUS2, INLINE_OPT, "y+2"
+# y = y + 2
+Forthword_ Y_PLUS2, INLINE_OPT, "y+=2"
   y_plus2_
   ret
 
 
 # ( -- )
-# update register Y with post increment 1+ from last memory operation
-Forthword_ Y_PLUS1, INLINE_OPT, "y+1"
+# y = y + 1
+Forthword_ Y_PLUS1, INLINE_OPT, "y+=1"
   y_plus1_
   ret
 
 # ( -- )
-# update register Y with decrement 4
-Forthword_ Y_MINUS4, INLINE_OPT, "y-4"
+# y = y - 4
+Forthword_ Y_MINUS4, INLINE_OPT, "y-=4"
   y_minus4_
   ret
 
 # ( -- )
-# update register Y with decrement 2
-Forthword_ Y_MINUS2, INLINE_OPT, "y-2"
+# y = y - 2
+Forthword_ Y_MINUS2, INLINE_OPT, "y-=2"
   y_minus2_
   ret
 
 # ( -- )
-# update register Y with decrement 1
-Forthword_ Y_MINUS1, INLINE_OPT, "y-1"
+# y = y - 1
+Forthword_ Y_MINUS1, INLINE_OPT, "y-=1"
   y_minus1_
   ret
 
@@ -1699,15 +1535,15 @@ Forthword_ MCPY, 0, "mcpy"
 	iszero_         # ( start dest count )
 	je MCPY_END
 
-  rpush_a_
-  rpush_b_
-	d0_str_b_          # ( start dest count ) B: dest
+  rpusha_
+  rpushb_
+	b_d0_              # ( start dest count ) B: dest
 	mov %eax, %ecx
-	d1_str_a_          # (  start dest count ) A: start
+	a_d1_              # (  start dest count ) A: start
 	cld
 	rep movsb
-  rpop_b_
-  rpop_a_
+  rpopb_
+  rpopa_
 MCPY_END:
   nip2_
   ret

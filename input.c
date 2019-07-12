@@ -23,6 +23,7 @@ void set_input_mode (void)
     {
       fprintf (stderr, "Note: input not a terminal.\n");
     }
+    
   /* Save the terminal attributes so we can restore them later. */
   tcgetattr (STDIN_FILENO, &saved_attributes);
   atexit (reset_input_mode);
@@ -33,4 +34,11 @@ void set_input_mode (void)
   tattr.c_cc[VMIN] = 0;
   tattr.c_cc[VTIME] = 0;
   tcsetattr (STDIN_FILENO, TCSAFLUSH, &tattr);
+  fcntl(STDIN_FILENO, F_SETFL, O_NONBLOCK);
+}
+
+int getchr(void)
+{
+  clearerr(stdin);
+  return getchar();
 }

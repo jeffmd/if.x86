@@ -9,16 +9,16 @@ Forthword_ BASE, 0, "base"
 # ( n -- )
 # save base
 Forthword_ BASESTORE, 0, "base!"
-  str_y_
+  y_w_
   user_ USER_BASE
-  yw_hstr_
+  hmw_y_
   ret
 
 # ( n -- )
 # load base
 Forthword_ BASEFETCH, 0, "base@"
   user_ USER_BASE
-  hfetch_
+  hmw_
   ret
 
 # ( -- )
@@ -94,8 +94,9 @@ PFA_SETBASE2:        # ( error)
 # skip a numeric prefix character
 #forthword_ PRAEFIX, 0, "praefix"
 PRAEFIX:             # ( addr len -- addr' len' )
-  over_            # ( addr len addr )
-  cfetch_          # ( addr len c )
+  push_
+  d1_              # ( addr len addr )
+  cmw_             # ( addr len c )
   cmp $0x30, %eax
   jb PFA_PRAEFIX0
   # no praefix
@@ -112,7 +113,7 @@ PFA_PRAEFIX0:
 # forthword_ NUMBERSIGN, 0, "#-"
 NUMBERSIGN:        # ( addr len -- )
   over_          # ( addr len addr )
-  cfetch_        # ( addr len char )
+  cmw_           # ( addr len char )
   cmp $'-, %eax
   je NUMBERSIGN_HASSIGN
     zero_      # ( addr len 0 )
@@ -132,7 +133,7 @@ Forthword_ TO_NUMBER, 0, ">num"
   iszero_
   je TO_NUMBER_END
     over_                # ( u addr len addr )
-    cfetch_              # ( u addr len char )
+    cmw_                 # ( u addr len char )
     call DIGITQ          # ( u addr len [digit] flag )
     iszero_
     pop_                 # ( u adr len [digit] )
@@ -141,12 +142,12 @@ Forthword_ TO_NUMBER, 0, ">num"
       ret              # ( u adr len )
 
 TO_NUMBER_CONV:
-  d2_str_y_            # ( u adr len digit ) Y: u
-  str_x_               # ( u adr len digit ) X: digit
+  y_d2_                # ( u adr len digit ) Y: u
+  x_w_                 # ( u adr len digit ) X: digit
   call BASEFETCH       # ( u adr len base )
   imul %edx, %eax      # ( u adr len u*base )
-  plus_x_              # ( u adr len u'' )
-  str_d2_              # ( u'' adr len u'' )
+  w_plus_x_            # ( u adr len u'' )
+  d2_w_                # ( u'' adr len u'' )
   one_                 # ( u'' adr len 1 )
   call SLASHSTRING     # ( u'' adr' len' )
   jmp TO_NUMBER
@@ -166,14 +167,14 @@ Forthword_ NUMBER, 0, "num"
   pop_                    # ( addr len )
   call PRAEFIX            # ( addr' len' )
   call NUMBERSIGN         # ( addr len flagsign2 )
-  r0_str_y_               # ( addr len flagsign2 Y:flagsign ) (R: base flagsign)
-  or_y_                   # ( addr len flagsign' )
-  str_r0_                 # ( addr len flagsign' ) (R: base flagsign')
-  d0_str_x_               # ( addr len flagsign' ) X: len
-  d1_str_y_               # ( addr len flagsign' ) Y: addr
+  y_r0_                   # ( addr len flagsign2 Y:flagsign ) (R: base flagsign)
+  w_or_y_                 # ( addr len flagsign' )
+  r0_w_                   # ( addr len flagsign' ) (R: base flagsign')
+  x_d0_                   # ( addr len flagsign' ) X: len
+  y_d1_                   # ( addr len flagsign' ) Y: addr
   zero_                   # ( addr len 0 )
-  str_d1_                 # ( 0 len 0 )
-  y_str_d0_               # ( 0 addr 0 )
+  d1_w_                   # ( 0 len 0 )
+  d0_y_                   # ( 0 addr 0 )
   x_                      # ( 0 addr len )
   call TO_NUMBER          # ( n addr' len' )
   # check length of the remaining string.

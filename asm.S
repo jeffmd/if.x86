@@ -19,9 +19,9 @@ Forthword_ PUSH_C, 0, "push,"
 Forthword_ RELDST, 0, "reldst"
   # calculate relative distance in bytes from start to dest
   # rel dist = dest - start
-  str_y_                # ( dest start ) Y: start
+  y_w_                  # ( dest start ) Y: start
   pop_                  # ( dest )
-  minus_y_              # ( dest-start )
+  w_minus_y_            # ( dest-start )
   ret
 
 # build assembler instruction jmp - unconditional long jump
@@ -54,15 +54,16 @@ Forthword_ JMP_COMMA, 0, "jmp,"
 # compile jump at start address
 # ( start dest -- )
 Forthword_ JMPC, 0, "jmpc"
-  over_                # ( start dest start )
+  push_
+  d1_                  # ( start dest start )
   call RELDST          # ( start reldst )
   call JUMP            # ( start rellong jumpinst )
-  str_y_               # ( start rellong jumpinst Y:jumpinst )
+  y_w_                 # ( start rellong jumpinst Y:jumpinst )
   d1_                  # ( start rellong start )
-  yw_cstr_             # ( start rellong start )
-  d0_str_y_            # ( start rellong start Y:rellong )
+  cmw_y_               # ( start rellong start )
+  y_d0_                # ( start rellong start Y:rellong )
   oneplus_             # ( start rellong start+1 )
-  yw_str_              # ( start rellong start+1 )
+  mw_y_                # ( start rellong start+1 )
   nip2_                # ( start+1 )
   jmp TAILOPTOFF
 

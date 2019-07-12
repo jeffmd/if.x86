@@ -2,21 +2,24 @@
 
 # ( -- )
 Forthword_ WIPE, 0, "WIPE"
+.if BUILD_LEVEL > 2
   lit_y_ DPSTART
   call DPSHARP
-  yw_str_
+  mw_y_
 
   lit_y_ CPSTART
   call CPSHARP
-  yw_str_
+  mw_y_
+.endif
 
+  y_0_
   lit_ EE_FORTHWORDLIST
-  zero_str_
+  mw_y_
   fourplus_
-  zero_str_
+  mw_y_
 
   lit_y_ HERESTART
   call HEREADDR
-  yw_str_
+  mw_y_
   
   jmp ONLY

@@ -3,7 +3,7 @@
 # ( n1 n2 -- n1|n2 )
 # compare two values leave the smaller one
 Forthword_ MIN, 0, "min"
-  str_y_
+  y_w_
   pop_
   cmp %eax, %edx
   jge 1f
@@ -14,7 +14,7 @@ Forthword_ MIN, 0, "min"
 # ( n1 n2 -- n1|n2 )
 # compare two values, leave the bigger one
 Forthword_ MAX, 0, "max"
-  str_y_
+  y_w_
   pop_
   cmp %eax, %edx
   jl 1f

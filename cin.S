@@ -19,7 +19,7 @@ Forthword_ STIB, 0, "stib"
   user_ ram_tib
   push_
   user_ ram_sharptib
-  hfetch_
+  hmw_
   ret
 
 # ( -- a-addr )
@@ -39,7 +39,7 @@ Forthword_ KEYADDR, 0, "key#"
 # fetch key from standard input, should leave a single character in WR
 # if a key was pressed. If no key pressed then -1 is in WR.
 Forthword_ STDIN, 0, "stdin"
-  call getchar
+  call getchr
   ret
 
 # ( -- key )
@@ -48,17 +48,18 @@ Forthword_ STDIN, 0, "stdin"
 Forthword_ KEY, 0, "key"
   push_
   call KEYADDR
-  fetch_
+  mw_
   jmp EXEC
 
 # ( -- )
 # Reset the input buffer
 Forthword_ INRESET, 0, "in_"
   call G_IN                # ( >inaddr )
-  zero_hstr_               # ( >inaddr )
+  y_0_
+  hmw_y_                   # ( >inaddr )
   # reset input buffer cursor position
   call SHARPTIB            # ( #tibaddr )
-  zero_hstr_               # ( #tibaddr )
+  hmw_y_                   # ( #tibaddr )
   jmp QP_RD
 
 # ( -- flag )
@@ -96,7 +97,7 @@ ACCEPT_checkdelete:
   # if cursor is 0 then at begining of input
   push_             # ( k k )
   call SHARPTIB     # ( k #tib )
-  hfetch_           # ( k tib )
+  hmw_              # ( k tib )
   # <if>
   iszero_           # ( k tib )
   pop_              # ( k )
@@ -115,9 +116,11 @@ ACCEPT_dodelete:
   call EMIT           # ( ? )
   # decrease cursor position by one
   call TRUE           # ( true )
-  str_y_              # ( true Y:true )
+  y_w_                # ( true Y:true )
   call SHARPTIB       # ( #tibaddr )
-  y_plus_hstr_         # ( #tibaddr )
+  x_hmw_
+  x_plus_y_
+  hmw_x_              # ( #tibaddr )
   jmp ACCEPT_checkmaxinput
 
 
@@ -134,22 +137,23 @@ ACCEPT_echo:
   call EMIT              # ( k ? )
   # now store the key in the input buffer
   call STIB              # ( k tibaddr #tib)
-  d0_str_y_              # ( k tibaddr #tib) Y: tibaddr
-  plus_y_                  # ( k tibaddr tibaddr+#tib )
-  d1_str_y_              # ( k tibaddr tibaddr+#tib ) Y: k
-  yw_cstr_               # ( k tibaddr tibaddr+#tib )
+  y_d0_                  # ( k tibaddr #tib) Y: tibaddr
+  w_plus_y_              # ( k tibaddr tibaddr+#tib )
+  x_d1_                  # ( k tibaddr tibaddr+#tib ) X: k
+  cmw_x_                 # ( k tibaddr tibaddr+#tib )
   nip2_                  # ( tibaddr+#tib )
 
   call SHARPTIB          # ( #tib )
-  oneplus_hstr_          # ( ? )
+  y_hmw_
+  y_plus1_
+  hmw_y_                 # ( ? )
 
 ACCEPT_checkmaxinput:
   # check if max number of char input
   call SHARPTIB          # ( #tibaddr )
-  hfetch_                # ( #tib )
-  str_y_                 # ( #tib ) Y: #tib
+  y_hmw_                 # ( #tib )
   lit_ TIBSIZE           # ( tibsize )
-  minus_y_                # ( tibsize-#tib )
+  w_minus_y_             # ( tibsize-#tib )
   # <if>
   iszero_                # ( tibsize-#tib )
   je ACCEPT_atmaxinput

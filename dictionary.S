@@ -26,8 +26,8 @@ Forthword_ NFA2LFA, 0, "nfa>lfa"
   call STRINGLEN               # ( nfa+2 len+flags )
   # mask out flags in len, allow up to 31 characters
   and $31, %eax                # ( nfa+2 len )
-  d0_str_y_                    # ( nfa+2 len ) Y: nfa+2
-  plus_y_                      # ( nfa+2 nfa+2+len )
+  y_d0_                        # ( nfa+2 len ) Y: nfa+2
+  w_plus_y_                    # ( nfa+2 nfa+2+len )
   nip_                         # ( nfa+2+len )
   ret
 
@@ -38,12 +38,12 @@ Forthword_ NFATOXTF, 0, "nfa>xtf"
   je NFATOXTF_EXIT
 
   push_                       # ( nfa nfa )
-  hfetch_                     # ( nfa xtflags )
+  hmw_                        # ( nfa xtflags )
   rpush_                      # ( nfa xtflags) (R: xtflags)
   pop_                        # ( nfa )
   call NFA2LFA                # ( lfa )
   fourplus_   # lfa>xtlink    # ( xtlink )
-  fetch_                      # ( xt )
+  mw_                         # ( xt )
   push_                       # ( xt xt )
   rpop_                       # ( xt xtflags )
 
@@ -53,10 +53,10 @@ NFATOXTF_EXIT:
 # ( addr len idx -- 0 | nfa )
 FINDWI:
   fourstar_          # ( addr len idx*4 )
-  str_y_             # ( addr len idx*4 ) Y: idx*4
+  y_w_               # ( addr len idx*4 ) Y: idx*4
   call CONTEXT       # ( addr len context )
-  plus_y_            # ( addr len context' )
-  fetch_             # ( addr len wid )
+  w_plus_y_          # ( addr len context' )
+  mw_                # ( addr len wid )
 
 # ( c-addr len wid -- [ 0 | nfa ] )
 # find a word in the dictionary
@@ -71,7 +71,7 @@ Forthword_ FINDNFA, 0, "findnfa"
 
   # <begin>
 FINDNFA_BEGIN:
-  fetch_                      # ( c-addr len nfa )
+  mw_                         # ( c-addr len nfa )
   # <while>
 FINDNFA_BEGIN1:
   iszero_                     # ( c-addr len nfa )
@@ -108,7 +108,8 @@ FINDNFA_NEXT:
 
 # ( addr len idx * )
 FINDLAST:
-  pop2_                       # ( addr len )
+  d1_
+  nip2_                       # ( addr len )
 
 # ( addr len --  0 | nfa )
 # search root wordlists for the name from string addr/len
@@ -127,14 +128,16 @@ Forthword_ FINDW, 0, "findw"
   call CONTEXT        # ( addr len context )
   # get context index and use as counter
   twominus_           # ( addr len context-2 )
-  hfetch_             # ( addr len idx )
+  mw_                 # ( addr len idx )
   push_               # ( addr len idx idx )
   
 FINDW_BEGIN:
   iszero_
-  js FINDLAST         # ( addr len idx * )
-    pop_              # ( addr len idx )
-    call THREEOVER    # ( addr len idx addr len idx )
+  js FINDLAST         # ( addr len idx idx )
+    y_d2_
+    x_d1_
+    pushy_
+    pushx_            # ( addr len idx addr len idx )
     call FINDWI       # ( addr len idx nfa )
     iszero_
     # end loop if word found
@@ -146,7 +149,7 @@ FINDW_NEXT:
   d0_                 # ( addr len idx idx )
   # decrement index
   oneminus_           # ( addr len idx idx-1 )
-  str_d0_             # ( addr len idx-1 idx-1 )
+  d0_w_               # ( addr len idx-1 idx-1 )
   jmp FINDW_BEGIN
 
 # ( -- )
@@ -156,16 +159,17 @@ Forthword_ ONLY, IMMEDIATE_EN, "only"
   # forth vocab always takes slot 0
   lit_y_ EE_FORTHWORDLIST     # ( ? ) Y:FLIST
   call CURRENT                # ( CURRENT )
-  yw_str_                     # ( CURRENT )
+  mw_y_                       # ( CURRENT )
   # make current also forth vocab
   call CONTEXT                # ( CONTEXT )
-  yw_str_                     # ( CONTEXT )
+  mw_y_                       # ( CONTEXT )
   # move index to next slot
   twominus_                   # ( CONTEXT-2 )
   lit_y_ 1                    # ( CONTEXT-2 Y:1 )
-  yw_hstr_                    # ( CONTEXT-2 )
+  hmw_y_                      # ( CONTEXT-2 )
   # make second slot have no vocab
   twoplus_                    # ( CONTEXT )
+  y_0_
   fourplus_                   # ( CONTEXT+4 )
-  zero_str_
+  mw_y_
   ret

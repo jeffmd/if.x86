@@ -1,100 +1,26 @@
 # interpret.S
 
-# ( c -- )
-# fetch the lit vector and EXEC it. Will interpret a litteral for one of the registers
-Forthword_ LIT_INTERP, 0, "lit.interp"
-  push_
-  user_  Lit_Interpret
-  fetch_
-  jmp EXEC
-
-# ( c -- )
-# fetch the lit vector and EXEC it. Will compile a litteral for one of the registers
-Forthword_ LIT_COMP, 0, "lit.comp"
-  push_
-  user_  Lit_Compile
-  fetch_
-  jmp EXEC
 
 # ( -- )
 # ignore remaining text to end of line
 Forthword_ COMMENT, IMMEDIATE_EN, "\\"
   push_      # preserve WR
   call STIB
-  str_y_
+  y_w_
   nip_
   call G_IN  # skip to end of input buffer
-  yw_hstr_
+  hmw_y_
   pop_      
   ret
-
-# ( xtc xti -- )
-# Select register for literal
-Forthword_ REGSET, IMMEDIATE_EN, "regset"
-  rpush_y_
-  str_y_
-  user_ Lit_Interpret
-  yw_str_
-  d0_str_y_
-  user_ Lit_Compile
-  yw_str_
-  pop2_
-  rpop_y_
-  ret
-
-# ( -- )
-# Select W register for literal
-Forthword_ WSET, IMMEDIATE_EN, "w="
-  push_
-  lit_ WLIT_C
-  push_
-  lit_ WLIT_INTERP
-  jmp REGSET
-  
-# ( -- )
-# Select A register for literal
-Forthword_ ASET, IMMEDIATE_EN, "a="
-  push_
-  lit_ ALIT_C
-  push_
-  lit_ ALIT_INTERP
-  jmp REGSET
-
-# ( -- )
-# Select B register for literal
-Forthword_ BSET, IMMEDIATE_EN, "b="
-  push_
-  lit_ BLIT_C
-  push_
-  lit_ BLIT_INTERP
-  jmp REGSET
-
-# ( -- )
-# Select X register for literal
-Forthword_ XSET, IMMEDIATE_EN, "x="
-  push_
-  lit_ XLIT_C
-  push_
-  lit_ XLIT_INTERP
-  jmp REGSET
-
-# ( -- )
-# Select Y register for literal
-Forthword_ YSET, IMMEDIATE_EN, "y="
-  push_
-  lit_ YLIT_C
-  push_
-  lit_ YLIT_INTERP
-  jmp REGSET
 
 # ( r-addr r-len f-addr f-len --  f)
 # compares two counted strings in RAM
 # flag is true if strings match
 Forthword_ MCMP, 0, "mcmp"
-  str_y_                   # ( r-addr r-len f-addr f-len)  Y: f-len
+  y_w_                     # ( r-addr r-len f-addr f-len)  Y: f-len
   d1_                      # ( r-addr r-len f-addr r-len)
   # check if strings are same length
-  xor %edx, %eax           # ( r-addr r-len f-addr flag )
+  w_xor_y_                 # ( r-addr r-len f-addr flag )
   # if
   iszero_                  # ( r-addr r-len f-addr flag )
   pop_                     # ( r-addr r-len f-addr )
@@ -110,17 +36,17 @@ Forthword_ MCMP, 0, "mcmp"
 # compare two strings of same length
 # flag is true if strings match
 Forthword_ CMPSB, 0, "cmpsb"
-  rpush_a_
-  rpush_b_
-  str_a_                   # ( r-addr len f-addr ) A: f-addr
-  d0_str_x_                # ( r-addr len f-addr ) C: len
-  d1_str_b_                # ( r-addr len f-addr ) B: r-addr
+  rpusha_
+  rpushb_
+  a_w_                     # ( r-addr len f-addr ) A: f-addr
+  x_d0_                    # ( r-addr len f-addr ) C: len
+  b_d1_                    # ( r-addr len f-addr ) B: r-addr
   nip2_                    # ( f-addr )
   cld
   repe cmpsb
   # while
-  rpop_b_
-  rpop_a_
+  rpopb_
+  rpopa_
   je MCMP_DONE
 
   # strings don't match
@@ -138,18 +64,18 @@ MCMP_DONE:
 # pointing to the 1st non-c character
 # n1 is max number of characters to search
 Forthword_ CSKIP, 0, "cskip"
-  rpush_a_
-  rpush_b_
-  str_b_               # ( addr1 n1 c ) B: c
-  d1_str_a_            # ( addr1 n1 c ) A: addr1
+  rpusha_
+  rpushb_
+  b_w_                 # ( addr1 n1 c ) B: c
+  a_d1_                # ( addr1 n1 c ) A: addr1
   d0_                  # ( addr1 n1 n1 )
-  str_y_               # ( addr1 n1 n1 ) Y: n1
-  str_x_               # ( addr1 n1 n1 ) X: n1
+  y_w_                 # ( addr1 n1 n1 ) Y: n1
+  x_w_                 # ( addr1 n1 n1 ) X: n1
   nip2_                # ( n1 )
   jmp PFA_CSKIP2
   
 PFA_CSKIP1:
-  a_cfetch_            # ( c' )
+  cma_                 # ( c' )
   a_plus1_
   cmp %edi, %eax       # ( c' )
   jne PFA_CSKIP3
@@ -159,10 +85,10 @@ PFA_CSKIP2:
   jne PFA_CSKIP1
 
 PFA_CSKIP3:
-  rpop_b_
-  rpop_a_
+  rpopb_
+  rpopa_
   x_                   # ( n1 )
-  minus_y_             # ( n1-n' )
+  w_minus_y_           # ( n1-n' )
   ret
 
 # ( addr1 n1 c -- addr1 n2 )
@@ -170,18 +96,18 @@ PFA_CSKIP3:
 # n1 is max number of characters to search
 # char at n2 is first c character
 Forthword_ CSCAN, 0, "cscan"
-  rpush_a_
-  rpush_b_
-  str_b_               # ( addr1 n1 c ) B: c
-  d1_str_a_            # ( addr1 n1 c ) A: addr1
+  rpusha_
+  rpushb_
+  b_w_                 # ( addr1 n1 c ) B: c
+  a_d1_                # ( addr1 n1 c ) A: addr1
   d0_                  # ( addr1 n1 n1 )
-  str_y_               # ( addr1 n1 n1 ) Y: n1 
-  str_x_               # ( addr1 n1 n1 ) X: n1
+  y_w_                 # ( addr1 n1 n1 ) Y: n1 
+  x_w_                 # ( addr1 n1 n1 ) X: n1
   nip_                 # ( addr1 n1 )
   jmp PFA_CSCAN2
   
 PFA_CSCAN1:
-  a_cfetch_            # ( addr1 c' )
+  cma_                 # ( addr1 c' )
   a_plus1_
   cmp %edi, %eax       # ( addr1 c' )
   je PFA_CSCAN3
@@ -191,10 +117,10 @@ PFA_CSCAN2:
   jne PFA_CSCAN1
 
 PFA_CSCAN3:
-  rpop_b_
-  rpop_a_
+  rpopb_
+  rpopa_
   x_                   # ( addr1 n1 )
-  minus_y_             # ( addr1 n1-n' )
+  w_minus_y_           # ( addr1 n1-n' )
   ret
 
 # ( -- srcaddr len  )
@@ -203,7 +129,7 @@ Forthword_ SRCIN, 0, "srcin"
   call STIB           # ( srcaddr len )
   push_               # ( srcaddr len len )
   call G_IN           # ( srcaddr len ginaddr )
-  hfetch_             # ( srcaddr len gin)
+  hmw_                # ( srcaddr len gin)
   jmp SLASHSTRING     # ( srcaddr' len' )
 
 # ( -- ginaddr )
@@ -215,9 +141,11 @@ Forthword_ SKIPBL, 0, "skipbl"
   call CSKIP          # ( n2 )
 
   # adjust >IN
-  str_y_              # ( n2 Y:n2 )
+  y_w_                # ( n2 Y:n2 )
   call G_IN           # ( ginaddr )
-  y_plus_hstr_        # ( ginaddr )
+  x_hmw_
+  x_plus_y_           # ( ginaddr )
+  hmw_x_
   ret
 
 # ( char "ccc<char>" -- c-addr u )
@@ -228,13 +156,14 @@ Forthword_ PARSE, 0, "parse"
   push_              # ( addr len len )
   rpop_              # ( addr len c ) (R: )
   call CSCAN         # ( addr' len'')
-  str_y_             # ( addr' len'' Y:len'')
-  str_x_             # ( addr' len'' X:len'')
+  y_w_               # ( addr' len'' Y:len'')
   # skip terminating delimeter
-  y_plus1_           # ( addr' len'' Y:len''+1 )
   call G_IN          # ( addr' >in )
-  y_plus_hstr_       # ( addr' >in )
-  x_                 # ( addr' len'' )
+  x_hmw_
+  x_plus_y_          
+  x_plus1_
+  hmw_x_
+  y_                 # ( addr' len'' )
   ret
 
 # ( "<name>" -- c-addr len )
@@ -244,76 +173,33 @@ Forthword_ PNAME, 0, "pname"
   bl_
   jmp PARSE
 
-# ( n -- )
-# store n in WR
-Forthword_ WLIT_INTERP, IMMEDIATE_EN, "[w=]"
-      movl %eax, WR
-      ret
-
-# ( n -- )
-# store n in RY
-Forthword_ YLIT_INTERP, IMMEDIATE_EN, "[y=]"
-      movl %eax, RY
-      ret
-
-# ( n -- )
-# store n in RX
-Forthword_ XLIT_INTERP, IMMEDIATE_EN, "[x=]"
-      movl %eax, RX
-      ret
-
-# ( n -- )
-# store n in RA
-Forthword_ ALIT_INTERP, IMMEDIATE_EN, "[a=]"
-      movl %eax, RA
-      ret
-
-# ( n -- )
-# store n in RB
-Forthword_ BLIT_INTERP, IMMEDIATE_EN, "[b=]"
-      movl %eax, RB
-      ret
-
-# ( addr len -- [n] | [addr len] f )
-# recognizer for integer numbers
-Forthword_ REC_NUM, 0, "rec#"
-  rpush_            # ( addr len ) (R: len )
-  d0_str_y_         # ( addr len Y:addr )
-  rpush_y_          # ( addr len ) (R: len addr )
-  # try converting to a number
-  call NUMBER              # ( [n] f )
-  iszero_
-  je REC_NONUMBER
-    rnip2_                 # ( n f )
-    call STATE             # ( n state )
-    iszero_
-    pop_
-    je REC_NUMBER_OK
-      call LIT_COMP
-      jmp REC_NUMBER_DONE
-
-REC_NUMBER_OK:
-      call LIT_INTERP
-      
-REC_NUMBER_DONE:
-      call WSET
-      true_               # ( true ) (R: )
-      ret
-
-REC_NONUMBER:
-  rpop_                    # ( addr ) (R: len )
-  push_                    # ( addr addr ) (R: len )
-  rpop_                    # ( addr len ) (R: )
-  push_                    # ( addr len len )
-  zero_                    # ( addr len 0 )
+# load registers W, A, B, X, Y
+# ( xt * -- WR xt )
+forthword_ REGL, 0, "regl"
+  d0_                # ( xt xt )
+  movl WR, %edx 
+  d0_y_              # ( WR xt )
+  movl RA, %esi
+  movl RB, %edi
+  movl RX, %ecx
+  movl RY, %edx
   ret
 
+# save registers W, A, B, X, Y
+forthword_ REGS, 0, "regs"
+  movl %eax, WR
+  movl %esi, RA
+  movl %edi, RB
+  movl %ecx, RX
+  movl %edx, RY
+  ret
+    
 # ( addr len -- ** [addr len] f )
 # recognize a word in the dictionary
 Forthword_ REC_WORD, 0, "recw"
   rpush_            # ( addr len ) (R: len )
-  d0_str_y_         # ( addr len Y:addr )
-  rpush_y_          # ( addr len ) (R: len addr )
+  y_d0_             # ( addr len Y:addr )
+  rpushy_           # ( addr len ) (R: len addr )
   call FINDW        # ( 0 | nfa )
   iszero_
   jne REC_WORD_FOUND
@@ -357,28 +243,19 @@ REC_WORD_CHECKSTATE:
     iszero_
     pop_             # ( xt flag )
     je REC_WORD_EXECUTE
+.if BUILD_LEVEL > 2
       # in compile mode so compile xt
       call COMPILEXT # ( ? )
+.endif
       true_
       ret
 
 REC_WORD_EXECUTE:
   # state is zero, EXEC xt
-  d0_                # ( xt xt )
-  movl WR, %edx 
-  y_str_d0_          # ( WR xt )
-  movl RA, %esi
-  movl RB, %edi
-  movl RX, %ecx
-  movl RY, %edx
-
+  call REGL
   call EXEC          # ( ?? )
+  call REGS
   
-  movl %eax, WR
-  movl %esi, RA
-  movl %edi, RB
-  movl %ecx, RX
-  movl %edx, RY
   true_              # ( true )
   ret
 
@@ -389,11 +266,15 @@ Forthword_ RECX, 0, "recx"
   call REC_WORD         # ( [addr len] flag )
   iszero_               # ( [addr len] flag )
   jne RECX_DONE
+
+.if BUILD_LEVEL > 2
   pop_                  # ( addr len )
   # test if its a number
   call REC_NUM          # ( [addr len] flag )
   iszero_               # ( [addr len] flag )
   jne RECX_DONE
+.endif
+
   # not recognized so throw
   call CR               # ( addr len ? )
   pop_                  # ( addr len )
@@ -444,5 +325,7 @@ Forthword_ DOINTERPRET, 0, "(interp)"
 DOINTERPRET_ok:
   # make sure in buf pointer is not at zero
   call G_IN          # ( >inaddr )
-  oneplus_hstr_      # (  )
+  y_hmw_
+  y_plus1_
+  hmw_y_             # (  )
   jmp PROMPTOK

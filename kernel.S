@@ -22,14 +22,14 @@ Forthword_ HEREADDR, 0, "here#"
 # the address of the next free ram location
 Forthword_ HERE, 0, "here"
   call HEREADDR
-  fetch_
+  mw_
   ret
 
 # ( nx* -- ) (R: ny* -- )
 # initialize rf further. EXECs turnkey operation and go to quit
 Forthword_ DOCMDARG, 0, "docmdarg"
   call ARGCADDR      # ( ARGCADDR )
-  fetch_             # ( ARGC )
+  mw_                # ( ARGC )
   push_              # ( ARGC ARGC )
   one_               # ( ARGC 1 )
   call GREATER       # ( flag )
@@ -37,10 +37,12 @@ Forthword_ DOCMDARG, 0, "docmdarg"
   je DOCMDARG_EXIT
 
   call ARGVADDR      # ( ARGVADDR )
-  fetch_             # ( ARGV )
+  mw_                # ( ARGV )
   fourplus_          # ( ARGV+4 )
-  fetch_             # ( ptr )
+  mw_                # ( ptr )
+.if BUILD_LEVEL > 2 
   jmp DOINCLUDE
+.endif
 
 DOCMDARG_EXIT:
   ret
@@ -53,7 +55,7 @@ Forthword_ TIME, 0, "time"
     push_
     push_
     rpush_
-    rpush_sp_
+    rpushdp_
     call gettimeofday
     rnip2_
     pop_
@@ -62,7 +64,7 @@ Forthword_ TIME, 0, "time"
 # ( -- n )
 # number of single-cell (4 byte) values contained in the data stack before n was placed on the stack.
 Forthword_ DEPTH, 0, "depth"
-  call SP0      # ( sp0 )
+  call DP0      # ( dp0 )
   sub %ebx, %eax
   fourslash_    # ( cnt/4 )
   # acount for value push on data stack
@@ -70,7 +72,7 @@ Forthword_ DEPTH, 0, "depth"
 
 # ( -- )
 # check stack underflow, throw exception -4
-Forthword_ QSTACK, 0, "?sp"
+Forthword_ QSTACK, 0, "?dp"
   call DEPTH       # ( depth )
   zeroless_        # ( flag )
   iszero_
@@ -90,23 +92,23 @@ Forthword_ HANDLER, 0, "handler"
 # setup handler to catch exceptions and then EXEC XT.
 Forthword_ CATCH, 0, "catch"
   # sp@ >r
-  rpush_sp_           # ( xt ) (R: ret -- callerret SP )
+  rpushdp_            # ( xt ) (R: ret -- callerret SP )
   # handler @ >r
   push_               # ( xt xt )
   call HANDLER        # ( xt haddr )
-  fetch_              # ( xt hxt )
+  y_w_
+  mw_                 # ( xt hxt )
   rpush_              # ( xt hxt ) (R: callerret SP hxt )
   # rp@ handler !
-  rp_str_y_           # ( xt Y:RP ) (R: callerret SP hxt)
-  call HANDLER        # ( xt haddr )
-  yw_str_             # ( xt haddr )
+  rp_                 # ( xt RP ) (R: callerret SP hxt)
+  my_w_               # ( xt RP )
   pop_                # ( xt )
   call EXEC
   # restore handler
   # r> handler !
-  rpop_y_             # ( hxt ) (R: callerret SP )
+  rpopy_              # ( hxt ) (R: callerret SP )
   call HANDLER        # ( haddr )
-  yw_str_             # ( haddr )
+  mw_y_               # ( haddr )
   rnip_               # ( haddr ) (R: callerret)
   zero_               # ( 0 )
   ret
@@ -117,11 +119,11 @@ Forthword_ CATCH, 0, "catch"
 Forthword_ THROW, 0, "throw"
   call TYPE          # ( ? )
   call HANDLER       # ( haddr )
-  str_x_             # ( haddr X:haddr )
-  fetch_             # ( RP_handler )
-  str_rp_            # ( RP_handler ) (R: callerret SP hxt)
+  x_w_               # ( haddr X:haddr )
+  mw_                # ( RP_handler )
+  rp_w_              # ( RP_handler ) (R: callerret SP hxt)
   rpop_              # ( hxt ) (R: callerret SP )
-  x_str_             # ( hxt )
-  rpop_sp_           # ( SP ) (R: callerret )
+  mx_w_              # ( hxt )
+  rpopdp_            # ( SP ) (R: callerret )
   one_               # ( ... 1 )
   ret

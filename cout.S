@@ -20,7 +20,7 @@ Forthword_ EMIT_OFF, 0, "emit.off"
   # reset output source for emit
   lit_y_ NOOP
   call EMITADDR
-  yw_str_
+  mw_y_
   ret
 
 # ( -- )
@@ -29,7 +29,7 @@ Forthword_ EMIT_ON, 0, "emit.on"
   # reset output source for emit
   lit_y_ PUTCHAR
   call EMITADDR
-  yw_str_
+  mw_y_
   ret
 
 # ( c -- )
@@ -37,7 +37,7 @@ Forthword_ EMIT_ON, 0, "emit.on"
 Forthword_ EMIT, 0, "emit"
   push_
   call EMITADDR
-  fetch_
+  mw_
   jmp EXEC
 
 # ( -- )
@@ -60,20 +60,20 @@ Forthword_ TYPE, 0, "type"
   iszero_
   jz TYPE_END
 
-  rpush_a_
-  rpush_b_
-  pop_a_           # Address of string
-  str_b_
+  rpusha_
+  rpushb_
+  popa_           # Address of string
+  b_w_            # number of char to emit
 
 TYPE1:
-  a_cfetch_
+  cma_
   a_plus1_
   call EMIT
   b_minus1_
   jnz TYPE1
 
-  rpop_b_
-  rpop_a_
+  rpopb_
+  rpopa_
 
 TYPE_END:
   ret
