@@ -1,7 +1,7 @@
 # macros.S
 
 # wreg -> %eax # W register and also considered Top of Stack
-# dp   -> %ebx # holds the Forth Parameter/Data stack pointer
+# dsp  -> %ebx # holds the Forth Parameter/Data stack pointer
 # areg -> %esi # A register used for memory pointer operations - non-volatile: user must preserve
 # breg -> %edi # B register used for general purpose operations - non-volatile: user must preserve
 # xreg -> %ecx # X register used for general purpose operations 
@@ -72,7 +72,7 @@
   pushl %edx
 .endm
 
-.macro rpushdp_
+.macro rpushdsp_
   pushl %ebx
 .endm
 
@@ -98,7 +98,7 @@
   popl %edx
 .endm
 
-.macro rpopdp_ 
+.macro rpopdsp_ 
   popl %ebx
 .endm
 
@@ -271,13 +271,13 @@
 
 # store return stack register in register
 
-# rp
-.macro rp_
+# rsp
+.macro rsp_
   movl %esp, %eax
 .endm
 
-# rp=w
-.macro rp_w_
+# rsp=w
+.macro rsp_w_
   movl %eax, %esp
 .endm
 
@@ -433,49 +433,49 @@
 
 # make space on data stack
 
-# push1
-.macro push1_ # move stack pointer down one cell
+# put1
+.macro put1_ # move stack pointer down one cell
   leal -4(%ebx), %ebx
 .endm
 
-# push2
-.macro push2_ # move stack pointer down two cells
+# put2
+.macro put2_ # move stack pointer down two cells
   leal -8(%ebx), %ebx
 .endm
 
-# push3
-.macro push3_ # move stack pointer down three cells
+# put3
+.macro put3_ # move stack pointer down three cells
   leal -12(%ebx), %ebx
 .endm
 
 # push register on data stack
 
 .macro push_ # save WR on data stack
-  push1_
+  put1_
   d0_w_
 .endm
 
 # pusha
 .macro pusha_ # save a on data stack
-  push1_
+  put1_
   d0_a_
 .endm
 
 # pushb
 .macro pushb_ # save b on data stack
-  push1_
+  put1_
   d0_b_
 .endm
 
 # pushx
 .macro pushx_ # save x on data stack
-  push1_
+  put1_
   d0_x_
 .endm
 
 # pushy
 .macro pushy_ # save y on data stack
-  push1_
+  put1_
   d0_y_
 .endm
 
@@ -523,13 +523,13 @@
   test $\v, %eax
 .endm
 
-# dp
-.macro dp_
+# dsp
+.macro dsp_
   movl %ebx, %eax
 .endm
 
-# dp=w
-.macro dp_w_
+# dsp=w
+.macro dsp_w_
   movl %eax, %ebx
 .endm
 

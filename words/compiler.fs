@@ -66,14 +66,14 @@
     \ temp save cp on return stack
     cp rpush                  ( retaddr xt cp ) ( R: cp )
     \ set cp to xt
-    d0 cp#! pop               ( retaddr xt )
+    d0 cp= pop               ( retaddr xt )
     \ modify the call
     \ calc displacement
     reldst                    ( dst )
     \ compile a call instruction
     call,                     ( ? )
     \ restore cp
-    rpop cp#!                 ( ? ) ( R: )
+    rpop cp=                 ( ? ) ( R: )
 ;
 
 ( -- )
@@ -96,7 +96,7 @@
 
 ( -- start  ? )
 \ Compiler
-\ places current dictionary position for forward
+\ places current code position for forward
 \ branch resolve on TOS and advances CP
 : >mark
     cp push       ( start start )
@@ -107,7 +107,7 @@
 \ Compiler
 \ do forward jump
 : >jmp
-    ?sp              ( start ? ) \ check stack integrety
+    ?dsp              ( start ? ) \ check stack integrety
     cp               ( start dest )
     jmpc             ( )
 ;
@@ -123,10 +123,12 @@
 \ Compiler
 \ do backward jump
 : <jmp
-    ?sp            \ make sure there is something on the stack
+    ?dsp            \ make sure there is something on the stack
     \ compile a jmp at current CP that jumps back to mark
     cp             \ ( dest start )
-    swap           \ ( start dest )
+    y=d0
+    d0=w
+    y              \ ( start dest )
     jmpc
     5 cp+          \ advance CP
 ;
@@ -170,7 +172,8 @@
 \ part of: if...else...then
 : else
     >mark         \ mark forward rjmp at end of true code
-    pop swap push \ swap new mark with previouse mark
+    d1 y=d0
+    d0=w d1=y     \ swap new mark with previouse mark
     >jmp          \ rjmp from previous mark to false code starting here
 ; :ic
 
@@ -206,7 +209,8 @@
 \ part of: begin...while...repeat
 : while
     [compile] if
-    pop swap push
+    d1 y=d0
+    d0=w d1=y    \ swap new mark with previouse mark
 ; :ic
 
 ( f -- f) ( C: dest -- orig dest )
@@ -215,7 +219,8 @@
 \ part of: begin...?while...repeat
 : ?while
     [compile] ?if
-    pop swap push
+    d1 y=d0
+    d0=w d1=y     \ swap new mark with previouse mark
 ; :ic
 
 ( --  ) ( C: orig dest -- )
@@ -258,7 +263,7 @@
 
 \ allocate or release n bytes of memory in RAM
 : allot ( n -- )
-    !y here y+ here# y.!
+    y=w here y+=w here# @w=y
 ;
 
 ( x -- ) ( C: x "<spaces>name" -- )
@@ -287,7 +292,7 @@
 
 \ compiles a string from RAM to program RAM
 : s, ( addr len -- )
-    push $cp!
+    push @cp=$
 ;
 
 ( C: addr len -- )

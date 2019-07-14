@@ -8,13 +8,13 @@
 
 
 # ( -- addr )
-# current vocabulary for new words
+# current wordlist vocabulary for new words
 Forthword_ CURRENT, 0, "current"
   user_ ram_CURRENT
   ret
 
 # ( -- addr )
-# context vocabulary for searching
+# context wordlist vocabulary for searching
 # array of wordlists
 Forthword_ CONTEXT, 0, "context"
   user_ ram_CONTEXT
@@ -83,10 +83,10 @@ FINDNFA_BEGIN1:
 FINDNFA_CHECK:
   
   rpush_                      # ( c-addr len nfa) (R: nfa )
-  pop_
-  call TWOOVER                # ( c-addr len c-addr len )
-  push_                       # ( c-addr len c-addr len len )
-  r0_                         # ( c-addr len c-addr len nfa )
+  y_d1_                       # ( c-addr len nfa ) Y:c-addr
+  x_d0_                       # ( c-addr len nfa ) X:len
+  pushy_                      # ( c-addr len c-addr nfa )
+  pushx_                      # ( c-addr len c-addr len nfa )
   call STRINGLEN              # ( c-addr len c-addr len f-addr len )
   and $31, %eax               # ( c-addr len c-addr len f-addr 0:len )
   call MCMP                   # ( c-addr len flag )
@@ -128,7 +128,7 @@ Forthword_ FINDW, 0, "findw"
   call CONTEXT        # ( addr len context )
   # get context index and use as counter
   twominus_           # ( addr len context-2 )
-  mw_                 # ( addr len idx )
+  hmw_                 # ( addr len idx )
   push_               # ( addr len idx idx )
   
 FINDW_BEGIN:
@@ -153,7 +153,7 @@ FINDW_NEXT:
   jmp FINDW_BEGIN
 
 # ( -- )
-# set the context and current to root forth vocabulary and remove
+# set the context and current to root and forth vocabulary and remove
 # other vocabularies
 Forthword_ ONLY, IMMEDIATE_EN, "only"
   # forth vocab always takes slot 0

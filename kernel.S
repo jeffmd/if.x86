@@ -40,7 +40,7 @@ Forthword_ DOCMDARG, 0, "docmdarg"
   mw_                # ( ARGV )
   fourplus_          # ( ARGV+4 )
   mw_                # ( ptr )
-.if BUILD_LEVEL > 2 
+.if BUILD_LEVEL > 3 
   jmp DOINCLUDE
 .endif
 
@@ -55,7 +55,7 @@ Forthword_ TIME, 0, "time"
     push_
     push_
     rpush_
-    rpushdp_
+    rpushdsp_
     call gettimeofday
     rnip2_
     pop_
@@ -64,7 +64,7 @@ Forthword_ TIME, 0, "time"
 # ( -- n )
 # number of single-cell (4 byte) values contained in the data stack before n was placed on the stack.
 Forthword_ DEPTH, 0, "depth"
-  call DP0      # ( dp0 )
+  call DSP0      # ( dp0 )
   sub %ebx, %eax
   fourslash_    # ( cnt/4 )
   # acount for value push on data stack
@@ -72,7 +72,7 @@ Forthword_ DEPTH, 0, "depth"
 
 # ( -- )
 # check stack underflow, throw exception -4
-Forthword_ QSTACK, 0, "?dp"
+Forthword_ QSTACK, 0, "?dsp"
   call DEPTH       # ( depth )
   zeroless_        # ( flag )
   iszero_
@@ -92,7 +92,7 @@ Forthword_ HANDLER, 0, "handler"
 # setup handler to catch exceptions and then EXEC XT.
 Forthword_ CATCH, 0, "catch"
   # sp@ >r
-  rpushdp_            # ( xt ) (R: ret -- callerret SP )
+  rpushdsp_           # ( xt ) (R: ret -- callerret SP )
   # handler @ >r
   push_               # ( xt xt )
   call HANDLER        # ( xt haddr )
@@ -100,7 +100,7 @@ Forthword_ CATCH, 0, "catch"
   mw_                 # ( xt hxt )
   rpush_              # ( xt hxt ) (R: callerret SP hxt )
   # rp@ handler !
-  rp_                 # ( xt RP ) (R: callerret SP hxt)
+  rsp_                # ( xt RP ) (R: callerret SP hxt)
   my_w_               # ( xt RP )
   pop_                # ( xt )
   call EXEC
@@ -121,9 +121,9 @@ Forthword_ THROW, 0, "throw"
   call HANDLER       # ( haddr )
   x_w_               # ( haddr X:haddr )
   mw_                # ( RP_handler )
-  rp_w_              # ( RP_handler ) (R: callerret SP hxt)
+  rsp_w_             # ( RP_handler ) (R: callerret SP hxt)
   rpop_              # ( hxt ) (R: callerret SP )
   mx_w_              # ( hxt )
-  rpopdp_            # ( SP ) (R: callerret )
+  rpopdsp_           # ( SP ) (R: callerret )
   one_               # ( ... 1 )
   ret

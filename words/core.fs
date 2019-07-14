@@ -7,7 +7,7 @@
 : (
     push          \ ( ?  ? )
     $29 parse     \ ( ?  addr u )
-    pop2          \ ( ? )
+    nip pop       \ ( ? )
 ; immediate
 
 
@@ -30,13 +30,13 @@
 ; immediate
 
 \ store address of the next free dictionary cell
-: dp#! ( addr -- )
-    !y dp# y.!
+: dp= ( addr -- )
+    y=w dp# @w=y
 ;
 
 \ store address of the next free code cell
-: cp#! ( addr -- )
-    !y cp# y.!
+: cp= ( addr -- )
+    y=w cp# @w=y
 ;
 
 
@@ -44,8 +44,8 @@
 \ create a dictionary entry and register in word list
 : rword
     (create)      ( nfa )
-    !y cur@       ( wid Y:nfa )
-    y.!           ( wid )
+    y=w cur@       ( wid Y:nfa )
+    @w=y           ( wid )
 ;
 
 ( -- dcell )
@@ -107,12 +107,12 @@ rword dcell* inlined
 \ and xt and flag are compiled as two literals
 : ['f]
     'f
-    swap
+    push d1
     w=,
     \ compile literal of 'f push
-    [ 'f push swap w=, ]
+    [ 'f push push d1 w=, ]
     push
-    [ pop w=, ]
+    [ d0 w=, pop ]
     cxt
-    pop w=,
+    d0 w=, pop
 ; :ic

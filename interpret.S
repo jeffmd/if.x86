@@ -1,6 +1,5 @@
 # interpret.S
 
-
 # ( -- )
 # ignore remaining text to end of line
 Forthword_ COMMENT, IMMEDIATE_EN, "\\"

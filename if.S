@@ -1,6 +1,6 @@
 # if.S
 
-.set BUILD_LEVEL, 2
+.set BUILD_LEVEL, 3
 # if BUILD_LEVEL is 0 then a minimum kernel is built but with no interpreter
 # minimum kernel build has minimum word set needed to be up and running without interpreter
 
@@ -103,7 +103,7 @@ CPSTART:
       .include "asm.S"
       .include "interpret_number.S"
       .include "include.S"
-      .include "mathadv.S"
+      #.include "mathadv.S"
       #.include "defer.S"
       #.include "file.S"
     .endif
@@ -130,7 +130,7 @@ Forthword_ WARM, 0, "warm"
 
 # ( -- addr)
 # start address of the data stack
-Forthword_ DP0, 0, "dp0"
+Forthword_ DSP0, 0, "dsp0"
   movl $topdatastack, %eax
   ret
 
@@ -162,9 +162,9 @@ Forthword_ COLD, 0, "cold"
   push %ebp
   movl $topdatastack, %ebx
   movl $sysvar_base, %ebp
-	rp_
+	rsp_
 	y_w_
-	call RP0
+	call RSP0
 	mw_y_
 .if BUILD_LEVEL > 2
   call WIPE

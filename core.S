@@ -8,10 +8,22 @@ Forthword_ DPUSH, INLINE_OPT, "push"
   push_
   ret  
   
-# ( n -- n n n )
-# push WR onto top of data stack twice
-Forthword_ DPUSH2, INLINE_OPT, "push2"
-  push2_
+# ( n -- ? n  )
+# restore top of data stack once
+Forthword_ PUT1, INLINE_OPT, "put1"
+  put1_
+  ret  
+  
+# ( n -- ? ? n )
+# restore top of data stack twice
+Forthword_ PUT2, INLINE_OPT, "put2"
+  put2_
+  ret  
+  
+# ( n -- ? ? ? n)
+# restore top of data stack three times
+Forthword_ PUT3, INLINE_OPT, "put3"
+  put2_
   ret  
   
 # ( n1 n2 -- n1 a  n2 )
@@ -307,14 +319,14 @@ Forthword_ DPOPY, INLINE_OPT, "popy"
 
 # (  -- addr )
 # current data stack pointer
-Forthword_ DP_FETCH, INLINE_OPT, "dp"
-  dp_
+Forthword_ DSP, INLINE_OPT, "dsp"
+  dsp_
   ret
   
 # ( addr -- i*x)
 # set data stack pointer to addr
-Forthword_ DP_W, INLINE_OPT, "dp=w"
-  dp_w_
+Forthword_ DSP_W, INLINE_OPT, "dsp=w"
+  dsp_w_
   ret
 
 #@@@@@@@@@@@@@ Return Stack @@@@@@@@@@@@@
@@ -399,8 +411,8 @@ Forthword_ RPUSHY, INLINE_OPT, "rpushy"
 
 # ( -- ) (R: -- sp)
 # push datastack pointer on top of return stack
-Forthword_ RPUSHDP, INLINE_OPT, "rpushdp"
-	rpushdp_
+Forthword_ RPUSHDP, INLINE_OPT, "rpushdsp"
+	rpushdsp_
 	ret
 
 # ( -- n) (R: n -- n )
@@ -599,7 +611,7 @@ Forthword_ R2_B, INLINE_OPT, "r2=b"
 # (R: ?  ?  n1 -- n2 ?  n1 ) X: n2
 #     r2 r1 r0
 # r2=x
-Forthword_ R2_X, INLINE_OPT, "R2=x"
+Forthword_ R2_X, INLINE_OPT, "r2=x"
   r2_x_
   ret
   
@@ -612,15 +624,15 @@ Forthword_ R2_Y, INLINE_OPT, "r2=y"
   
 # (  -- n)
 # current return stack pointer address
-Forthword_ RP, INLINE_OPT, "rp"
-	rp_
+Forthword_ RSP, INLINE_OPT, "rsp"
+	rsp_
 	ret
 
 # ( addr  -- ) (R: -- x*y)
 # set return stack pointer
-Forthword_ STORE_RP, INLINE_OPT, "rp=w"
+Forthword_ RSP_W, INLINE_OPT, "rsp=w"
 	# keep the return address
-	rp_w_
+	rsp_w_
 	ret
 
 # ( -- retaddr )
@@ -636,7 +648,7 @@ Forthword_ POPRET, 0, "popret"
 # get TOR and then increment TOR by 1 cell (32 bit)
 # assumes TOR content will be used for 32 bit memory access
 # since this word must be called, skip the top most item on the return stack
-Forthword_ RTORPLUS, INLINE_OPT, "r0+"
+Forthword_ R0PLUS, INLINE_OPT, "r0+"
 	r0_
 	addl $4, (%esp)
 	ret
@@ -816,37 +828,37 @@ Forthword_ W_XOR_B, INLINE_OPT, "w^=b"
 
 # ( n1 -- n2)
 # 1-complement of WR
-Forthword_ NOT, INLINE_OPT, "~"
+Forthword_ NOT, INLINE_OPT, "!"
   not_
   ret
 
 # ( n1 -- n2)
 # 1-complement of y
-Forthword_ NOT_Y, INLINE_OPT, "~y"
+Forthword_ NOT_Y, INLINE_OPT, "!y"
   not_y_
   ret
 
 # ( n1 -- n2)
 # 1-complement of x
-Forthword_ NOT_X, INLINE_OPT, "~x"
+Forthword_ NOT_X, INLINE_OPT, "!x"
   not_x_
   ret
 
 # ( n1 -- n2)
 # 1-complement of a
-Forthword_ NOT_A, INLINE_OPT, "~a"
+Forthword_ NOT_A, INLINE_OPT, "!a"
   not_a_
   ret
 
 # ( n1 -- n2)
 # 1-complement of b
-Forthword_ NOT_B, INLINE_OPT, "~b"
+Forthword_ NOT_B, INLINE_OPT, "!b"
   not_b_
   ret
 
 # ( n1 n2 -- flag)
 # flag is true if n1 is not equal to n2
-Forthword_ NOTEQUAL, INLINE_OPT, "<>"
+Forthword_ NOTEQUAL, INLINE_OPT, "!="
   y_d0_
   nip_
   w_xor_y_
@@ -854,7 +866,7 @@ Forthword_ NOTEQUAL, INLINE_OPT, "<>"
 
 # ( n1 n2 -- flag )
 # flag is true if WR and NOS are equal
-Forthword_ EQUAL, 0, "="
+Forthword_ EQUAL, 0, "=="
   sub (%ebx), %eax
   nip_
   sub $1, %eax
@@ -995,31 +1007,31 @@ Forthword_ Y_0, INLINE_OPT, "y=0"
 
 # ( n -- n )
 # test WR if zero, does not consume WR
-Forthword_ ISZERO, INLINE_OPT, "0?"
+Forthword_ ISZERO, INLINE_OPT, "==0"
 	iszero_
 	ret
   
 # ( n -- n )
 # test if A is zero
-Forthword_ AISZERO, INLINE_OPT, "a0?"
+Forthword_ AISZERO, INLINE_OPT, "a==0"
 	a_iszero_
 	ret
   
 # ( n -- n )
 # test if B is zero
-Forthword_ BISZERO, INLINE_OPT, "b0?"
+Forthword_ BISZERO, INLINE_OPT, "b==0"
 	b_iszero_
 	ret
   
 # ( n -- n )
 # test if X is zero
-Forthword_ XISZERO, INLINE_OPT, "x0?"
+Forthword_ XISZERO, INLINE_OPT, "x==0"
 	x_iszero_
 	ret
   
 # ( n -- n )
 # test if Y is zero
-Forthword_ YISZERO, INLINE_OPT, "y0?"
+Forthword_ YISZERO, INLINE_OPT, "y==0"
 	y_iszero_
 	ret
   

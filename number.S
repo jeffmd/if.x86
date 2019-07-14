@@ -8,7 +8,7 @@ Forthword_ BASE, 0, "base"
 
 # ( n -- )
 # save base
-Forthword_ BASESTORE, 0, "base!"
+Forthword_ BASESTORE, 0, "base="
   y_w_
   user_ USER_BASE
   hmw_y_
@@ -54,7 +54,8 @@ Forthword_ DIGITQ, 0, "digit?"
   ret
 
 DIGITQ0:
-  push2_               # ( n n n )
+  push_
+  push_                # ( n n n )
   call BASEFETCH       # ( n n base )
   call UGREATEREQUAL   # ( n flag )
   iszero_
@@ -112,7 +113,8 @@ PFA_PRAEFIX0:
 # check for - sign
 # forthword_ NUMBERSIGN, 0, "#-"
 NUMBERSIGN:        # ( addr len -- )
-  over_          # ( addr len addr )
+  push_
+  d1_            # ( addr len addr )
   cmw_           # ( addr len char )
   cmp $'-, %eax
   je NUMBERSIGN_HASSIGN
@@ -132,7 +134,8 @@ NUMBERSIGN_HASSIGN:
 Forthword_ TO_NUMBER, 0, ">num"
   iszero_
   je TO_NUMBER_END
-    over_                # ( u addr len addr )
+    push_
+    d1_                  # ( u addr len addr )
     cmw_                 # ( u addr len char )
     call DIGITQ          # ( u addr len [digit] flag )
     iszero_

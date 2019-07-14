@@ -5,21 +5,21 @@
 \ header ( addr len wid -- nfa )
 \ 
 dp push         \ ( nfa nfa ) name field address
-pname header push y= $FF00 or.y $dp! \ ( nfa ? )
+pname header push y= $FF00 w|=y @dp=$ \ ( nfa ? )
   current @ @   \ ( nfa linkaddr ) get latest word
-  dp!           \ ( nfa ? ) set link field to prev word in vocab
-  cp dp! pop    \ ( nfa ) set code pointer field
-  smudge!       \ ( ? )
+  @dp=          \ ( nfa ? ) set link field to prev word in vocab
+  cp @dp= pop   \ ( nfa ) set code pointer field
+  smudge=       \ ( ? )
   ]
     push dp     \ ( addr len wid nfa )
     rpush       \ ( addr len wid nfa ) (R: nfa )
     pop         \ ( addr len wid )
     rpush       \ ( addr len wid ) (R: nfa wid )
-    d0!y        \ ( addr len wid Y:len )
-    $FF00 or.y  \ ( addr len len|$FF00 )
-    $dp!        \ ( ? )
+    y=d0        \ ( addr len wid Y:len )
+    $FF00 w|=y  \ ( addr len len|$FF00 )
+    @dp=$       \ ( ? )
     rpop @      \ ( linkaddr ) (R: nfa )
-    dp!         \ ( ? )
+    @dp=        \ ( ? )
     rpop        \ ( dp )
   [
   ;opt
@@ -28,10 +28,10 @@ pname header push y= $FF00 or.y $dp! \ ( nfa ? )
 \ (create) ( <input> -- nfa )
 pname (create) push current @ header \ ( nfa )
   push cp       \ ( nfa cp )
-  dp! pop       \ ( nfa )
-  smudge!       \ ( ? )
+  @dp= pop      \ ( nfa )
+  smudge=       \ ( ? )
   ]
-    pname push current @ header push cp dp! pop
+    pname push current @ header push cp @dp= pop
   [
   ;opt
   uwid
@@ -39,9 +39,9 @@ pname (create) push current @ header \ ( nfa )
 \ : ( <input> -- )
 \ used to define a new word
 (create) :
-  smudge!
+  smudge=
   ]
-    (create) smudge! ]
+    (create) smudge= ]
   [
   ;opt
   uwid
@@ -59,11 +59,11 @@ pname (create) push current @ header \ ( nfa )
 \ ( n -- )
 \ set wid flags of current word
 : widf
-    !y         \ ( n ) y; n
-    cur@ @ !x  \ ( nfa ) X: nfa
-    xh@        \ ( flags )
-    and.y      \ ( n&flags )
-    xh!        \ ( n&flags )
+    y=w        \ ( n ) y; n
+    cur@ @ x=w \ ( nfa ) X: nfa
+    h@x        \ ( flags )
+    w&=y       \ ( n&flags )
+    h@x=w      \ ( n&flags )
   [
   ;opt uwid
 

@@ -47,7 +47,7 @@ Forthword_ PAUSE_RESET, 0, "pause.reset"
 
 # ( -- addr)
 # start address of return stack
-Forthword_ RP0, 0, "rp0"
+Forthword_ RSP0, 0, "rsp0"
   user_ rstack0
   ret
 
@@ -77,7 +77,9 @@ Forthword_ PHEX, 0, ".$"
   call EMIT    # ( n ? )
   lit_ 28      # ( n 28 )
 PHEX_BEGIN:
-  call TWOOVER # ( n x n x )
+  y_d0_
+  push_
+  pushy_       # ( n x n x )
   rshift_      # ( n x n' )
   call PNIB
   pop_         # ( n x )
@@ -251,7 +253,8 @@ Forthword_ RESET, 0, "reset"
 
 .if BUILD_LEVEL > 2
   call WSET
-  call ZERO_SMUDGE_STR
+  zero_
+  call SMUDGE_STR
 .endif
   call PAUSE_RESET
   # switch to interpret mode
@@ -261,8 +264,8 @@ Forthword_ RESET, 0, "reset"
 # reset stacks and start over again
 Forthword_ QUIT, 0, "quit"
   # reset data stack
-  call DP0
-  dp_w_
+  call DSP0
+  dsp_w_
   # reset return stack pointer
   #call RP0
   #fetch_

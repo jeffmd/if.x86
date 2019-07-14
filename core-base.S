@@ -12,15 +12,7 @@ Forthword_ EXEC, 0, "exec"
 Forthword_ NOOP, INLINE_OPT, "noop"
   nop
   ret
-
-# ( x1 x2 -- x1 x2 x1 x2)
-# Place a copy of x1 and x2 on top of the stack
-Forthword_ TWOOVER, 0, "2over"
-  y_d0_
-  push_
-  pushy_
-  ret
-  
+ 
 # ( u1 u2 -- flag )
 # flag is true if u1 > u2 (unsigned)
 Forthword_ UGREATER, 0, "u>"

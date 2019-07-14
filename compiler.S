@@ -1,25 +1,18 @@
 # compiler.S
 
 # ( -- addr )
-# system SMUDGE. Get flash program address of latest word being compiled.
+# system SMUDGE. Get program address of latest word being compiled.
 Forthword_ SMUDGE, 0, "smudge"
   user_ COLON_SMUDGE
-  fetch_
+  mw_
   ret
   
 # ( addr -- )
-# system SMUDGE. Get program address of latest word being compiled.
-Forthword_ SMUDGE_STR, 0, "smudge!"
-  str_y_
+# system SMUDGE. Set program address of latest word being compiled.
+Forthword_ SMUDGE_STR, 0, "smudge="
+  y_w_
   user_ COLON_SMUDGE
-  yw_str_
-  ret
-
-# ( -- )
-# system SMUDGE. Get program address of latest word being compiled.
-Forthword_ ZERO_SMUDGE_STR, 0, "0smudge!"
-  user_ COLON_SMUDGE
-  zero_str_
+  mw_y_
   ret
 
 # ( -- f-addr )
@@ -31,23 +24,19 @@ Forthword_ DPSHARP, 0, "dp#"
 # ( -- f-addr )
 # address of the next free dictionary cell
 Forthword_ DP, 0, "dp"
-  call DPSHARP
-  fetch_
+  user_ ram_dp
+  mw_
   ret
 
 # ( offset -- )
 # add offset to (dictionary pointer) DP
 Forthword_ DPPLUS, 0, "dp+"
-  str_y_
+  y_w_
   call DPSHARP
-  y_plus_str_
+  x_mw_
+  x_plus_y_
+  mw_x_
   ret
-
-# ( -- )
-# increment 32 bit (dictionary pointer) DP by one cell
-Forthword_ DPPLUSONE, 0, "dp+1"
-  one_
-  jmp DPPLUS
 
 # ( -- f-addr )
 # get address of the code cell
@@ -58,23 +47,19 @@ Forthword_ CPSHARP, 0, "cp#"
 # ( -- f-addr )
 # address of the next free code cell
 Forthword_ CP, 0, "cp"
-  call CPSHARP
-  fetch_
+  user_ ram_cp
+  mw_
   ret
 
 # ( offset -- cp#)
 # add offset to (code pointer) CP
 Forthword_ CPPLUS, 0, "cp+"
-  str_y_
+  y_w_
   call CPSHARP
-  y_plus_str_
+  x_mw_
+  x_plus_y_
+  mw_x_
   ret
-
-# ( -- )
-# increment 32 bit (code pointer) CP by one cell
-Forthword_ CPPLUSONE, 0, "cp+1"
-  one_
-  jmp CPPLUS
 
 # ( -- )
 # turn last is call off
@@ -119,7 +104,7 @@ TAIL_CALL_OPTIMIZE:
   sub $5, %eax       # ( 0xe9 CP-5 )
   push_              # ( 0xe9 CP-5 CP-5 )
   # make sure current instruction is a call otherwise compile a return
-  cfetch_            # ( 0xe9 CP-5 inst )
+  cmw_               # ( 0xe9 CP-5 inst )
   and $0xff, %eax
   cmp $0xe8, %eax
   je DO_JMPOPT
@@ -127,9 +112,9 @@ TAIL_CALL_OPTIMIZE:
     jmp RET_C
 DO_JMPOPT:
   d0_                # ( 0xe9 CP-5 CP-5 )
-  d1_str_y_          # ( 0xe9 CP-5 CP-5 ) Y: 0xe9
+  y_d1_              # ( 0xe9 CP-5 CP-5 ) Y: 0xe9
   nip2_              # ( CP-5 )
-  yw_cstr_           # ( CP-5 )
+  cmw_y_             # ( CP-5 )
   # clear last is call flag in fflags
   andw $~(1 << LAST_IS_CALL_FB), fflags
   ret
@@ -142,40 +127,42 @@ Forthword_ UWID, 0, "uwid"
   je UWID_end
 
   # wid.word = smudge
-  str_y_       # ( xt ) Y:xt
+  y_w_         # ( xt ) Y:xt
   call CURRENT # ( CURRENT )
-  fetch_       # ( wid )
-  yw_str_      # ( wid )
+  mw_          # ( wid )
+  mw_y_        # ( wid )
   #call CLRCACHE
   # set smudge to zero indicating no longer compiling a word
-  call ZERO_SMUDGE_STR # ( SMUDGE )
+  zero_
+  call SMUDGE_STR # ( SMUDGE )
 UWID_end:
   ret
 
 # ( n -- )
 # store 8 bit value in WR into code section ram at (code pointer) CP
 Forthword_ COMMA, 0, ","
-  str_y_           # ( n )
+  y_w_             # ( n )
   call CP          # ( CP )
-  yw_cstr_         # ( CP )
-  jmp CPPLUSONE    # 
+  cmw_y_           # ( CP )
+  one_
+  jmp CPPLUS       # 
 
 # ( n -- )
 # store double word 32 bit value in WR into code section ram at (code pointer) CP
 Forthword_ DWCOMMA, 0, "dw,"
-  str_y_
+  y_w_
   call CP
-  yw_str_
+  mw_y_
   four_
   jmp CPPLUS
 
 # ( n -- )
 # store 32 bit value in WR into dictionary section ram at (dictionary pointer) DP
 # automaticaly increment dp position by 4 bytes
-Forthword_ DPSTORE, 0, "dp!"
-  str_y_
+Forthword_ DPSTORE, 0, "@dp="
+  y_w_
   call DP
-  yw_str_
+  mw_y_
   four_
   jmp DPPLUS
 
@@ -183,42 +170,42 @@ Forthword_ DPSTORE, 0, "dp!"
 # copies a counted string with flags from s-addr to d-addr
 # returns destination address + len
 Forthword_ COPYSTRING, 0, "copy$"
-  rpush_a_
-  rpush_b_
-  str_b_             # ( s-addr len len' d-addr ) B: d-addr
+  rpusha_
+  rpushb_
+  b_w_               # ( s-addr len len' d-addr ) B: d-addr
   d0_                # ( s-addr len len' len')
-  b_hstr_
+  hmb_w_
   b_plus2_
-  d1_str_x_
-  d2_str_a_          # ( s-addr ) A: addr
+  x_d1_
+  a_d2_              # ( s-addr ) A: addr
   cld
   rep movsb
   b_                 # ( s-addr+len )
   nip3_
-  rpop_b_
-  rpop_a_
+  rpopb_
+  rpopa_
   ret
 
 # ( addr len len' -- )
 # copies a counted string with flags to program ram
-Forthword_ STRINGPROGSTORE, 0, "$cp!"
+Forthword_ STRINGPROGSTORE, 0, "@cp=$"
   push_
   call CP
   call COPYSTRING
-  str_y_
+  y_w_
   call CPSHARP
-  yw_str_
+  mw_y_
   ret
 
 # ( addr len len' -- )
 # copies a counted string with flags to dictionary ram
-Forthword_ STRINGDICTSTORE, 0, "$dp!"
+Forthword_ STRINGDICTSTORE, 0, "@dp=$"
   push_
   call DP
   call COPYSTRING
-  str_y_
+  y_w_
   call DPSHARP
-  yw_str_
+  mw_y_
   ret
 
 # ( source destination term -- count )
@@ -230,30 +217,30 @@ Forthword_ STRINGDICTSTORE, 0, "$dp!"
 # count is the number of bytes copied
 Forthword_ COPY_BYTE_UNTIL, 0, "copy.byte.until"
   # fetch from ram and check if equal to match byte
-  rpush_a_
-  rpush_b_
-  str_x_             # ( source destination term ) X: term
-  d0_str_b_          # ( source destination match ) B: destination
-  d1_str_a_          # ( source destination match ) A: source
+  rpusha_
+  rpushb_
+  x_w_               # ( source destination term ) X: term
+  b_d0_              # ( source destination match ) B: destination
+  a_d1_              # ( source destination match ) A: source
   # begin
 CBU_BEGIN:
-    a_cfetch_        # ( source destination byte )
+    cma_             # ( source destination byte )
     a_plus1_
     and $0xFF, %eax
     cmp %eax, %ecx    
     # until
     je CBU_DONE
-    b_cstr_          # ( source destination byte ) [B]: byte
+    cmb_w_           # ( source destination byte ) [B]: byte
     b_plus1_         # ( source destination byte ) B+1
     jmp CBU_BEGIN
 
 CBU_DONE:
-  d0_str_y_          # ( source destination byte ) Y: destination
+  y_d0_              # ( source destination byte ) Y: destination
   nip2_              # ( byte )
   b_                 # ( destination+count )
-  minus_y_           # ( count )
-  rpop_b_
-  rpop_a_
+  w_minus_y_         # ( count )
+  rpopb_
+  rpopa_
   ret
 
 # ( start -- )
