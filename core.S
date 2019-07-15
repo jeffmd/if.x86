@@ -710,10 +710,94 @@ Forthword_ Y_PLUS_W, INLINE_OPT, "y+=w"
   y_plus_w_
   ret
 
+# ( n1 -- n1 Y:Y+A )
+# y = y + a
+Forthword_ Y_PLUS_A, INLINE_OPT, "y+=a"
+  y_plus_a_
+  ret
+
+# ( n1 -- n1 Y:Y+B )
+# y = y + b
+Forthword_ Y_PLUS_B, INLINE_OPT, "y+=b"
+  y_plus_b_
+  ret
+
+# ( n1 -- n1 Y:Y+X )
+# y = y + x
+Forthword_ Y_PLUS_X, INLINE_OPT, "y+=x"
+  y_plus_x_
+  ret
+
+# ( n1 -- n1 Y:Y-n1 )
+# y = y - w
+Forthword_ Y_MINUS_W, INLINE_OPT, "y-=w"
+  y_minus_w_
+  ret
+
+# ( n1 -- n1 Y:Y-A )
+# y = y - a
+Forthword_ Y_MINUS_A, INLINE_OPT, "y-=a"
+  y_minus_a_
+  ret
+
+# ( n1 -- n1 Y:Y-B )
+# y = y - b
+Forthword_ Y_MINUS_B, INLINE_OPT, "y-=b"
+  y_minus_b_
+  ret
+
+# ( n1 -- n1 Y:Y-X )
+# y = y - x
+Forthword_ Y_MINUS_X, INLINE_OPT, "y-=x"
+  y_minus_x_
+  ret
+
 # ( n1 -- n1 X:X+n1 )
 # x = x + w
 Forthword_ X_PLUS_W, INLINE_OPT, "x+=w"
   x_plus_w_
+  ret
+
+# ( n1 -- n1 X:X+a )
+# x = x + a
+Forthword_ X_PLUS_A, INLINE_OPT, "x+=a"
+  x_plus_a_
+  ret
+
+# ( n1 -- n1 X:X+B )
+# x = x + b
+Forthword_ X_PLUS_B, INLINE_OPT, "x+=b"
+  x_plus_b_
+  ret
+
+# ( n1 -- n1 X:X+Y )
+# x = x + y
+Forthword_ X_PLUS_Y, INLINE_OPT, "x+=y"
+  x_plus_y_
+  ret
+
+# ( n1 -- n1 X:X-n1 )
+# x = x - w
+Forthword_ X_MINUS_W, INLINE_OPT, "x-=w"
+  x_minus_w_
+  ret
+
+# ( n1 -- n1 X:X-a )
+# x = x - a
+Forthword_ X_MINUS_A, INLINE_OPT, "x-=a"
+  x_minus_a_
+  ret
+
+# ( n1 -- n1 X:X-B )
+# x = x - b
+Forthword_ X_MINUS_B, INLINE_OPT, "x-=b"
+  x_minus_b_
+  ret
+
+# ( n1 -- n1 X:X-Y )
+# x = x - y
+Forthword_ X_MINUS_Y, INLINE_OPT, "x-=y"
+  x_minus_y_
   ret
 
 # ( n1 -- n1 A:A+n1 )
@@ -722,10 +806,94 @@ Forthword_ A_PLUS_W, INLINE_OPT, "a+=w"
   a_plus_w_
   ret
 
+# ( n1 -- n1 A:A+B )
+# a = a + b
+Forthword_ A_PLUS_B, INLINE_OPT, "a+=b"
+  a_plus_b_
+  ret
+
+# ( n1 -- n1 A:A+X )
+# a = a + x
+Forthword_ A_PLUS_X, INLINE_OPT, "a+=x"
+  a_plus_x_
+  ret
+
+# ( n1 -- n1 A:A+Y )
+# a = a + y
+Forthword_ A_PLUS_Y, INLINE_OPT, "a+=y"
+  a_plus_y_
+  ret
+
+# ( n1 -- n1 A:A-n1 )
+# a = a - w
+Forthword_ A_MINUS_W, INLINE_OPT, "a-=w"
+  a_minus_w_
+  ret
+
+# ( n1 -- n1 A:A-B )
+# a = a - b
+Forthword_ A_MINUS_B, INLINE_OPT, "a-=b"
+  a_minus_b_
+  ret
+
+# ( n1 -- n1 A:A-X )
+# a = a - x
+Forthword_ A_MINUS_X, INLINE_OPT, "a-=x"
+  a_minus_x_
+  ret
+
+# ( n1 -- n1 A:A-Y )
+# a = a - y
+Forthword_ A_MINUS_Y, INLINE_OPT, "a-=y"
+  a_minus_y_
+  ret
+
 # ( n1 -- n1 B:B+n1 )
 # b = b + w
 Forthword_ B_PLUS_W, INLINE_OPT, "b+=w"
   b_plus_w_
+  ret
+
+# ( n1 -- n1 B:B+A )
+# b = b + a
+Forthword_ B_PLUS_A, INLINE_OPT, "b+=a"
+  b_plus_a_
+  ret
+
+# ( n1 -- n1 B:B+X )
+# b = b + x
+Forthword_ B_PLUS_X, INLINE_OPT, "b+=x"
+  b_plus_x_
+  ret
+
+# ( n1 -- n1 B:B+Y )
+# b = b + y
+Forthword_ B_PLUS_Y, INLINE_OPT, "b+=y"
+  b_plus_y_
+  ret
+
+# ( n1 -- n1 B:B-n1 )
+# b = b - w
+Forthword_ B_MINUS_W, INLINE_OPT, "b-=w"
+  b_minus_w_
+  ret
+
+# ( n1 -- n1 B:B-A )
+# b = b - a
+Forthword_ B_MINUS_A, INLINE_OPT, "b-=a"
+  b_minus_a_
+  ret
+
+# ( n1 -- n1 B:B-X )
+# b = b - x
+Forthword_ B_MINUS_X, INLINE_OPT, "b-=x"
+  b_minus_x_
+  ret
+
+# ( n1 -- n1 B:B-Y )
+# b = b - y
+Forthword_ B_MINUS_Y, INLINE_OPT, "b-=y"
+  b_minus_y_
   ret
 
 # ( u1|n1 u2|n2 -- u3|n3 )
