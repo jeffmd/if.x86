@@ -136,14 +136,14 @@
 
 \ compile zerosense and conditional jump forward
 : ?jmpc
-    program: 0?       \ inline zerosense
+    program: ==0       \ inline zerosense
     program: pop
     jne1,
 ;
 
 \ compile zerosense and conditional jump forward
 : ??jmpc
-    program: 0?
+    program: ==0
     jne1,
 ;
 
