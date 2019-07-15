@@ -112,7 +112,7 @@ rword dcell* inlined
     \ compile literal of 'f push
     [ 'f push push d1 w=, ]
     push
-    [ d0 w=, pop ]
+    [ d0 w=, nip pop ]
     cxt
-    d0 w=, pop
+    d0 w=, nip pop
 ; :ic
