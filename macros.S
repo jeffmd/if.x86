@@ -665,7 +665,7 @@
 
 # y-=a
 .macro y_minus_a_
-  sub %es5, %edx
+  sub %esi, %edx
 .endm
 
 # y-=b
