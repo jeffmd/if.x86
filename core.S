@@ -1177,31 +1177,7 @@ Forthword_ Y_0, INLINE_OPT, "y=0"
 # test WR if zero, does not consume WR
 Forthword_ ISZERO, INLINE_OPT, "==0"
 	iszero_
-	ret
-  
-# ( n -- n )
-# test if A is zero
-Forthword_ AISZERO, INLINE_OPT, "a==0"
-	a_iszero_
-	ret
-  
-# ( n -- n )
-# test if B is zero
-Forthword_ BISZERO, INLINE_OPT, "b==0"
-	b_iszero_
-	ret
-  
-# ( n -- n )
-# test if X is zero
-Forthword_ XISZERO, INLINE_OPT, "x==0"
-	x_iszero_
-	ret
-  
-# ( n -- n )
-# test if Y is zero
-Forthword_ YISZERO, INLINE_OPT, "y==0"
-	y_iszero_
-	ret
+	ret  
   
 # ( n1 n2 -- n3)
 # logically shift n1 left n2 times
