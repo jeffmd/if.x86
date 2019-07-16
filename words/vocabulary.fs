@@ -7,7 +7,7 @@
 
 \ get context array address using context index
 : context# ( -- addr )
-  context !y contidx h@ dcell* +y
+  context y=w contidx h@ dcell* w+=y
 ;
 
 \ get a wordlist id from context array
@@ -16,8 +16,8 @@
 ;
 
 \ save wordlist id in context array at context index
-: context! ( wid -- addr )
-  push context# pop.y y.!
+: context= ( wid -- addr )
+  push context# popy @w=y
 ;
 
 \ get a valid wid from the context
@@ -39,28 +39,30 @@
 \ add link field offset
 : wid:link ( wid -- wid:link) dcell+ dcell+ ;
 \ add child field offset
-: wid:child ( wid -- wid:child ) !y 3 dcell* +y ;
+: wid:child ( wid -- wid:child ) y=w 3 dcell* w+=y ;
 
 \ initialize wid fields of definitions vocabulary
 : widinit ( wid -- wid )
   \ wid.word = 0
-  !x ( wid )  \ X: wid
-  0! ( wid )  \ wid.word = 0
+  x=w  ( wid )  \ X: wid
+  y=0
+  @w=y ( wid )  \ wid.word = 0
 
   \ parent wid child field is in cur@->child
   push cur@ wid:child  ( wid parentwid.child )
   push       ( wid parentwid.child parentwid.child )
   @          ( wid parentwid.child childwid )
-  !y         ( wid parentwid.child childwid Y:childwid)
+  y=w        ( wid parentwid.child childwid Y:childwid)
   x wid:link ( wid parentwid.child wid.link )
   \ wid.link = childLink
-  y.!        ( wid parentwid.child wid.link )
+  @w=y       ( wid parentwid.child wid.link )
   \ wid.child = 0
-  dcell+ 0!  ( wid parentwid.child wid.child )
+  dcell+ y=0
+  @w=y       ( wid parentwid.child wid.child )
   \ parentwid.child = wid
   pop        ( wid parentwid.child )
-  d0!y nip   ( parentwid.child )
-  y.! x      ( wid )
+  y=d0 nip   ( parentwid.child )
+  @w=y x     ( wid )
 ;
 
 \ make a wordlist record in data ram
@@ -80,8 +82,9 @@
 : also ( -- )
   context@ push
   \ increment index
-  contidx 1+h! pop
-  context!
+  contidx 
+  y=h@w y+=1 h@w=y pop
+  context=
   
 ; immediate
 
@@ -95,9 +98,9 @@
   \ index must be >= 1
   0>           ( contidx idx-1 flag )
   ?if
-    0 context! ( contidx idx-1 addr ) 
-    d0!y d1    ( contidx idx-1 contidx Y:idx-1 )
-    y.h!       ( contidx idx-1 contidx )
+    0 context= ( contidx idx-1 addr ) 
+    y=d0 d1    ( contidx idx-1 contidx Y:idx-1 )
+    h@w=y      ( contidx idx-1 contidx )
   else
     [compile] only
   then
@@ -115,7 +118,7 @@
 ( -- )
 : definitions
     context@
-    ?if !y current y.! then
+    ?if y=w current @w=y then
 ; immediate
 
 \ A defining word used in the form:
@@ -135,18 +138,18 @@
   \ voc.wid = wid
   dw,            ( wid ? )
   \ wid.name = vocabulary.nfa  
-  cur@ @ !y pop  ( wid Y:voc.nfa )
-  dcell+ y.!     ( wid.name )
+  cur@ @ y=w pop  ( wid Y:voc.nfa )
+  dcell+ @w=y     ( wid.name )
   
   does>
    @ \ get header address
    \ make this vocabulary the active search context
-   context!
+   context=
 ;
 
 \ Set context to Forth vocabulary
 : Forth ( -- )
-  context @ context!
+  context @ context=
 ; immediate
 
 \ setup forth name pointer in forth wid name field
@@ -156,15 +159,15 @@ cur@ @ push ( nfa nfa )
 \ forthwid.word is already initialized
 context @ dcell+ ( nfa forthwid.name )
 \ forthwid.name = nfa
-d0!y nip y.! ( forthwid.name )
+popy @w=y ( forthwid.name )
 \ forthwid.link = 0
-dcell+ 0! ( forthwid.link )
+dcell+ y=0 @w=y ( forthwid.link )
 \ forthwid.child = 0
-dcell+ 0! ( )
+dcell+ y=0 @w=y ( )
 
 \ print name field
 : .nf ( nfa -- )
-      $l y= $FF and.y  ( addr cnt ) \ mask immediate bit
+      $l y= $FF w&=y   ( addr cnt ) \ mask immediate bit
       type space       ( ? )
 ;
  
@@ -175,9 +178,9 @@ dcell+ 0! ( )
     begin
     ?while                   ( nfa cnt nfa ) \ is nfa = counted string
       .nf                    ( nfa cnt ? )
-      d0 1+ !d0              ( nfa' cnt+1 cnt+1 )
+      d0 1+ d0=w             ( nfa' cnt+1 cnt+1 )
       d1 nfa>lfa             ( nfa cnt lfa )
-      @ !d1                  ( nfa' cnt addr )
+      @ d1=w                 ( nfa' cnt addr )
     repeat 
     cr ." count: " d0 .
     nip2
@@ -206,7 +209,7 @@ dcell+ 0! ( )
   begin
   \ iterate through vocab array and print out vocab names
   ?while
-    dcell* !y context +y      ( idx context' )
+    dcell* y=w context w+=y    ( idx context' )
     \ get context wid
     @                          ( idx wid )
     \ if not zero then print vocab name 
@@ -216,7 +219,7 @@ dcell+ 0! ( )
       .nf                      ( idx ? )
     then
     \ decrement index
-    d0 1- !d0
+    d0 1- d0=w
   repeat
   pop
   ." Forth Root" cr
@@ -230,22 +233,22 @@ dcell+ 0! ( )
   \ while link is not zero
   ?while  ( spaces linkwid )
     \ print indent
-    over spaces ." |- " ( spaces linkwid ? )
+    push d1 spaces ." |- " ( spaces linkwid ? )
     \ get name from name field
-    d0 dcell+ !d0 @ ( spaces linkwid.name name )
+    d0 dcell+ d0=w @ ( spaces linkwid.name name )
     \ print name and line feed
     .nf cr        ( spaces link.name ? )
     \ increase spaces for indenting child vocabularies
     d1 4+ push    ( spaces linkwid.name spaces+4 spaces+4 )
     \ get link field
-    d1 dcell+ !d1 ( spaces linkwid.link spaces+4 linkwid.link )
+    d1 dcell+ d1=w ( spaces linkwid.link spaces+4 linkwid.link )
     \ get child link and recurse: print child vocabularies
     dcell+ @      ( spaces linkwid.link spaces+4 childwid )
     recurse       ( spaces linkwid.link )
     \ get link for next sibling
     @
   repeat
-  pop2
+  nip pop
 ;
 
 \ list context vocabulary and all child vocabularies
