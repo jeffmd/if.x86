@@ -9,6 +9,7 @@
 
 # size of the Terminal Input Buffer
 .set TIBSIZE, 100
+.set MAX_CONTEXTS, 10
 
 .bss
 .balign 4
@@ -38,7 +39,7 @@ USER_HERE: .space 4
 USER_IDLETIME: .space 4
 ram_CURRENT: .space 4
 ram_CONTEXTidx: .space 2
-ram_CONTEXT: .space 4 * 10 # 10 wordlists max
+ram_CONTEXT: .space 4 * MAX_CONTEXTS # 10 wordlists max
 fflags: .space 2
 ram_dp: .space 4
 ram_cp: .space 4
