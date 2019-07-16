@@ -103,7 +103,7 @@ CPSTART:
       .include "asm.S"
       .include "interpret_number.S"
       .include "include.S"
-      #.include "mathadv.S"
+      .include "mathadv.S"
       #.include "defer.S"
       #.include "file.S"
     .endif
