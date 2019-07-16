@@ -14,7 +14,7 @@ Forthword_ STATE, 0, "state"
   ret
 
 # ( val -- )
-Forthword_ STATESTORE, 0, "state!"
+Forthword_ STATESTORE, 0, "state="
   y_w_
   user_ state
   hmw_y_
@@ -195,7 +195,7 @@ Forthword_ IDLETIMEADDR, 0, "idletime#"
 
 # ( n -- )
 # set idletime
-Forthword_ IDLETIMESTORE, 0, "idletime!"
+Forthword_ IDLETIMESTORE, 0, "idletime="
   y_w_
   user_ USER_IDLETIME
   mw_y_
