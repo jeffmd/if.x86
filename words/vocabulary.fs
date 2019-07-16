@@ -7,7 +7,7 @@
 
 \ get context array address using context index
 : context# ( -- addr )
-  context y=w contidx h@ dcell* w+=y
+  context push contidx@ popy dcell* w+=y
 ;
 
 \ get a wordlist id from context array
@@ -205,7 +205,7 @@ dcell+ y=0 @w=y ( )
 : order ( -- )
   ." Search: "
   \ get context index and use as counter
-  contidx h@ push              ( idx idx )
+  contidx@ push                ( idx idx )
   begin
   \ iterate through vocab array and print out vocab names
   ?while
@@ -217,6 +217,8 @@ dcell+ y=0 @w=y ( )
       \ next cell has name field address 
       dcell+ @                 ( idx nfa )
       .nf                      ( idx ? )
+    else
+      ." [] "
     then
     \ decrement index
     d0 1- d0=w

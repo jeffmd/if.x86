@@ -119,16 +119,35 @@ Forthword_ FINDROOT, 0, "froot"
   lit_ VE_WIPE       # ( addr len VE_COLD )
   jmp FINDNFA_BEGIN1
 
+# ( -- idx )
+# get context index
+Forthword_ CONTIDX_FETCH, 0 "contidx@"
+  call CONTEXT        # ( context )
+  # get context index
+  twominus_           # ( context-2 )
+  y_w_                # ( contidx ) Y:contidx
+  hmw_                # ( idx )
+  x_w_            
+  push_               # ( idx idx ) X:idx
+  lit_ (MAX_CONTEXTS - 1) # ( idx max )
+  call GREATER        # ( flag )
+  iszero_
+  jz 1f
+    lit_ (MAX_CONTEXTS - 1)  # ( max )
+    hmy_w_
+    ret
+1:
+  x_                  # ( idx )
+  ret
+
 # ( addr len --  0 | nfa )
 # search wordlists for the name from string addr/len
 Forthword_ FINDW, 0, "findw"
   # loop through context slots to find a word
   # start with last slot
   push_               # ( addr len len )
-  call CONTEXT        # ( addr len context )
+  call CONTIDX_FETCH  # ( addr len idx )
   # get context index and use as counter
-  twominus_           # ( addr len context-2 )
-  hmw_                 # ( addr len idx )
   push_               # ( addr len idx idx )
   
 FINDW_BEGIN:
@@ -163,7 +182,7 @@ Forthword_ ONLY, IMMEDIATE_EN, "only"
   # make current also forth vocab
   call CONTEXT                # ( CONTEXT )
   mw_y_                       # ( CONTEXT )
-  # move index to next slot
+  # move index to slot 1
   twominus_                   # ( CONTEXT-2 )
   lit_y_ 1                    # ( CONTEXT-2 Y:1 )
   hmw_y_                      # ( CONTEXT-2 )
