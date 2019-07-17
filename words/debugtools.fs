@@ -4,17 +4,17 @@ only
 \ Tools
 \ Amount of available RAM (incl. PAD)
 : unused
-    sp0 !y here -y
+    dsp0 y=w here w-=y
 ;
 
 ( addr1 cnt -- addr2)
 : dmp
- over .$ [char] : emit space
+ push d1 .$ [char] : emit space
  begin
    d0 ?while
-     1- !d0 d1 @ .$ d1 dcell+ !d1
+     1- d0=w d1 @ .$ d1 dcell+ d1=w
  repeat
- pop2
+ nip pop
 ;
 
 ( addr -- )
@@ -28,23 +28,23 @@ only
 ( bbb reg -- )
 \ tools
 \ set the bits of reg defined by bit pattern in bbb
-: rbs pop.y !x c@ or.y xc! ;
+: rbs popy x=w c@ w|=y c@x=w ;
 
 ( bbb reg -- )
 \ tools
 \ clear the bits of reg defined by bit pattern in bbb
-: rbc !x pop.y not.y xc@ and.y xc! ;
+: rbc x=w popy !y c@x w&=y c@x=w ;
 
 \ modify bits of reg defined by mask
 : rbm ( val mask reg -- )
-    !x pop.y xc@ and.y pop.y or.y xc!
+    x=w popy c@x w&=y popy w|=y c@x=w
 ;
 
 
 ( reg|addr -- )
 \ tools
 \ read register/ram byte contents and print in binary form
-: rb? c@ !x bin x <# # # # # # # # # #> type space decimal ;
+: rb? c@ x=w bin x <# # # # # # # # # #> type space decimal ;
 
 ( reg -- )
 \ tools
@@ -53,7 +53,7 @@ only
 
 \ setup fence which is the lowest address that we can forget words
 var fence
-find r? !y fence y.!
+find r? y=w fence @w=y
 
 ( c: name -- )
 \ can only forget a name that is in the current definition
@@ -69,17 +69,17 @@ find r? !y fence y.!
     if
       \ nfa is valid
       \ set dp to nfa
-      dp#!          ( dp# Y:nfa )
+      dp=           ( dp# Y:nfa )
       \ set context wid to lfa
       y nfa>lfa     ( lfa )
-      @ !y          ( nfa Y:nfa )
+      @ y=w         ( nfa Y:nfa )
       cur@          ( wid )
-      y.!           ( wid )
+      @w=y          ( wid )
     then
   then
 ;
 
-find forget !y fence y.!
+find forget y=w fence @w=y
 
 \ create a marker word
 \ when executed it will restore dp, here and current
@@ -96,12 +96,12 @@ find forget !y fence y.!
   
   does> ( addr )
     \ restore here
-    push @ !y here# y.!    ( addr ? )
+    x=w y=@w here# @w=y    ( here# X:addr )
     \ restore dp
-    d0 dcell+ !d0 @ dp#!   ( addr ? )
+    x+=4 @x dp=          ( dp )
     \ restore current wid
-    d0 dcell+ !d0 @ !y     ( addr nfa Y:nfa )
-    pop dcell+ @ y.!       ( wid )
+    x+=4 @x y=w          ( nfa Y:nfa )
+    x+=4 @x @w=y         ( wid )
     \ only Forth and Root are safe vocabs
     [compile] only
 ;
