@@ -272,6 +272,7 @@
     push rword pop
     w=,
     ret,
+    inlined
 ;
 
 

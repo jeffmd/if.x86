@@ -70,7 +70,7 @@ pname (create) push current @ header \ ( nfa )
 : immediate
     $7FFF widf
   [
-  ;opt uwid immediate
+  ;opt uwid
 
 \ define ; which is used when finishing the compiling of a word
 : ;

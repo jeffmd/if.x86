@@ -15,19 +15,19 @@
 \ make most current word compile only
 : :c
     $F7FF widf
-; immediate
+;
 
 ( -- )
 \ make most current word inlinned
 : inlined
     $FEFF widf
-; immediate
+;
 
 ( -- )
 \ make most current word immediate and compile only
 : :ic
     $77FF widf
-; immediate
+;
 
 \ store address of the next free dictionary cell
 : dp= ( addr -- )

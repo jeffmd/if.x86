@@ -132,7 +132,7 @@
 
 : vocabulary ( -- ) ( C:cccc )
   create
-  [compile] immediate
+  immediate
   \ allocate space in ram for head and tail of vocab word list
   wordlist push  ( wid wid )
   \ voc.wid = wid
