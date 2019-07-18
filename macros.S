@@ -1,5 +1,16 @@
 # macros.S
 
+# if registers and stacks
+#
+# data stack       registers      return stack
+# d0               w              r0
+# d1               a              r1
+# d2               b              r2
+#                  x
+#                  y
+#                  dsp
+#                  rp
+
 # wreg -> %eax # W register and also considered Top of Stack
 # dsp  -> %ebx # holds the Forth Parameter/Data stack pointer
 # areg -> %esi # A register used for memory pointer operations - non-volatile: user must preserve
