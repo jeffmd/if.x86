@@ -5,6 +5,16 @@
   context 2-
 ;
 
+\ increment context idx by 1
+: contidx++ ( * -- contidx )
+  contidx y=h@w y+=1 h@w=y
+;
+
+\ change value of context index
+: contidx= ( val -- )
+  y=w contidx h@w=y 
+;
+
 \ get context array address using context index
 : context# ( -- addr )
   context push contidx@ popy dcell* w+=y
@@ -43,16 +53,13 @@
 
 \ initialize wid fields of definitions vocabulary
 : widinit ( wid -- wid )
-  \ wid.word = 0
   x=w  ( wid )  \ X: wid
-  y=0
-  @w=y ( wid )  \ wid.word = 0
-
+  \ wid.word = 0
+  y=0 @w=y ( wid )  
   \ parent wid child field is in cur@->child
   push cur@ wid:child  ( wid parentwid.child )
   push       ( wid parentwid.child parentwid.child )
-  @          ( wid parentwid.child childwid )
-  y=w        ( wid parentwid.child childwid Y:childwid)
+  y=@w       ( wid parentwid.child parentwid.child Y:childwid)
   x wid:link ( wid parentwid.child wid.link )
   \ wid.link = childLink
   @w=y       ( wid parentwid.child wid.link )
@@ -61,7 +68,7 @@
   @w=y       ( wid parentwid.child wid.child )
   \ parentwid.child = wid
   pop        ( wid parentwid.child )
-  y=d0 nip   ( parentwid.child )
+  popy       ( parentwid.child  Y:wid)
   @w=y x     ( wid )
 ;
 
@@ -82,8 +89,7 @@
 : also ( -- )
   context@ push
   \ increment index
-  contidx 
-  y=h@w y+=1 h@w=y pop
+  contidx++ pop
   context=
   
 ; immediate
@@ -93,18 +99,17 @@
 \ removes most recently added wordlist from vocabulary search list
 : previous ( -- )
   \ get current index and decrement by 1
-  contidx push ( contidx contidx ) 
-  h@ 1- push   ( contidx idx-1 idx-1 )
+  contidx@     ( idx ) 
+  1- push      ( idx-1 idx-1 )
   \ index must be >= 1
-  0>           ( contidx idx-1 flag )
+  0>           ( idx-1 flag )
   ?if
-    0 context= ( contidx idx-1 addr ) 
-    y=d0 d1    ( contidx idx-1 contidx Y:idx-1 )
-    h@w=y      ( contidx idx-1 contidx )
+    0 context= ( idx-1 ? ) 
+    d0 contidx= ( idx-1 ? )
   else
     [compile] only
   then
-  nip2
+  nip
 ; immediate
 
 \ Used in the form:
