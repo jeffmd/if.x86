@@ -9,7 +9,7 @@
 #                  x
 #                  y
 #                  dsp
-#                  rp
+#                  rsp
 
 # wreg -> %eax # W register and also considered Top of Stack
 # dsp  -> %ebx # holds the Forth Parameter/Data stack pointer
