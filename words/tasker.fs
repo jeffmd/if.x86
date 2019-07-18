@@ -14,22 +14,29 @@ cvar tidx
 var tcnt
 maxtask dcell* allot
 
+( n -- tidx Y:n )
+\ store current task index
+: tidx=
+  y=w tidx c@w=y
+;
+
 ( -- n )
 \ fetch task index: verifies index is valid
 \ adjusts index if count is odd ?
 : tidx@
-  tidx c@ 
+  tidx c@   ( idx )
   \ verify index is below 63
-  push2 maxtask >
+  push push ( idx idx idx ) 
+  maxtask > ( idx flag )
   if
     \ greater than 62 so 0
-    tidx 0c!
-    0
+    0 tidx=
+    y
   then
 ;
 
-: cnt& ( idx -- cntaddr )
-  dcell* !y tcnt +y
+: cnt& ( idx -- cntaddr Y:offset)
+  dcell* y=w tcnt w+=y
 ;
 
 ( idx -- cnt )
@@ -46,15 +53,15 @@ maxtask dcell* allot
 ;
 
 \ increment tcnt array element using idx as index
-( idx -- )
-: cnt+
-  cnt& 1+!
+( idx -- cnt& Y:count )
+: cnt++
+  cnt& y=@w y+=1 @w=y
 ;
 
 ( n idx -- )
 \ set tcnt array element using idx as index
-: cnt!
-  pop.x cnt& x.!
+: cnt=
+  popx cnt& @w=x
 ;
 
 \ array of task slots in ram : max 31 tasks 62 bytes
@@ -71,18 +78,18 @@ maxtask dcell* allot
 ( -- )
 \ increment task index to next task idx
 \ assume array flat layout and next idx = idx*2 + 1
-: tidx+
+: tidx++
   tidx@ 2* 1+ 
   \ if slot count is odd then 1+
-  !x count 
-  y= 1 and.y x+ 
-  tidx x.c!
+  x=w count 
+  y= 1 w&=y w+=x 
+  tidx= 
 ;
 
-( idx -- taskaddr )
+( idx -- taskaddr Y:offset )
 \ get task address based on idx
 : task&
-  dcell* !y tasks +y
+  dcell* y=w tasks w+=y
 ;
 
 ( idx -- task )
@@ -95,22 +102,22 @@ maxtask dcell* allot
 \ store a task in a slot
 \ idx is the slot index range: 0 to 62
 \ addr is xt of word to be executed
-: task!
-  !x pop task& x.!
+: task=
+  x=w pop task& @w=x
 ;
 
 \ store a task in a slot
 \ example: 12 task mytask
 \ places xt of mytask in slot 12
 : task ( idx C: name -- )
-  push ' task!
+  push ' task=
 ;
 
 ( idx -- )
 \ clear task at idx slot
 \ replaces task with noop
 : taskclr 
-  push ['] noop task!
+  push ['] noop task=
 ;
 
 
@@ -118,9 +125,9 @@ maxtask dcell* allot
 \ execute active task and step to next task
 : taskex
   \ increment count for task slot
-  tidx@ push cnt+
+  tidx@ push cnt++
   d0 task@ exec
-  tidx+
+  tidx++
 ;
 
 var lastms
@@ -128,19 +135,25 @@ var lastms
 \ default to 62.5/6 ms 
 var exms
 
+( n -- lastms Y:n )
+\ add offset to lastms
+: lastms+=
+  y=w            ( timediff Y:timediff ) 
+  lastms x=@w
+  x+=y @w=x      ( lastms )
+;
 
 ( -- )
 \ execute tasks.ex if tick time expired
 : tick
-  time lastms @   ( time lastms )
-  !y d0 -y !d1    ( timediff timediff Y:lastms )
-  push exms @ u>  ( timediff flag )
+  time lastms @    ( time lastms )
+  y=w d0 w-=y d1=w ( timediff timediff Y:lastms )
+  push exms @ u>   ( timediff flag )
   if
-    !y            ( timediff Y:timediff ) 
-    lastms y+!    ( lastms )
+    lastms+=       ( lastms Y:timediff ) 
     taskex
   else
-    y= 255 and.y usleep
+    y= 255 w&=y usleep
   then
 ;
 
@@ -148,13 +161,13 @@ var exms
 \ clear all tasks
 : allclr
   \ iterate 0 to maxtask and clear tcnt[] and set tasks[] to noop
-  tidx 0c!
-  0 push           ( idx 0 )
+  0 tidx=          ( idx )
+  pushy            ( 0 ? )
   begin
-    0 over         ( idx 0 idx )
-    cnt!           ( idx ? )
+    0 push d1      ( idx 0 idx )
+    cnt=           ( idx ? )
     d0 taskclr     ( idx ? )
-    d0 1+ !d0      ( idx+1 idx+1 )
+    d0 1+ d0=w     ( idx+1 idx+1 )
     push maxtask > ( idx+1 flag ) 
   ?until
   nip
@@ -163,9 +176,9 @@ var exms
 ( -- )
 \ start tasking
 : run
-  y= 10417 exms y.!
-  lastms 0!
-  ['] tick !y pause# y.!
+  y= 10417 exms @w=y
+  lastms y=0 @w=y
+  ['] tick pause=
 ;
 
 ( -- )
@@ -179,5 +192,5 @@ var exms
 ( -- )
 \ stop tasks from running
 : stop
-  ['] noop !y pause# y.!
+  pause.clr
 ;

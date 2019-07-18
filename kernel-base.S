@@ -32,18 +32,25 @@ Forthword_ RBRACKET, 0, "]"
   one_
   jmp STATESTORE
 
-# ( -- pauseaddr )
-# get ram address of pause defer
-Forthword_ PAUSEADDR, 0, "pause#"
+# ( -- addr )
+# get pause executable
+Forthword_ PAUSE_FETCH, 0, "pause@"
   user_ USER_PAUSE
+  mw_
   ret
 
-Forthword_ PAUSE_RESET, 0, "pause.reset"
-  # init pause to noop
-  lit_y_ NOOP
-  call PAUSEADDR
+# ( addr --  )
+# set pause to addr
+Forthword_ PAUSE_STR, 0, "pause="
+  y_w_
+  user_ USER_PAUSE
   mw_y_
   ret
+
+Forthword_ PAUSE_CLR, 0, "pause.clr"
+  # init pause to noop
+  lit_ NOOP
+  jmp PAUSE_STR
 
 # ( -- addr)
 # start address of return stack
@@ -160,8 +167,7 @@ DOREFILL_do:
 Forthword_ DOPAUSE, 0, "(pause)"
   push_
   call SLEEP ## temp fix for cpu hogging
-  call PAUSEADDR
-  mw_
+  call PAUSE_FETCH
   jmp EXEC
 
 # ( -- )
@@ -256,7 +262,7 @@ Forthword_ RESET, 0, "reset"
   zero_
   call SMUDGE_STR
 .endif
-  call PAUSE_RESET
+  call PAUSE_CLR
   # switch to interpret mode
   jmp LBRACKET
 
