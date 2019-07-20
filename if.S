@@ -1,9 +1,9 @@
 # if.S
 
 .set BUILD_LEVEL, 3
-# if BUILD_LEVEL is 0 then a minimum kernel is built but with no interpreter
+# BUILD_LEVEL 0: a minimum base kernel is built but with no interpreter, no dictionary
 # BUILD_LEVEL 1: core and kernel are working
-# BUILD_LEVEL 2: interpreter and dictionary working
+# BUILD_LEVEL 2: core-inline, interpreter and dictionary working
 # BUILD_LEVEL 3: compiler working
 # minimum kernel build has minimum word set needed to be up and running without interpreter
 
@@ -99,6 +99,7 @@ CPSTART:
   .include "kernel.S"
   
   .if BUILD_LEVEL > 1
+    .include "core-inline.S"
     .include "interpret.S"
     .include "dictionary.S"
     .if BUILD_LEVEL > 2
