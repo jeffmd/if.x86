@@ -115,7 +115,7 @@ ACCEPT_dodelete:
   pop_                # ( k )
   call EMIT           # ( ? )
   # decrease cursor position by one
-  call TRUE           # ( true )
+  true_               # ( true )
   y_w_                # ( true Y:true )
   call SHARPTIB       # ( #tibaddr )
   x_hmw_
@@ -157,11 +157,13 @@ ACCEPT_checkmaxinput:
   # <if>
   iszero_                # ( tibsize-#tib )
   je ACCEPT_atmaxinput
-  jmp ZERO
+  zero_
+  ret
 
 ACCEPT_atmaxinput:
   # max number of characters in input buffer so have it processed
-  jmp TRUE
+  true_
+  ret
 
 # ( -- f )
 # refills the input buffer - flag is true if buffer has something
