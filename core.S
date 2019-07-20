@@ -905,7 +905,7 @@ Forthword_ MULU, INLINE_OPT,  "*"
 
 # ( n1 -- -n1 )
 # 2-compliment of n1
-Forthword_ NEG, INLINE_OPT, "neg"
+Forthword_ NEG, INLINE_OPT, "-"
   neg_
   ret
 
@@ -1148,6 +1148,18 @@ Forthword_ ZEROGREATER, 0, "0>"
 forthword_ ZEROLESS, INLINE_OPT, "0<"
   zeroless_
   ret
+
+# ( -- -1 )
+# w=-1 (true)
+Forthword_ TRUE, INLINE_OPT, "true"
+  true_
+  ret
+
+# ( -- 0 )
+# w = 0
+Forthword_ ZERO, INLINE_OPT, "0"
+	zero_
+	ret
 
 # ( -- ) A: 0
 # a = 0

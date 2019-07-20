@@ -30,15 +30,3 @@ Forthword_ ULESS, 0, "u<"
   sbb %edx, %edx
   mov %edx, %eax
   ret
-
-# ( -- -1 )
-# w=-1 (true)
-Forthword_ TRUE, INLINE_OPT, "true"
-  true_
-  ret
-
-# ( -- 0 )
-# w=0
-Forthword_ ZERO, INLINE_OPT, "0"
-	zero_
-	ret
