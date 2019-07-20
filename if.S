@@ -2,6 +2,9 @@
 
 .set BUILD_LEVEL, 3
 # if BUILD_LEVEL is 0 then a minimum kernel is built but with no interpreter
+# BUILD_LEVEL 1: core and kernel are working
+# BUILD_LEVEL 2: interpreter and dictionary working
+# BUILD_LEVEL 3: compiler working
 # minimum kernel build has minimum word set needed to be up and running without interpreter
 
 .include "macros.S"
@@ -145,10 +148,14 @@ Forthword_ RECOVER, 0, "recover"
   movl $topdatastack, %ebx
   movl $sysvar_base, %ebp
   call RESET
-.if BUILD_LEVEL > 2
+  
+.if BUILD_LEVEL > 1
 	call ONLY
+.if BUILD_LEVEL > 2
   call DECIMAL           # default to decimal base
 .endif
+.endif
+
   type_ "recovering...\n"
 	call QUIT
 	pop %ebp
@@ -163,14 +170,17 @@ Forthword_ COLD, 0, "cold"
   push %ebp
   movl $topdatastack, %ebx
   movl $sysvar_base, %ebp
+  
 	rsp_
 	y_w_
 	call RSP0
 	mw_y_
-.if BUILD_LEVEL > 2
+  
+.if BUILD_LEVEL > 1
   call WIPE
 .endif
   call WARM
+  
   pop %ebp
   ret
 
