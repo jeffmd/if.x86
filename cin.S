@@ -39,8 +39,7 @@ Forthword_ KEYADDR, 0, "key#"
 # fetch key from standard input, should leave a single character in WR
 # if a key was pressed. If no key pressed then -1 is in WR.
 Forthword_ STDIN, 0, "stdin"
-  call getchr
-  ret
+  jmp getchr
 
 # ( -- key )
 # fetch key from deffered routine, should leave a single character
