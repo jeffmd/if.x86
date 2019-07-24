@@ -24,11 +24,10 @@ Forthword_ CONTEXT, 0, "context"
 # get the link field address from the name field address
 Forthword_ NFA2LFA, 0, "nfa>lfa"
   call STRINGLEN               # ( nfa+2 len+flags )
+  popy_                        # ( len ) Y: nfa+2
   # mask out flags in len, allow up to 31 characters
-  and $31, %eax                # ( nfa+2 len )
-  y_d0_                        # ( nfa+2 len ) Y: nfa+2
-  w_plus_y_                    # ( nfa+2 nfa+2+len )
-  nip_                         # ( nfa+2+len )
+  and $31, %eax                # ( len )
+  w_plus_y_                    # ( nfa+2+len )
   ret
 
 # ( nfa -- [ 0 ] | [ xt xtflags] )
