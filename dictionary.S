@@ -36,10 +36,8 @@ Forthword_ NFATOXTF, 0, "nfa>xtf"
   iszero_                     # ( n )
   je NFATOXTF_EXIT
 
-  push_                       # ( nfa nfa )
-  hmw_                        # ( nfa xtflags )
-  rpush_                      # ( nfa xtflags) (R: xtflags)
-  pop_                        # ( nfa )
+  y_hmw_                      # ( nfa Y:xtflags )
+  rpushy_                     # ( nfa ) (R: xtflags)
   call NFA2LFA                # ( lfa )
   fourplus_   # lfa>xtlink    # ( xtlink )
   mw_                         # ( xt )
