@@ -2,7 +2,7 @@
 
 # ( -- )
 Forthword_ WIPE, 0, "WIPE"
-.if BUILD_LEVEL > 2
+.if BUILD_LEVEL > 9
   lit_y_ DPSTART
   call DPSHARP
   mw_y_

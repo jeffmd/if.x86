@@ -40,7 +40,7 @@ Forthword_ DOCMDARG, 0, "docmdarg"
   mw_                # ( ARGV )
   fourplus_          # ( ARGV+4 )
   mw_                # ( ptr )
-.if BUILD_LEVEL > 3 
+.if BUILD_LEVEL > 9
   jmp DOINCLUDE
 .endif
 

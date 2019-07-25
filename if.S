@@ -1,10 +1,11 @@
 # if.S
 
-.set BUILD_LEVEL, 3
+.set BUILD_LEVEL, 10
 # BUILD_LEVEL 0: a minimum base kernel is built but with no interpreter, no dictionary
 # BUILD_LEVEL 1: core and kernel are working
-# BUILD_LEVEL 2: core-inline, interpreter and dictionary working
-# BUILD_LEVEL 3: compiler working
+# BUILD_LEVEL 2: word interpreter and dictionary working
+# BUILD_LEVEL 3: core-inline working
+# BUILD_LEVEL 10: compiler and interpret number working
 # minimum kernel build has minimum word set needed to be up and running without interpreter
 
 .include "macros.S"
@@ -99,18 +100,20 @@ CPSTART:
   .include "kernel.S"
   
   .if BUILD_LEVEL > 1
-    .include "core-inline.S"
     .include "interpret.S"
     .include "dictionary.S"
     .if BUILD_LEVEL > 2
-      .include "number.S"
-      .include "compiler.S"
-      .include "asm.S"
-      .include "interpret_number.S"
-      .include "include.S"
-      .include "mathadv.S"
-      #.include "defer.S"
-      #.include "file.S"
+      .include "core-inline.S"
+      .if BUILD_LEVEL > 9
+        .include "number.S"
+        .include "compiler.S"
+        .include "asm.S"
+        .include "interpret_number.S"
+        .include "include.S"
+        .include "mathadv.S"
+        #.include "defer.S"
+        #.include "file.S"
+      .endif
     .endif
   .endif
   
@@ -122,7 +125,7 @@ Forthword_ WARM, 0, "warm"
   call RESET
 .if BUILD_LEVEL > 1
 	call ONLY
-.if BUILD_LEVEL > 2
+.if BUILD_LEVEL > 9
   call DECIMAL           # default to decimal base
 .endif
 .endif
@@ -152,7 +155,7 @@ Forthword_ RECOVER, 0, "recover"
   
 .if BUILD_LEVEL > 1
 	call ONLY
-.if BUILD_LEVEL > 2
+.if BUILD_LEVEL > 9
   call DECIMAL           # default to decimal base
 .endif
 .endif

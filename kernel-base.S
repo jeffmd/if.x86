@@ -257,7 +257,7 @@ Forthword_ RESET, 0, "reset"
   call INRESET
   call SLEEPON
 
-.if BUILD_LEVEL > 2
+.if BUILD_LEVEL > 9
   call WSET
   zero_
   call SMUDGE_STR

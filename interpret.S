@@ -242,7 +242,7 @@ REC_WORD_CHECKSTATE:
     iszero_
     pop_             # ( xt flag )
     je REC_WORD_EXECUTE
-.if BUILD_LEVEL > 2
+.if BUILD_LEVEL > 9
       # in compile mode so compile xt
       call COMPILEXT # ( ? )
 .endif
@@ -266,7 +266,7 @@ Forthword_ RECX, 0, "recx"
   iszero_               # ( [addr len] flag )
   jne RECX_DONE
 
-.if BUILD_LEVEL > 2
+.if BUILD_LEVEL > 3
   pop_                  # ( addr len )
   # test if its a number
   call REC_NUM          # ( [addr len] flag )
