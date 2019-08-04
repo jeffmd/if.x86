@@ -115,12 +115,12 @@ Forthword_ REC_NUM, 0, "rec#"
   # try converting to a number
   call NUMBER              # ( [n] f )
   iszero_
-  je REC_NONUMBER
+  if_0_ REC_NONUMBER
     rnip2_                 # ( n f )
     call STATE             # ( n state )
     iszero_
     pop_
-    je REC_NUMBER_OK
+    if_0_ REC_NUMBER_OK
       call LIT_COMP
       jmp REC_NUMBER_DONE
 

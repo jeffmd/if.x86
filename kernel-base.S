@@ -29,7 +29,7 @@ Forthword_ LBRACKET, IMMEDIATE_EN, "["
 # ( -- )
 # enter compile mode
 Forthword_ RBRACKET, 0, "]"
-  one_
+  lit_ 1
   jmp STATESTORE
 
 # ( -- addr )
@@ -91,7 +91,7 @@ PHEX_BEGIN:
   call PNIB
   pop_         # ( n x )
   fourminus_   # ( n x-4 )
-  jne PHEX_BEGIN
+  if_not_0_ PHEX_BEGIN
 
   pop_         # ( n )
   call PNIB
@@ -140,7 +140,7 @@ Forthword_ QP_RD, 0, "?prd"
   # output ready prompt if in interpret mode
   # <-if>
   iszero_
-  jne QP_RD_exit
+  if_not_0_ QP_RD_exit
     jmp PROMPTRDY
 
 QP_RD_exit:
@@ -155,7 +155,7 @@ Forthword_ DOREFILL, 0, "(refill)"
   call G_IN                # ( >inaddr )
   hmw_                     # ( >in )
   iszero_                  # ( >in )
-  je DOREFILL_do
+  if_0_ DOREFILL_do
     call INRESET
 
 DOREFILL_do:
@@ -176,7 +176,7 @@ Forthword_ DOTASKS, 0, "(tasks)"
   # <begin>
   call DOREFILL     # ( flag )
   iszero_
-  je DOTASKS_N1
+  if_0_ DOTASKS_N1
     # there is something in the input buffer, try interpreting it
 .if BUILD_LEVEL > 1
     call DOINTERPRET
@@ -189,7 +189,7 @@ DOTASKS_N1:
   hmw_
   bittest_ TERMINATE_F
   # <again>
-  je DOTASKS
+  if_0_ DOTASKS
   
   ret
 
@@ -227,7 +227,7 @@ Forthword_ USLEEP, 0, "usleep"
 Forthword_ SLEEP, 0, "sleep"
   call IDLETIMEFETCH
   iszero_
-  je NO_IDLESLEEP
+  if_0_ NO_IDLESLEEP
   jmp USLEEP
 NO_IDLESLEEP:
   ret

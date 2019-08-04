@@ -77,20 +77,20 @@ ACCEPT_checkeol:
   # check for EOL
   cmp $10, %eax
   # <if>
-  jne ACCEPT_checkreturn
+  if_not_0_ ACCEPT_checkreturn
   ret
 
 ACCEPT_checkreturn:
   cmp $13, %eax     # ( k )
   # <if>
-  jne ACCEPT_checkdelete
+  if_not_0_ ACCEPT_checkdelete
   ret
 
 ACCEPT_checkdelete:
   # check delete
   cmp $127, %eax     # ( k )
   # <if>
-  jne ACCEPT_checkcontrol
+  if_not_0_ ACCEPT_checkcontrol
   # delete previous character
   # check beginning of line
   # if cursor is 0 then at begining of input
@@ -100,7 +100,7 @@ ACCEPT_checkdelete:
   # <if>
   iszero_           # ( k tib )
   pop_              # ( k )
-  jne ACCEPT_dodelete
+  if_not_0_ ACCEPT_dodelete
   # at the beginning of the line, ignore this character
   zero_             # ( 0 )
   ret
@@ -155,7 +155,7 @@ ACCEPT_checkmaxinput:
   w_minus_y_             # ( tibsize-#tib )
   # <if>
   iszero_                # ( tibsize-#tib )
-  je ACCEPT_atmaxinput
+  if_0_ ACCEPT_atmaxinput
   zero_
   ret
 
@@ -169,7 +169,7 @@ ACCEPT_atmaxinput:
 Forthword_ REFILLTIB, 0, "reftib"
   call ACCEPT                # ( f )
   iszero_                    # ( f )
-  je REFILLTIB_exit
+  if_0_ REFILLTIB_exit
   push_
   call CR
   pop_

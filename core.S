@@ -62,7 +62,7 @@ forthword_ ZEROLESS, INLINE_OPT, "0<"
 # copy ram using bytes.  Assumes no overlap.
 Forthword_ MCPY, 0, "mcpy"
 	iszero_         # ( start dest count )
-	je MCPY_END
+	if_0_ MCPY_END
 
   rpusha_
   rpushb_

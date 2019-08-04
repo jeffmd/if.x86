@@ -829,22 +829,22 @@
   not %eax
 .endm
 
-# ~y
+# !y
 .macro not_y_
   not %edx
 .endm
 
-# ~x
+# !x
 .macro not_x_
   not %ecx
 .endm
 
-# ~a
+# !a
 .macro not_a_
   not %esi
 .endm
 
-# ~b
+# !b
 .macro not_b_
   not %edi
 .endm
@@ -983,26 +983,6 @@
 .macro zeroequal_
   sub $1, %eax
   sbb %eax, %eax
-.endm
-
-# 1
-.macro one_
-  lit_ 1
-.endm
-
-# 2
-.macro two_
-  lit_ 2
-.endm
-
-# 4
-.macro four_
-  lit_ 4
-.endm
-
-# 10
-.macro ten_
-  lit_ 10
 .endm
 
 # bl
@@ -1453,6 +1433,16 @@
 # y-=1
 .macro y_minus1_
   dec %edx
+.endm
+
+# if zero flag then go to addr
+.macro if_0_ addr
+  je \addr
+.endm
+
+# if not zero flag then go to addr
+.macro if_not_0_ addr
+  jne \addr
 .endm
 
 .macro ascii_ str, flg=0

@@ -34,7 +34,7 @@ Forthword_ NFA2LFA, 0, "nfa>lfa"
 # convert name field address to xt and xtflags
 Forthword_ NFATOXTF, 0, "nfa>xtf"
   iszero_                     # ( n )
-  je NFATOXTF_EXIT
+  if_0_ NFATOXTF_EXIT
 
   y_hmw_                      # ( nfa Y:xtflags )
   rpushy_                     # ( nfa ) (R: xtflags)
@@ -61,7 +61,7 @@ FINDWI:
 # nfa if word is found
 Forthword_ FINDNFA, 0, "findnfa"
   iszero_
-  jne FINDNFA_BEGIN
+  if_not_0_ FINDNFA_BEGIN
     # terminating, wid is empty
     nip2_
     ret
@@ -72,7 +72,7 @@ FINDNFA_BEGIN:
   # <while>
 FINDNFA_BEGIN1:
   iszero_                     # ( c-addr len nfa )
-  jne FINDNFA_CHECK
+  if_not_0_ FINDNFA_CHECK
     # terminating, 0 found
     nip2_                     # ( 0 )
     ret
@@ -90,7 +90,7 @@ FINDNFA_CHECK:
   # <if>
   iszero_
   rpop_                       # ( c-addr len nfa )
-  je FINDNFA_NEXT
+  if_0_ FINDNFA_NEXT
     # we found the string
     nip2_                     # ( nfa )
     ret
@@ -107,6 +107,7 @@ FINDNFA_NEXT:
 FINDLAST:
   d1_
   nip2_                       # ( addr len )
+  # fall into froot
 
 # ( addr len --  0 | nfa )
 # search root wordlists for the name from string addr/len
@@ -129,7 +130,7 @@ Forthword_ CONTIDX_FETCH, 0 "contidx@"
   lit_ (MAX_CONTEXTS - 1) # ( idx max )
   call GREATER        # ( flag )
   iszero_
-  jz 1f
+  if_0_ 1f
     lit_ (MAX_CONTEXTS - 1)  # ( max )
     hmy_w_
     ret
@@ -157,7 +158,7 @@ FINDW_BEGIN:
     call FINDWI       # ( addr len idx nfa )
     iszero_
     # end loop if word found
-    je FINDW_NEXT
+    if_0_ FINDW_NEXT
       nip3_           # ( nfa )
       ret
 

@@ -12,7 +12,7 @@ Forthword_ KEYFILEADDR, 0, "keyf#"
 Forthword_ KEYFILE, 0, "keyfile"
   zero_                    # ( 0 )
   push_                    # ( 0 0 )
-  one_                     # ( 0 1 )
+  lit_  1                  # ( 0 1 )
   rpush_                   # ( 0 1 ) (R: 1 )
   rpushdsp_                # ( 0 ebx ) (R: 1 ebx )
   call KEYFILEADDR         # ( 0 keyfile# )
@@ -22,7 +22,7 @@ Forthword_ KEYFILE, 0, "keyfile"
   rnip3_                   # ( key count ) (R:  )
   # was one key read from the file?
   push_                    # ( key count count )
-  one_                     # ( key count 1 )
+  lit_ 1                   # ( key count 1 )
   call EQUAL               # ( key flag )
   iszero_                  # ( key flag )
   pop_                     # ( key )

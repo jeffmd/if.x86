@@ -23,7 +23,7 @@ Forthword_ MCMP, 0, "mcmp"
   # if
   iszero_                  # ( r-addr r-len f-addr flag )
   pop_                     # ( r-addr r-len f-addr )
-  je CMPSB
+  if_0_ CMPSB
 
   # strings are not the same length
   nip2_                    # ( f-addr )
@@ -46,7 +46,7 @@ Forthword_ CMPSB, 0, "cmpsb"
   # while
   rpopb_
   rpopa_
-  je MCMP_DONE
+  if_0_ MCMP_DONE
 
   # strings don't match
   zero_                    # ( 0 )
@@ -77,11 +77,11 @@ PFA_CSKIP1:
   cma_                 # ( c' )
   a_plus1_
   cmp %edi, %eax       # ( c' )
-  jne PFA_CSKIP3
+  if_not_0_ PFA_CSKIP3
   y_minus1_            # ( c' ) Y-1
 PFA_CSKIP2:
   y_iszero_            # ( c' )
-  jne PFA_CSKIP1
+  if_not_0_ PFA_CSKIP1
 
 PFA_CSKIP3:
   rpopb_
@@ -109,11 +109,11 @@ PFA_CSCAN1:
   cma_                 # ( addr1 c' )
   a_plus1_
   cmp %edi, %eax       # ( addr1 c' )
-  je PFA_CSCAN3
+  if_0_ PFA_CSCAN3
   y_minus1_            # ( addr1 c' ) Y-1
 PFA_CSCAN2:
   y_iszero_            # ( addr1 c' )
-  jne PFA_CSCAN1
+  if_not_0_ PFA_CSCAN1
 
 PFA_CSCAN3:
   rpopb_
@@ -201,7 +201,7 @@ Forthword_ REC_WORD, 0, "recw"
   rpushy_           # ( addr len ) (R: len addr )
   call FINDW        # ( 0 | nfa )
   iszero_
-  jne REC_WORD_FOUND
+  if_not_0_ REC_WORD_FOUND
     rpop_           # ( addr ) (R: len ) 
     push_           # ( addr addr ) (R: len ) 
     rpop_           # ( addr len ) (R: ) 
@@ -233,7 +233,7 @@ CHECK_IMMEDIATE:
   rol $8, %edx
   test %edx, %eax
   # flag is 0: always EXEC
-  je REC_WORD_EXECUTE
+  if_0_ REC_WORD_EXECUTE
 
 REC_WORD_CHECKSTATE:
     # check state
@@ -241,7 +241,7 @@ REC_WORD_CHECKSTATE:
     call STATE       # ( xt flag state )
     iszero_
     pop_             # ( xt flag )
-    je REC_WORD_EXECUTE
+    if_0_ REC_WORD_EXECUTE
 .if BUILD_LEVEL > 9
       # in compile mode so compile xt
       call COMPILEXT # ( ? )
@@ -264,14 +264,14 @@ Forthword_ RECX, 0, "recx"
   # test if its a word
   call REC_WORD         # ( [addr len] flag )
   iszero_               # ( [addr len] flag )
-  jne RECX_DONE
+  if_not_0_ RECX_DONE
 
 .if BUILD_LEVEL > 3
   pop_                  # ( addr len )
   # test if its a number
   call REC_NUM          # ( [addr len] flag )
   iszero_               # ( [addr len] flag )
-  jne RECX_DONE
+  if_not_0_ RECX_DONE
 .endif
 
   # not recognized so throw
@@ -293,7 +293,7 @@ Forthword_ INTERPRET, 0, "interp"
   call PNAME            # ( addr len )
   # ?while
   iszero_               # ( addr len )
-  je INTERPRET_END
+  if_0_ INTERPRET_END
 
   call RECX             # ( ? )
   call QSTACK           # ( ? )
@@ -316,7 +316,7 @@ Forthword_ DOINTERPRET, 0, "(interp)"
   # check to make sure no throws
   # <if>
   iszero_
-  je DOINTERPRET_ok
+  if_0_ DOINTERPRET_ok
     call PROMPTERROR
     jmp QUIT
 

@@ -81,19 +81,19 @@ Forthword_ TAILOPT, 0, ";opt"
   # optimize only if smudge is not zero
   call SMUDGE
   iszero_
-  jne CHECK_DIS_CALL_OPT
+  if_not_0_ CHECK_DIS_CALL_OPT
   ret
 
 CHECK_DIS_CALL_OPT:
   # check fflags to see if tail call optimization can be done
   testw $(1 << DIS_CALL_OPT_FB), fflags
-  jz CHECK_LAST_IS_CALL
+  if_0_ CHECK_LAST_IS_CALL
   # don't optimize tail call, just compile a ret.
     jmp RET_C          # ( )
 
 CHECK_LAST_IS_CALL:
   testw $(1 << LAST_IS_CALL_FB), fflags
-  jnz TAIL_CALL_OPTIMIZE
+  if_not_0_ TAIL_CALL_OPTIMIZE
     jmp RET_C
 
 TAIL_CALL_OPTIMIZE:
@@ -107,7 +107,7 @@ TAIL_CALL_OPTIMIZE:
   cmw_               # ( 0xe9 CP-5 inst )
   and $0xff, %eax
   cmp $0xe8, %eax
-  je DO_JMPOPT
+  if_0_ DO_JMPOPT
     nip2_
     jmp RET_C
 DO_JMPOPT:
@@ -124,7 +124,7 @@ DO_JMPOPT:
 Forthword_ UWID, 0, "uwid"
   call SMUDGE    # ( xt )
   iszero_        # ( xt )
-  je UWID_end
+  if_0_ UWID_end
 
   # wid.word = smudge
   y_w_         # ( xt ) Y:xt
@@ -144,7 +144,7 @@ Forthword_ COMMA, 0, ","
   y_w_             # ( n )
   call CP          # ( CP )
   cmw_y_           # ( CP )
-  one_
+  lit_ 1
   jmp CPPLUS       # 
 
 # ( n -- )
@@ -153,7 +153,7 @@ Forthword_ DWCOMMA, 0, "dw,"
   y_w_
   call CP
   mw_y_
-  four_
+  lit_ 4
   jmp CPPLUS
 
 # ( n -- )
@@ -163,7 +163,7 @@ Forthword_ DPSTORE, 0, "@dp="
   y_w_
   call DP
   mw_y_
-  four_
+  lit_ 4
   jmp DPPLUS
 
 # ( s-addr len len' d-addr -- d-addr+len)
@@ -229,7 +229,7 @@ CBU_BEGIN:
     and $0xFF, %eax
     cmp %eax, %ecx    
     # until
-    je CBU_DONE
+    if_0_ CBU_DONE
     cmb_w_           # ( source destination byte ) [B]: byte
     b_plus1_         # ( source destination byte ) B+1
     jmp CBU_BEGIN

@@ -43,7 +43,7 @@ Forthword_ EMIT, 0, "emit"
 # ( -- )
 # cause subsequent output appear at the beginning of the next line
 Forthword_ CR, 0, "cr"
-  ten_
+  lit_ 10
   call EMIT
   lit_ 13
   jmp EMIT
@@ -58,7 +58,7 @@ Forthword_ BL, INLINE_OPT, "bl"
 # print a counted string
 Forthword_ TYPE, 0, "type"
   iszero_
-  jz TYPE_END
+  if_0_ TYPE_END
 
   rpusha_
   rpushb_
@@ -70,7 +70,7 @@ TYPE1:
   a_plus1_
   call EMIT
   b_minus1_
-  jnz TYPE1
+  if_not_0_ TYPE1
 
   rpopb_
   rpopa_

@@ -31,10 +31,10 @@ Forthword_ DOCMDARG, 0, "docmdarg"
   call ARGCADDR      # ( ARGCADDR )
   mw_                # ( ARGC )
   push_              # ( ARGC ARGC )
-  one_               # ( ARGC 1 )
+  lit_ 1             # ( ARGC 1 )
   call GREATER       # ( flag )
   iszero_
-  je DOCMDARG_EXIT
+  if_0_ DOCMDARG_EXIT
 
   call ARGVADDR      # ( ARGVADDR )
   mw_                # ( ARGV )
@@ -51,15 +51,15 @@ DOCMDARG_EXIT:
 # get time of day
 # gives the number of seconds and microseconds since the Epoch
 Forthword_ TIME, 0, "time"
-    zero_
-    push_
-    push_
-    rpush_
-    rpushdsp_
-    call gettimeofday
-    rnip2_
-    pop_
-    ret
+  zero_
+  push_
+  push_
+  rpush_
+  rpushdsp_
+  call gettimeofday
+  rnip2_
+  pop_
+  ret
 
 # ( -- n )
 # number of single-cell (4 byte) values contained in the data stack before n was placed on the stack.
@@ -76,7 +76,7 @@ Forthword_ QSTACK, 0, "?dsp"
   call DEPTH       # ( depth )
   zeroless_        # ( flag )
   iszero_
-  je QSTACKFIN
+  if_0_ QSTACKFIN
     slit_ " Stack Underflow!"
     call THROW
 
@@ -125,5 +125,5 @@ Forthword_ THROW, 0, "throw"
   rpop_              # ( hxt ) (R: callerret SP )
   mx_w_              # ( hxt )
   rpopdsp_           # ( SP ) (R: callerret )
-  one_               # ( ... 1 )
+  lit_ 1             # ( 1 )
   ret
