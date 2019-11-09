@@ -5,7 +5,7 @@
 Forthword_ SMUDGE, 0, "smudge"
   user_ COLON_SMUDGE
   mw_
-  ret
+  end_
   
 # ( addr -- )
 # system SMUDGE. Set program address of latest word being compiled.
@@ -13,94 +13,94 @@ Forthword_ SMUDGE_STR, 0, "smudge="
   y_w_
   user_ COLON_SMUDGE
   mw_y_
-  ret
+  end_
 
 # ( -- f-addr )
 # get address of the dictionary cell
 Forthword_ DPSHARP, 0, "dp#"
   user_ ram_dp
-  ret
+  end_
 
 # ( -- f-addr )
 # address of the next free dictionary cell
 Forthword_ DP, 0, "dp"
   user_ ram_dp
   mw_
-  ret
+  end_
 
 # ( offset -- )
 # add offset to (dictionary pointer) DP
 Forthword_ DPPLUS, 0, "dp+"
   y_w_
-  call DPSHARP
+  do_ DPSHARP
   x_mw_
   x_plus_y_
   mw_x_
-  ret
+  end_
 
 # ( -- f-addr )
 # get address of the code cell
 Forthword_ CPSHARP, 0, "cp#"
   user_ ram_cp
-  ret
+  end_
 
 # ( -- f-addr )
 # address of the next free code cell
 Forthword_ CP, 0, "cp"
   user_ ram_cp
   mw_
-  ret
+  end_
 
 # ( offset -- cp#)
 # add offset to (code pointer) CP
 Forthword_ CPPLUS, 0, "cp+"
   y_w_
-  call CPSHARP
+  do_ CPSHARP
   x_mw_
   x_plus_y_
   mw_x_
-  ret
+  end_
 
 # ( -- )
 # turn last is call off
 Forthword_ CALLOFF, 0, "calloff"
   # clear last is call flag
   andw $~(1<<LAST_IS_CALL_FB), fflags
-  ret
+  end_
 
 # ( -- )
 # turn optimization off
 Forthword_ TAILOPTOFF, 0, "optoff"
   # set disable tail call optimize flag
   orw $(1<<DIS_CALL_OPT_FB), fflags
-  ret
+  end_
 
 # ( -- )
 # tail call optimize: change last call into jmp
 Forthword_ TAILOPT, 0, ";opt"
   # optimize only if smudge is not zero
-  call SMUDGE
+  do_ SMUDGE
   iszero_
   if_not_0_ CHECK_DIS_CALL_OPT
-  ret
+  end_
 
 CHECK_DIS_CALL_OPT:
   # check fflags to see if tail call optimization can be done
   testw $(1 << DIS_CALL_OPT_FB), fflags
   if_0_ CHECK_LAST_IS_CALL
   # don't optimize tail call, just compile a ret.
-    jmp RET_C          # ( )
+    exit_do_ RET_C          # ( )
 
 CHECK_LAST_IS_CALL:
   testw $(1 << LAST_IS_CALL_FB), fflags
   if_not_0_ TAIL_CALL_OPTIMIZE
-    jmp RET_C
+    exit_do_ RET_C
 
 TAIL_CALL_OPTIMIZE:
   # replace CP - 5 call instruction with 0xe9
   lit_ 0xe9          # ( 0xe9 )
   push_              # ( 0xe9 0xe9 )
-  call CP            # ( 0xe9 CP )
+  do_ CP            # ( 0xe9 CP )
   sub $5, %eax       # ( 0xe9 CP-5 )
   push_              # ( 0xe9 CP-5 CP-5 )
   # make sure current instruction is a call otherwise compile a return
@@ -109,7 +109,7 @@ TAIL_CALL_OPTIMIZE:
   cmp $0xe8, %eax
   if_0_ DO_JMPOPT
     nip2_
-    jmp RET_C
+    exit_do_ RET_C
 DO_JMPOPT:
   d0_                # ( 0xe9 CP-5 CP-5 )
   y_d1_              # ( 0xe9 CP-5 CP-5 ) Y: 0xe9
@@ -117,54 +117,54 @@ DO_JMPOPT:
   cmw_y_             # ( CP-5 )
   # clear last is call flag in fflags
   andw $~(1 << LAST_IS_CALL_FB), fflags
-  ret
+  end_
 
 # ( -- )
 # update wid from smudge if valid
 Forthword_ UWID, 0, "uwid"
-  call SMUDGE    # ( xt )
+  do_ SMUDGE    # ( xt )
   iszero_        # ( xt )
   if_0_ UWID_end
 
   # wid.word = smudge
   y_w_         # ( xt ) Y:xt
-  call CURRENT # ( CURRENT )
+  do_ CURRENT # ( CURRENT )
   mw_          # ( wid )
   mw_y_        # ( wid )
-  #call CLRCACHE
+  #do_ CLRCACHE
   # set smudge to zero indicating no longer compiling a word
   zero_
-  call SMUDGE_STR # ( SMUDGE )
+  do_ SMUDGE_STR # ( SMUDGE )
 UWID_end:
-  ret
+  end_
 
 # ( n -- )
 # store 8 bit value in WR into code section ram at (code pointer) CP
 Forthword_ COMMA, 0, ","
   y_w_             # ( n )
-  call CP          # ( CP )
+  do_ CP          # ( CP )
   cmw_y_           # ( CP )
   lit_ 1
-  jmp CPPLUS       # 
+  end_do_ CPPLUS   # 
 
 # ( n -- )
 # store double word 32 bit value in WR into code section ram at (code pointer) CP
 Forthword_ DWCOMMA, 0, "dw,"
   y_w_
-  call CP
+  do_ CP
   mw_y_
   lit_ 4
-  jmp CPPLUS
+  end_do_ CPPLUS
 
 # ( n -- )
 # store 32 bit value in WR into dictionary section ram at (dictionary pointer) DP
 # automaticaly increment dp position by 4 bytes
 Forthword_ DPSTORE, 0, "@dp="
   y_w_
-  call DP
+  do_ DP
   mw_y_
   lit_ 4
-  jmp DPPLUS
+  end_do_ DPPLUS
 
 # ( s-addr len len' d-addr -- d-addr+len)
 # copies a counted string with flags from s-addr to d-addr
@@ -184,29 +184,29 @@ Forthword_ COPYSTRING, 0, "copy$"
   nip3_
   rpopb_
   rpopa_
-  ret
+  end_
 
 # ( addr len len' -- )
 # copies a counted string with flags to program ram
 Forthword_ STRINGPROGSTORE, 0, "@cp=$"
   push_
-  call CP
-  call COPYSTRING
+  do_ CP
+  do_ COPYSTRING
   y_w_
-  call CPSHARP
+  do_ CPSHARP
   mw_y_
-  ret
+  end_
 
 # ( addr len len' -- )
 # copies a counted string with flags to dictionary ram
 Forthword_ STRINGDICTSTORE, 0, "@dp=$"
   push_
-  call DP
-  call COPYSTRING
+  do_ DP
+  do_ COPYSTRING
   y_w_
-  call DPSHARP
+  do_ DPSHARP
   mw_y_
-  ret
+  end_
 
 # ( source destination term -- count )
 # copy bytes from source to destination until match is made
@@ -232,7 +232,7 @@ CBU_BEGIN:
     if_0_ CBU_DONE
     cmb_w_           # ( source destination byte ) [B]: byte
     b_plus1_         # ( source destination byte ) B+1
-    jmp CBU_BEGIN
+    exit_do_ CBU_BEGIN
 
 CBU_DONE:
   y_d0_              # ( source destination byte ) Y: destination
@@ -241,7 +241,7 @@ CBU_DONE:
   w_minus_y_         # ( count )
   rpopb_
   rpopa_
-  ret
+  end_
 
 # ( start -- )
 # copy code to current dictionary entry
@@ -249,8 +249,8 @@ Forthword_ INLINE, 0, "inline"
   # find the ret instruction, want count to ret
   # count will be number of bytes to inline
   push_                    # ( start start )
-  call CP                  # ( start cp )
+  do_ CP                  # ( start cp )
   push_                    # ( start cp cp )
   lit_ 0xc3                # ( start cp 0xc3 )
-  call COPY_BYTE_UNTIL     # ( count )
-  jmp CPPLUS
+  do_ COPY_BYTE_UNTIL     # ( count )
+  end_do_ CPPLUS

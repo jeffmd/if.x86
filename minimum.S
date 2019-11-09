@@ -4,11 +4,11 @@
 Forthword_ WIPE, 0, "WIPE"
 .if BUILD_LEVEL > 9
   lit_y_ DPSTART
-  call DPSHARP
+  do_ DPSHARP
   mw_y_
 
   lit_y_ CPSTART
-  call CPSHARP
+  do_ CPSHARP
   mw_y_
 .endif
 
@@ -19,7 +19,7 @@ Forthword_ WIPE, 0, "WIPE"
   mw_y_
 
   lit_y_ HERESTART
-  call HEREADDR
+  do_ HEREADDR
   mw_y_
   
   jmp ONLY

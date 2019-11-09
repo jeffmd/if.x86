@@ -913,6 +913,18 @@ Forthword_ NEG_X, INLINE_OPT, "-x"
   ret
 
 
+# ( A:n1 -- A:-n1 )
+# 2-compliment of A
+Forthword_ NEG_A, INLINE_OPT, "-a"
+  neg_a_
+  ret
+
+# ( B:n1 -- B:-n1 )
+# 2-compliment of B
+Forthword_ NEG_B, INLINE_OPT, "-b"
+  neg_b_
+  ret
+
 # ( n1 -- n1 and Y )
 # w = w and y
 Forthword_ W_AND_Y, INLINE_OPT, "w&=y"

@@ -4,55 +4,55 @@
 # get ram address of emit defer
 Forthword_ EMITADDR, 0, "emit#"
   user_ USER_EMIT
-  ret
+  end_
   
 # ( c -- )
 # fetch the emit vector and EXEC it. Will emit a character from WR
 Forthword_ PUTCHAR, 0, "putchar"
   rpush_
-  call putchar
+  do_ putchar
   rnip_
-  ret
+  end_
 
 # ( -- )
 # turn emit off
 Forthword_ EMIT_OFF, 0, "emit.off"
   # reset output source for emit
   lit_y_ NOOP
-  call EMITADDR
+  do_ EMITADDR
   mw_y_
-  ret
+  end_
 
 # ( -- )
 # turn emit on for default output
 Forthword_ EMIT_ON, 0, "emit.on"
   # reset output source for emit
   lit_y_ PUTCHAR
-  call EMITADDR
+  do_ EMITADDR
   mw_y_
-  ret
+  end_
 
 # ( c -- )
 # fetch the emit vector and EXEC it. Will emit a character from WR
 Forthword_ EMIT, 0, "emit"
   push_
-  call EMITADDR
+  do_ EMITADDR
   mw_
-  jmp EXEC
+  end_do_ EXEC
 
 # ( -- )
 # cause subsequent output appear at the beginning of the next line
 Forthword_ CR, 0, "cr"
   lit_ 10
-  call EMIT
+  do_ EMIT
   lit_ 13
-  jmp EMIT
+  end_do_ EMIT
 
 # ( -- 32 )
 # put ascii code of the blank/space character to the stack
 Forthword_ BL, INLINE_OPT, "bl"
   bl_
-  ret
+  end_
 
 # ( addr n -- )
 # print a counted string
@@ -68,7 +68,7 @@ Forthword_ TYPE, 0, "type"
 TYPE1:
   cma_
   a_plus1_
-  call EMIT
+  do_ EMIT
   b_minus1_
   if_not_0_ TYPE1
 
@@ -76,4 +76,4 @@ TYPE1:
   rpopa_
 
 TYPE_END:
-  ret
+  end_

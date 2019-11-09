@@ -122,25 +122,25 @@ CPSTART:
 # ( nx* -- ) (R: ny* -- )
 # initialize if further. EXECs turnkey operation and go to quit
 Forthword_ WARM, 0, "warm"
-  call RESET
+  do_ RESET
 .if BUILD_LEVEL > 1
-	call ONLY
+	do_ ONLY
 .if BUILD_LEVEL > 9
-  call DECIMAL           # default to decimal base
+  do_ DECIMAL           # default to decimal base
 .endif
 .endif
   type_ "if.x86 0.2\n"
   # check if command line args need to be loaded
 .if BUILD_LEVEL > 1
-	call DOCMDARG
+	do_ DOCMDARG
 .endif
-	jmp QUIT
+	end_do_ QUIT
 
 # ( -- addr)
 # start address of the data stack
 Forthword_ DSP0, 0, "dsp0"
   movl $topdatastack, %eax
-  ret
+  end_
 
 .globl RECOVER
 .type RECOVER, @function
@@ -151,19 +151,19 @@ Forthword_ RECOVER, 0, "recover"
   push %ebp
   movl $topdatastack, %ebx
   movl $sysvar_base, %ebp
-  call RESET
+  do_ RESET
   
 .if BUILD_LEVEL > 1
-	call ONLY
+	do_ ONLY
 .if BUILD_LEVEL > 9
-  call DECIMAL           # default to decimal base
+  do_ DECIMAL           # default to decimal base
 .endif
 .endif
 
   type_ "recovering...\n"
-	call QUIT
+	do_ QUIT
 	pop %ebp
-	ret
+	end_
 
 .globl COLD
 .type COLD, @function
@@ -177,16 +177,16 @@ Forthword_ COLD, 0, "cold"
   
 	rsp_
 	y_w_
-	call RSP0
+	do_ RSP0
 	mw_y_
   
 .if BUILD_LEVEL > 1
-  call WIPE
+  do_ WIPE
 .endif
-  call WARM
+  do_ WARM
   
   pop %ebp
-  ret
+  end_
 
 .if BUILD_LEVEL > 1
 .include "minimum.S"

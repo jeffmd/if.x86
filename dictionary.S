@@ -11,24 +11,24 @@
 # current wordlist vocabulary for new words
 Forthword_ CURRENT, 0, "current"
   user_ ram_CURRENT
-  ret
+  end_
 
 # ( -- addr )
 # context wordlist vocabulary for searching
 # array of wordlists
 Forthword_ CONTEXT, 0, "context"
   user_ ram_CONTEXT
-  ret
+  end_
 
 # ( nfa -- lfa )
 # get the link field address from the name field address
 Forthword_ NFA2LFA, 0, "nfa>lfa"
-  call STRINGLEN               # ( nfa+2 len+flags )
+  do_ STRINGLEN                # ( nfa+2 len+flags )
   popy_                        # ( len ) Y: nfa+2
   # mask out flags in len, allow up to 31 characters
   and $31, %eax                # ( len )
   w_plus_y_                    # ( nfa+2+len )
-  ret
+  end_
 
 # ( nfa -- [ 0 ] | [ xt xtflags] )
 # convert name field address to xt and xtflags
@@ -38,20 +38,20 @@ Forthword_ NFATOXTF, 0, "nfa>xtf"
 
   y_hmw_                      # ( nfa Y:xtflags )
   rpushy_                     # ( nfa ) (R: xtflags)
-  call NFA2LFA                # ( lfa )
+  do_ NFA2LFA                 # ( lfa )
   fourplus_   # lfa>xtlink    # ( xtlink )
   mw_                         # ( xt )
   push_                       # ( xt xt )
   rpop_                       # ( xt xtflags )
 
 NFATOXTF_EXIT:
-  ret
+  end_
 
 # ( addr len idx -- 0 | nfa )
 FINDWI:
   fourstar_          # ( addr len idx*4 )
   y_w_               # ( addr len idx*4 ) Y: idx*4
-  call CONTEXT       # ( addr len context )
+  do_ CONTEXT        # ( addr len context )
   w_plus_y_          # ( addr len context' )
   mw_                # ( addr len wid )
 
@@ -64,7 +64,7 @@ Forthword_ FINDNFA, 0, "findnfa"
   if_not_0_ FINDNFA_BEGIN
     # terminating, wid is empty
     nip2_
-    ret
+    exit_
 
   # <begin>
 FINDNFA_BEGIN:
@@ -75,7 +75,7 @@ FINDNFA_BEGIN1:
   if_not_0_ FINDNFA_CHECK
     # terminating, 0 found
     nip2_                     # ( 0 )
-    ret
+    exit_
 
 FINDNFA_CHECK:
   
@@ -84,23 +84,23 @@ FINDNFA_CHECK:
   x_d0_                       # ( c-addr len nfa ) X:len
   pushy_                      # ( c-addr len c-addr nfa )
   pushx_                      # ( c-addr len c-addr len nfa )
-  call STRINGLEN              # ( c-addr len c-addr len f-addr len )
+  do_ STRINGLEN               # ( c-addr len c-addr len f-addr len )
   and $31, %eax               # ( c-addr len c-addr len f-addr 0:len )
-  call MCMP                   # ( c-addr len flag )
+  do_ MCMP                    # ( c-addr len flag )
   # <if>
   iszero_
   rpop_                       # ( c-addr len nfa )
   if_0_ FINDNFA_NEXT
     # we found the string
     nip2_                     # ( nfa )
-    ret
+    end_
     
   # <then>
 FINDNFA_NEXT:
-    # next try
-    call NFA2LFA              # ( c-addr len lfa )
-    # <repeat>
-    jmp FINDNFA_BEGIN
+  # next try
+  do_ NFA2LFA                 # ( c-addr len lfa )
+  # <repeat>
+  goto_ FINDNFA_BEGIN
 
 
 # ( addr len idx * )
@@ -115,12 +115,12 @@ Forthword_ FINDROOT, 0, "froot"
   # put root wid on stack
   push_              # ( addr len len )
   lit_ VE_WIPE       # ( addr len VE_COLD )
-  jmp FINDNFA_BEGIN1
+  end_do_ FINDNFA_BEGIN1
 
 # ( -- idx )
 # get context index
 Forthword_ CONTIDX_FETCH, 0 "contidx@"
-  call CONTEXT        # ( context )
+  do_ CONTEXT         # ( context )
   # get context index
   twominus_           # ( context-2 )
   y_w_                # ( contidx ) Y:contidx
@@ -128,15 +128,15 @@ Forthword_ CONTIDX_FETCH, 0 "contidx@"
   x_w_            
   push_               # ( idx idx ) X:idx
   lit_ (MAX_CONTEXTS - 1) # ( idx max )
-  call GREATER        # ( flag )
+  do_ GREATER         # ( flag )
   iszero_
   if_0_ 1f
     lit_ (MAX_CONTEXTS - 1)  # ( max )
     hmy_w_
-    ret
+    exit_
 1:
   x_                  # ( idx )
-  ret
+  end_
 
 # ( addr len --  0 | nfa )
 # search wordlists for the name from string addr/len
@@ -144,7 +144,7 @@ Forthword_ FINDW, 0, "findw"
   # loop through context slots to find a word
   # start with last slot
   push_               # ( addr len len )
-  call CONTIDX_FETCH  # ( addr len idx )
+  do_ CONTIDX_FETCH   # ( addr len idx )
   # get context index and use as counter
   push_               # ( addr len idx idx )
   
@@ -155,19 +155,19 @@ FINDW_BEGIN:
     x_d1_
     pushy_
     pushx_            # ( addr len idx addr len idx )
-    call FINDWI       # ( addr len idx nfa )
+    do_ FINDWI        # ( addr len idx nfa )
     iszero_
     # end loop if word found
     if_0_ FINDW_NEXT
       nip3_           # ( nfa )
-      ret
+      end_
 
 FINDW_NEXT:
   d0_                 # ( addr len idx idx )
   # decrement index
   oneminus_           # ( addr len idx idx-1 )
   d0_w_               # ( addr len idx-1 idx-1 )
-  jmp FINDW_BEGIN
+  goto_ FINDW_BEGIN
 
 # ( -- )
 # set the context and current to root and forth vocabulary and remove
@@ -175,10 +175,10 @@ FINDW_NEXT:
 Forthword_ ONLY, IMMEDIATE_EN, "only"
   # forth vocab always takes slot 0
   lit_y_ EE_FORTHWORDLIST     # ( ? ) Y:FLIST
-  call CURRENT                # ( CURRENT )
+  do_ CURRENT                 # ( CURRENT )
   mw_y_                       # ( CURRENT )
   # make current also forth vocab
-  call CONTEXT                # ( CONTEXT )
+  do_ CONTEXT                 # ( CONTEXT )
   mw_y_                       # ( CONTEXT )
   # move index to slot 1
   twominus_                   # ( CONTEXT-2 )
@@ -189,4 +189,4 @@ Forthword_ ONLY, IMMEDIATE_EN, "only"
   y_0_
   fourplus_                   # ( CONTEXT+4 )
   mw_y_
-  ret
+  end_

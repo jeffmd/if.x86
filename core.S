@@ -6,7 +6,7 @@
 # must be called
 Forthword_ POPRET, 0, "popret"
   rpop_
-  ret
+  end_
     
 # ( n1 n2 -- flag )
 # flag is true if WR and NOS are equal
@@ -15,7 +15,7 @@ Forthword_ EQUAL, 0, "=="
   nip_
   sub $1, %eax
   sbb %eax, %eax
-  ret
+  end_
 
 # ( n1 n2 -- flag)
 # flag is true if n1 is less than n2
@@ -25,10 +25,10 @@ Forthword_ LESS, 0, "<"
   jge 1f
   zero_
   not_
-  ret
+  exit_
 1:
   zero_
-  ret
+  end_
 
 # ( n1 n2 -- flag )
 # flag is true if n1 is greater than n2
@@ -40,22 +40,22 @@ GREATER_CHK:
   jle 1f
   zero_
   not_
-  ret
+  exit_
 1:
   zero_
-  ret
+  end_
 
 # ( n1 -- flag )
 # flag is true if n1 is greater than 0
 Forthword_ ZEROGREATER, 0, "0>"
   sub $0, %eax
-  jmp GREATER_CHK
+  end_do_ GREATER_CHK
 
 # ( n1 -- flag)
 # flag is true if WR is less than zero
 forthword_ ZEROLESS, INLINE_OPT, "0<"
   zeroless_
-  ret
+  end_
 
 # (start dest count -- )
 # count is the number of bytes to copy
@@ -75,4 +75,4 @@ Forthword_ MCPY, 0, "mcpy"
   rpopa_
 MCPY_END:
   nip2_
-  ret
+  end_

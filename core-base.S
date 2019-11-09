@@ -5,13 +5,13 @@
 Forthword_ EXEC, 0, "exec"
   rpush_
   pop_
-  ret
+  end_
 
 # ( xt -- )
 # Don't do anything, just chew up a few cycles
 Forthword_ NOOP, INLINE_OPT, "noop"
   nop
-  ret
+  end_
  
 # ( u1 u2 -- flag )
 # flag is true if u1 > u2 (unsigned)
@@ -19,7 +19,7 @@ Forthword_ UGREATER, 0, "u>"
   popy_
   sub %edx, %eax
   sbb %eax, %eax
-  ret
+  end_
 
 # ( u1 u2 -- flag)
 # flag is true if u1 < u2 (unsigned)
@@ -29,4 +29,4 @@ Forthword_ ULESS, 0, "u<"
 # w = a-b  -- carry set if a is less than b
   sbb %edx, %edx
   mov %edx, %eax
-  ret
+  end_

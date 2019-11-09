@@ -292,6 +292,8 @@
   movl %eax, %esp
 .endm
 
+# move values between data stack locations and registers
+
 # d0=w
 .macro d0_w_
   mov %eax, (%ebx)
@@ -1443,6 +1445,30 @@
 # if not zero flag then go to addr
 .macro if_not_0_ addr
   jne \addr
+.endm
+
+.macro do_ addr
+  call \addr
+.endm
+
+.macro exit_
+  ret
+.endm
+
+.macro exit_do_ addr
+  jmp \addr
+.endm
+
+.macro goto_ addr
+  jmp \addr
+.endm
+
+.macro end_
+  ret
+.endm
+
+.macro end_do_ addr
+  jmp \addr
 .endm
 
 .macro ascii_ str, flg=0

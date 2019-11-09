@@ -4,48 +4,48 @@
 # get ram address of command line argument count
 Forthword_ ARGCADDR, 0, "argc#"
   user_ USER_ARGC
-  ret
+  end_
   
 # ( -- cmd[]addr )
 # get ram address of command line argument vector
 Forthword_ ARGVADDR, 0, "argv#"
   user_ USER_ARGV
-  ret
+  end_
 
 # ( -- a-addr )
 # location of the cell containing the address of the next free ram location
 Forthword_ HEREADDR, 0, "here#"
   user_ USER_HERE
-  ret
+  end_
 
 # ( -- a-addr )
 # the address of the next free ram location
 Forthword_ HERE, 0, "here"
-  call HEREADDR
+  do_ HEREADDR
   mw_
-  ret
+  end_
 
 # ( nx* -- ) (R: ny* -- )
 # initialize rf further. EXECs turnkey operation and go to quit
 Forthword_ DOCMDARG, 0, "docmdarg"
-  call ARGCADDR      # ( ARGCADDR )
+  do_ ARGCADDR       # ( ARGCADDR )
   mw_                # ( ARGC )
   push_              # ( ARGC ARGC )
   lit_ 1             # ( ARGC 1 )
-  call GREATER       # ( flag )
+  do_ GREATER        # ( flag )
   iszero_
   if_0_ DOCMDARG_EXIT
 
-  call ARGVADDR      # ( ARGVADDR )
+  do_ ARGVADDR       # ( ARGVADDR )
   mw_                # ( ARGV )
   fourplus_          # ( ARGV+4 )
   mw_                # ( ptr )
 .if BUILD_LEVEL > 9
-  jmp DOINCLUDE
+  exit_do_ DOINCLUDE
 .endif
 
 DOCMDARG_EXIT:
-  ret
+  end_
 
 # ( -- usecs seconds ) 
 # get time of day
@@ -56,69 +56,67 @@ Forthword_ TIME, 0, "time"
   push_
   rpush_
   rpushdsp_
-  call gettimeofday
+  do_ gettimeofday
   rnip2_
   pop_
-  ret
+  end_
 
 # ( -- n )
 # number of single-cell (4 byte) values contained in the data stack before n was placed on the stack.
 Forthword_ DEPTH, 0, "depth"
-  call DSP0      # ( dp0 )
+  do_ DSP0      # ( dp0 )
   sub %ebx, %eax
   fourslash_    # ( cnt/4 )
   # acount for value push on data stack
-  ret
+  end_
 
 # ( -- )
 # check stack underflow, throw exception -4
 Forthword_ QSTACK, 0, "?dsp"
-  call DEPTH       # ( depth )
+  do_ DEPTH        # ( depth )
   zeroless_        # ( flag )
   iszero_
   if_0_ QSTACKFIN
     slit_ " Stack Underflow!"
-    call THROW
+    do_ THROW
 
 QSTACKFIN:
-  ret
+  end_
     
 # USER variable used by catch/throw
 Forthword_ HANDLER, 0, "handler"
   user_ ram_handler
-  ret
+  end_
 
 # ( i*x xt -- j*x 0 | i*x n )
 # setup handler to catch exceptions and then EXEC XT.
 Forthword_ CATCH, 0, "catch"
-  # sp@ >r
   rpushdsp_           # ( xt ) (R: ret -- callerret SP )
-  # handler @ >r
   push_               # ( xt xt )
-  call HANDLER        # ( xt haddr )
+  do_ HANDLER         # ( xt haddr )
   y_w_
   mw_                 # ( xt hxt )
   rpush_              # ( xt hxt ) (R: callerret SP hxt )
-  # rp@ handler !
-  rsp_                # ( xt RP ) (R: callerret SP hxt)
-  my_w_               # ( xt RP )
+  rsp_                # ( xt RSP ) (R: callerret SP hxt)
+  # @handler=rsp
+  my_w_               # ( xt RSP )
   pop_                # ( xt )
-  call EXEC
+  do_ EXEC
   # restore handler
   # r> handler !
   rpopy_              # ( hxt ) (R: callerret SP )
-  call HANDLER        # ( haddr )
+  do_ HANDLER         # ( haddr )
   mw_y_               # ( haddr )
   rnip_               # ( haddr ) (R: callerret)
   zero_               # ( 0 )
-  ret
+  end_
 
 # ( straddr len -- )
 # throw an exception
 # will type the string passed in
 Forthword_ THROW, 0, "throw"
-  call TYPE          # ( ? )
-  call HANDLER       # ( haddr )
+  do_ TYPE           # ( ? )
+  do_ HANDLER        # ( haddr )
   x_w_               # ( haddr X:haddr )
   mw_                # ( RP_handler )
   rsp_w_             # ( RP_handler ) (R: callerret SP hxt)
@@ -126,4 +124,4 @@ Forthword_ THROW, 0, "throw"
   mx_w_              # ( hxt )
   rpopdsp_           # ( SP ) (R: callerret )
   lit_ 1             # ( 1 )
-  ret
+  end_

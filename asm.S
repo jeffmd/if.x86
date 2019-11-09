@@ -4,15 +4,15 @@
 # compile assembler ret
 Forthword_ RET_C, 0, "ret,"
   lit_ 0xc3
-  jmp COMMA
+  end_do_ COMMA
 
 # ( -- )
 # compile assembler data stack push
 Forthword_ PUSH_C, 0, "push,"
   lit_ 0x89fc5b8d
-  call DWCOMMA
+  do_ DWCOMMA
   lit_ 0x03
-  jmp COMMA
+  end_do_ COMMA
 
 # calc relative distance
 # ( dest start  -- distance )
@@ -22,7 +22,7 @@ Forthword_ RELDST, 0, "reldst"
   y_w_                  # ( dest start ) Y: start
   pop_                  # ( dest )
   w_minus_y_            # ( dest-start )
-  ret
+  end_
 
 # build assembler instruction jmp - unconditional long jump
 # ( reldist -- rellong jumpinst)
@@ -32,32 +32,32 @@ Forthword_ JUMP, 0, "jmpl"
   sub $5, %eax
   push_
   lit_ 0xe9
-  ret
+  end_
 
 # build assembler instruction jmp - unconditional short jump
 # ( reldist -- jumprellong )
 # reldist: relative distance as 2's compliment 32 bit
 Forthword_ JUMPS, 0, "jmps"
   # 0xe9 XXXX XXXX XXXX 
-  ret
+  end_
 
 # compile assembler instruction jmp - unconditional jump
 # ( reldist -- )
 # reldist: relative distance as 2's compliment
 Forthword_ JMP_COMMA, 0, "jmp,"
-	call JUMP            # ( rellong jumpinst )
-	call COMMA           # ( rellong ? )
+	do_ JUMP             # ( rellong jumpinst )
+	do_ COMMA            # ( rellong ? )
   pop_                 # ( rellong )
-	call DWCOMMA         # ( ? )
-	jmp CALLOFF
+	do_ DWCOMMA          # ( ? )
+	end_do_ CALLOFF
 
 # compile jump at start address
 # ( start dest -- )
 Forthword_ JMPC, 0, "jmpc"
   push_
   d1_                  # ( start dest start )
-  call RELDST          # ( start reldst )
-  call JUMP            # ( start rellong jumpinst )
+  do_ RELDST           # ( start reldst )
+  do_ JUMP             # ( start rellong jumpinst )
   y_w_                 # ( start rellong jumpinst Y:jumpinst )
   d1_                  # ( start rellong start )
   cmw_y_               # ( start rellong start )
@@ -65,16 +65,16 @@ Forthword_ JMPC, 0, "jmpc"
   oneplus_             # ( start rellong start+1 )
   mw_y_                # ( start rellong start+1 )
   nip2_                # ( start+1 )
-  jmp TAILOPTOFF
+  end_do_ TAILOPTOFF
 
 # conditional jump over a jmp if not zero
 # ( -- )
 Forthword_ JMPNZ1_COMPILE, 0, "jne1,"
     # compile jne $06 : 0x7505
   lit_ 0x75
-  call COMMA
+  do_ COMMA
   lit_ 5
-  jmp COMMA
+  end_do_ COMMA
 
 
 # compile call to xt at the current code position (CP)
@@ -91,16 +91,16 @@ Forthword_ COMPILEXT, 0, "cxt"
   # should word be inlinned?
 	test $(INLINE_OPT << 8), %eax
 	# if bit 0 of high byte flag is 0 then word is to be inlinned
-  jne DO_COMPILEXT
+  if_not_0_ DO_COMPILEXT
     # not a call so disable tail call optimization
-    call CALLOFF       # ( xt ? )
+    do_ CALLOFF        # ( xt ? )
     pop_               # ( xt )
-    jmp INLINE
+    exit_do_ INLINE
 
 DO_COMPILEXT:
   # calculate relative distance in words from start to dest
-  call CP              # ( xt cp )
-  call RELDST          # ( distance )
+  do_ CP               # ( xt cp )
+  do_ RELDST           # ( distance )
   # fall through into CALLC
 
 # compile call at start address
@@ -113,52 +113,52 @@ Forthword_ CALLC, 0, "call,"
   #
   push_                # ( dist dist )
   lit_ 0xe8            # ( dist 0xe8 )
-  call COMMA           # ( dist ? )
+  do_ COMMA            # ( dist ? )
   pop_                 # ( dist )
   # adjust rel distance to account for instruction length of call
   sub $5, %eax         # ( dist-5 )
   # store offset
-  jmp DWCOMMA
+  end_do_ DWCOMMA
 
 # compile inlinned immediate 32 bit constant
 # ( n ins -- )
 Forthword_ DOLIT, 0, "(lit,)"
-  call COMMA
+  do_ COMMA
   pop_
   # store 32 bit val from tos
-  jmp DWCOMMA
+  end_do_ DWCOMMA
 
 # compile top of stack as inlinned immediate 32 bit constant
 # ( n -- )
 Forthword_ WLIT_C, 0, "w=,"
   push_
   lit_ 0xb8
-  jmp DOLIT
+  end_do_ DOLIT
 
 # compile Y register load inlinned immediate 32 bit constant
 # ( n -- )
 Forthword_ YLIT_C, 0, "y=,"
   push_
   lit_ 0xba
-  jmp DOLIT
+  end_do_ DOLIT
 
 # compile X register load inlinned immediate 32 bit constant
 # ( n -- )
 Forthword_ XLIT_C, 0, "x=,"
   push_
   lit_ 0xb9
-  jmp DOLIT
+  end_do_ DOLIT
 
 # compile A register load inlinned immediate 32 bit constant
 # ( n -- )
 Forthword_ ALIT_C, 0, "a=,"
   push_
   lit_ 0xbe
-  jmp DOLIT
+  end_do_ DOLIT
 
 # compile B register load inlinned immediate 32 bit constant
 # ( n -- )
 Forthword_ BLIT_C, 0, "b=,"
   push_
   lit_ 0xbf
-  jmp DOLIT
+  end_do_ DOLIT
