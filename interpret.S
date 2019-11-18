@@ -131,7 +131,17 @@ Forthword_ SRCIN, 0, "srcin"
   hmw_                # ( srcaddr len gin)
   end_do_ SLASHSTRING # ( srcaddr' len' )
 
-# ( -- ginaddr )
+# ( n -- ginaddr Y:n )
+# update position in input source.
+Forthword_ UPDIN, 0, "updin"
+  y_w_                # ( n2 Y:n2 )
+  do_ G_IN            # ( ginaddr )
+  x_hmw_              # ( ginaddr X:inidx)
+  x_plus_y_           # ( ginaddr X:X+Y)
+  hmw_x_
+  end_
+
+# ( -- ginidx )
 # skip space in input source.
 Forthword_ SKIPBL, 0, "skipbl"
   do_ SRCIN           # ( srcaddr len )
@@ -140,12 +150,7 @@ Forthword_ SKIPBL, 0, "skipbl"
   do_ CSKIP           # ( n2 )
 
   # adjust >IN
-  y_w_                # ( n2 Y:n2 )
-  do_ G_IN            # ( ginaddr )
-  x_hmw_
-  x_plus_y_           # ( ginaddr )
-  hmw_x_
-  end_
+  end_do_ UPDIN
 
 # ( char "ccc<char>" -- c-addr u )
 # in input buffer parse ccc delimited string by the delimiter char.
@@ -155,14 +160,11 @@ Forthword_ PARSE, 0, "parse"
   push_              # ( addr len len )
   rpop_              # ( addr len c ) (R: )
   do_ CSCAN          # ( addr' len'')
-  y_w_               # ( addr' len'' Y:len'')
+  oneplus_           # ( addr' len''+1 )
   # skip terminating delimeter
-  do_ G_IN           # ( addr' >in )
-  x_hmw_
-  x_plus_y_          
-  x_plus1_
-  hmw_x_
-  y_                 # ( addr' len'' )
+  do_ UPDIN
+  y_                 # ( addr' len''+1)
+  oneminus_          # ( addr' len'')
   end_
 
 # ( "<name>" -- c-addr len )
@@ -199,7 +201,7 @@ Forthword_ REC_WORD, 0, "recw"
   rpush_            # ( addr len ) (R: len )
   y_d0_             # ( addr len Y:addr )
   rpushy_           # ( addr len ) (R: len addr )
-  do_ FINDW        # ( 0 | nfa )
+  do_ FINDW         # ( 0 | nfa )
   iszero_
   if_not_0_ REC_WORD_FOUND
     rpop_           # ( addr ) (R: len ) 
@@ -211,7 +213,7 @@ Forthword_ REC_WORD, 0, "recw"
 
 REC_WORD_FOUND:
   rnip2_            # ( nfa ) (R: )
-  do_ NFATOXTF     # ( xt flag )
+  do_ NFATOXTF      # ( xt flag )
   # check if compile only word
   #sbrc tosh, COMPILE_ONLY_FB
   #    rjmp CHECK_IMMEDIATE
@@ -238,13 +240,13 @@ CHECK_IMMEDIATE:
 REC_WORD_CHECKSTATE:
     # check state
     push_            # ( xt flag flag )
-    do_ STATE       # ( xt flag state )
+    do_ STATE        # ( xt flag state )
     iszero_
     pop_             # ( xt flag )
     if_0_ REC_WORD_EXECUTE
 .if BUILD_LEVEL > 9
       # in compile mode so compile xt
-      do_ COMPILEXT # ( ? )
+      do_ COMPILEXT  # ( ? )
 .endif
       true_
       exit_
@@ -252,7 +254,7 @@ REC_WORD_CHECKSTATE:
 REC_WORD_EXECUTE:
   # state is zero, EXEC xt
   do_ REGL
-  do_ EXEC          # ( ?? )
+  do_ EXEC           # ( ?? )
   do_ REGS
   
   true_              # ( true )
@@ -262,20 +264,20 @@ REC_WORD_EXECUTE:
 # recognize and execute name of word in ram using recognizer list.
 Forthword_ RECX, 0, "recx"
   # test if its a word
-  do_ REC_WORD         # ( [addr len] flag )
+  do_ REC_WORD          # ( [addr len] flag )
   iszero_               # ( [addr len] flag )
   if_not_0_ RECX_DONE
 
 .if BUILD_LEVEL > 3
   pop_                  # ( addr len )
   # test if its a number
-  do_ REC_NUM          # ( [addr len] flag )
+  do_ REC_NUM           # ( [addr len] flag )
   iszero_               # ( [addr len] flag )
   if_not_0_ RECX_DONE
 .endif
 
   # not recognized so throw
-  do_ CR               # ( addr len ? )
+  do_ CR                # ( addr len ? )
   pop_                  # ( addr len )
   # print unrecognized word
   do_ TYPE
@@ -292,7 +294,7 @@ Forthword_ INTERPRET, 0, "interp"
   # begin
   do_ PNAME            # ( addr len )
   # ?while
-  iszero_               # ( addr len )
+  iszero_              # ( addr len )
   if_0_ INTERPRET_END
 
   do_ RECX             # ( ? )
@@ -323,7 +325,7 @@ Forthword_ DOINTERPRET, 0, "(interp)"
   # <then>
 DOINTERPRET_ok:
   # make sure in buf pointer is not at zero
-  do_ G_IN          # ( >inaddr )
+  do_ G_IN           # ( >inaddr )
   y_hmw_
   y_plus1_
   hmw_y_             # (  )
