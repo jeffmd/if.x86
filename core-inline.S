@@ -1095,6 +1095,101 @@ Forthword_ FOURSTAR, INLINE_OPT, "4*"
   fourstar_
   ret
 
+# ( X:n1 -- X:n1/2 )
+# optimized X divide by 2
+Forthword_ XTWOSLASH, INLINE_OPT, "x/=2"
+  x_twoslash_
+  ret
+
+# ( X:n1 -- X:n1*2 )
+# optimized X 2 multiply
+Forthword_ XTWOSTAR, INLINE_OPT, "x*=2"
+  x_twostar_
+  ret
+
+# ( X:n1 -- X:n1/4 )
+# optimized X divide by 4
+Forthword_ XFOURSLASH, INLINE_OPT, "x/=4"
+  x_fourslash_
+  ret
+
+# ( X:n1 -- X:n*4 )
+# optimized x four multiply
+Forthword_ XFOURSTAR, INLINE_OPT, "x*=4"
+  x_fourstar_
+  ret
+
+# ( Y:n1 -- Y:n1/2 )
+# optimized y divide by 2
+Forthword_ YTWOSLASH, INLINE_OPT, "y/=2"
+  y_twoslash_
+  ret
+
+# ( Y:n1 -- Y:n1*2 )
+# optimized y 2 multiply
+Forthword_ YTWOSTAR, INLINE_OPT, "y*=2"
+  y_twostar_
+  ret
+
+# ( Y:n1 -- Y:n1/4 )
+# optimized y divide by 4
+Forthword_ YFOURSLASH, INLINE_OPT, "y/=4"
+  y_fourslash_
+  ret
+
+# ( Y:n1 -- Y:n*4 )
+# optimized y four multiply
+Forthword_ YFOURSTAR, INLINE_OPT, "y*=4"
+  y_fourstar_
+  ret
+
+# ( A:n1 -- A:n1/2 )
+# optimized A divide by 2
+Forthword_ ATWOSLASH, INLINE_OPT, "a/=2"
+  a_twoslash_
+  ret
+
+# ( A:n1 -- A:n1*2 )
+# optimized A 2 multiply
+Forthword_ ATWOSTAR, INLINE_OPT, "a*=2"
+  a_twostar_
+  ret
+
+# ( A:n1 -- A:n1/4 )
+# optimized A divide by 4
+Forthword_ AFOURSLASH, INLINE_OPT, "a/=4"
+  a_fourslash_
+  ret
+
+# ( A:n1 -- A:n*4 )
+# optimized A four multiply
+Forthword_ AFOURSTAR, INLINE_OPT, "a*=4"
+  a_fourstar_
+  ret
+
+# ( B:n1 -- B:n1/2 )
+# optimized B divide by 2
+Forthword_ BTWOSLASH, INLINE_OPT, "b/=2"
+  b_twoslash_
+  ret
+
+# ( B:n1 -- B:n1*2 )
+# optimized B 2 multiply
+Forthword_ BTWOSTAR, INLINE_OPT, "b*=2"
+  b_twostar_
+  ret
+
+# ( B:n1 -- B:n1/4 )
+# optimized B divide by 4
+Forthword_ BFOURSLASH, INLINE_OPT, "b/=4"
+  b_fourslash_
+  ret
+
+# ( B:n1 -- B:n*4 )
+# optimized B four multiply
+Forthword_ BFOURSTAR, INLINE_OPT, "b*=4"
+  b_fourstar_
+  ret
 
 # ( n1 -- flag )
 # flag is true if n1 is 0

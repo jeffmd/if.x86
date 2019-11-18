@@ -926,6 +926,86 @@
   sal $2, %eax
 .endm
 
+# x/=2
+.macro x_twoslash_
+  sar %ecx
+.endm
+
+# x/=4
+.macro x_fourslash_
+  sar $2, %ecx
+.endm
+
+# x*=2
+.macro x_twostar_
+  sal %ecx
+.endm
+
+# x*=4
+.macro x_fourstar_
+  sal $2, %ecx
+.endm
+
+# y/=2
+.macro y_twoslash_
+  sar %edx
+.endm
+
+# y/=4
+.macro y_fourslash_
+  sar $2, %edx
+.endm
+
+# y*=2
+.macro y_twostar_
+  sal %edx
+.endm
+
+# y*=4
+.macro y_fourstar_
+  sal $2, %edx
+.endm
+
+# a/=2
+.macro a_twoslash_
+  sar %esi
+.endm
+
+# a/=4
+.macro a_fourslash_
+  sar $2, %esi
+.endm
+
+# a*=2
+.macro a_twostar_
+  sal %esi
+.endm
+
+# a*=4
+.macro a_fourstar_
+  sal $2, %esi
+.endm
+
+# b/=2
+.macro b_twoslash_
+  sar %edi
+.endm
+
+# b/=4
+.macro b_fourslash_
+  sar $2, %edi
+.endm
+
+# b*=2
+.macro b_twostar_
+  sal %edi
+.endm
+
+# b*=4
+.macro b_fourstar_
+  sal $2, %edi
+.endm
+
 # ==0
 .macro iszero_
   or %eax, %eax
