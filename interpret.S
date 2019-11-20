@@ -21,7 +21,6 @@ Forthword_ MCMP, 0, "mcmp"
   # check if strings are same length
   w_xor_y_                 # ( r-addr r-len f-addr flag )
   # if
-  iszero_                  # ( r-addr r-len f-addr flag )
   pop_                     # ( r-addr r-len f-addr )
   if_0_ CMPSB
 
