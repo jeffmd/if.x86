@@ -203,11 +203,10 @@ Forthword_ REC_WORD, 0, "recw"
   do_ FINDW         # ( 0 | nfa )
   iszero_
   if_not_0_ REC_WORD_FOUND
-    rpop_           # ( addr ) (R: len ) 
-    push_           # ( addr addr ) (R: len ) 
-    rpop_           # ( addr len ) (R: ) 
-    push_           # ( addr len len )
-    zero_           # ( addr len 0 )
+    rpopy_          # ( 0 Y:addr ) (R: len ) 
+    pushy_          # ( addr 0 ) (R: len ) 
+    rpopy_          # ( addr 0 Y:len ) (R: ) 
+    pushy_          # ( addr len 0 )
     exit_
 
 REC_WORD_FOUND:
