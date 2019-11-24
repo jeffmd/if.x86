@@ -143,23 +143,25 @@ Forthword_ FINDW, 0, "findw"
 FINDW_BEGIN:
   iszero_
   js FINDLAST         # ( addr len idx idx )
-    y_d2_
-    x_d1_
-    pushy_
-    pushx_            # ( addr len idx addr len idx )
-    do_ FINDWI        # ( addr len idx nfa )
-    iszero_
-    # end loop if word found
-    if_0_ FINDW_NEXT
-      nip3_           # ( nfa )
-      end_
 
-FINDW_NEXT:
+  y_d2_
+  x_d1_
+  pushy_
+  pushx_            # ( addr len idx addr len idx )
+  do_ FINDWI        # ( addr len idx nfa )
+  iszero_
+  # if not zero then word found, end loop
+  if_not_0_ FINDW_END
+
   d0_                 # ( addr len idx idx )
   # decrement index
   oneminus_           # ( addr len idx idx-1 )
   d0_w_               # ( addr len idx-1 idx-1 )
   goto_ FINDW_BEGIN
+
+FINDW_END:
+  nip3_           # ( nfa )
+  end_
 
 # ( -- )
 # set the context and current to root and forth vocabulary and remove
