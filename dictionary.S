@@ -54,6 +54,7 @@ FINDWI:
   do_ CONTEXT        # ( addr len context )
   w_plus_y_          # ( addr len context' )
   mw_                # ( addr len wid )
+  end_next_
 
 # ( c-addr len wid -- [ 0 | nfa ] )
 # find a word in the dictionary
@@ -61,10 +62,7 @@ FINDWI:
 # nfa if word is found
 Forthword_ FINDNFA, 0, "findnfa"
   iszero_
-  if_not_0_ FINDNFA_BEGIN
-    # terminating, wid is empty
-    nip2_
-    exit_
+  if_0_ FINDNFA_END
 
   # <begin>
 FINDNFA_BEGIN:
@@ -72,13 +70,9 @@ FINDNFA_BEGIN:
   # <while>
 FINDNFA_BEGIN1:
   iszero_                     # ( c-addr len nfa )
-  if_not_0_ FINDNFA_CHECK
-    # terminating, 0 found
-    nip2_                     # ( 0 )
-    exit_
+  # terminate if 0 found
+  if_0_ FINDNFA_END
 
-FINDNFA_CHECK:
-  
   rpush_                      # ( c-addr len nfa) (R: nfa )
   y_d1_                       # ( c-addr len nfa ) Y:c-addr
   x_d0_                       # ( c-addr len nfa ) X:len
@@ -87,21 +81,19 @@ FINDNFA_CHECK:
   do_ STRINGLEN               # ( c-addr len c-addr len f-addr len )
   and $31, %eax               # ( c-addr len c-addr len f-addr 0:len )
   do_ MCMP                    # ( c-addr len flag )
-  # <if>
   iszero_
-  rpop_                       # ( c-addr len nfa )
-  if_0_ FINDNFA_NEXT
-    # we found the string
-    nip2_                     # ( nfa )
-    end_
+  rpop_                       # ( c-addr len nfa ) (R: )
+  # if not zero then string was found
+  if_not_0_ FINDNFA_END
     
-  # <then>
-FINDNFA_NEXT:
   # next try
   do_ NFA2LFA                 # ( c-addr len lfa )
   # <repeat>
   goto_ FINDNFA_BEGIN
 
+FINDNFA_END:
+  nip2_                       # ( nfa )
+  end_
 
 # ( addr len idx * )
 FINDLAST:
@@ -113,9 +105,9 @@ FINDLAST:
 # search root wordlists for the name from string addr/len
 Forthword_ FINDROOT, 0, "froot"
   # put root wid on stack
-  push_              # ( addr len len )
-  lit_ VE_WIPE       # ( addr len VE_COLD )
-  end_do_ FINDNFA_BEGIN1
+  push_               # ( addr len len )
+  lit_ VE_WIPE        # ( addr len VE_COLD )
+  end_goto_ FINDNFA_BEGIN1
 
 # ( -- idx )
 # get context index

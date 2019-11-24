@@ -1547,9 +1547,17 @@
   ret
 .endm
 
+.macro end_goto_ addr
+  jmp \addr
+.endm
+
 .macro end_do_ addr
   jmp \addr
 .endm
+
+.macro end_next_
+.endm
+
 
 .macro ascii_ str, flg=0
   #.p2align 1 # Align to even locations
