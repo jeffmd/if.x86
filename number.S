@@ -5,7 +5,6 @@
 Forthword_ BASE, 0, "base"
   user_ USER_BASE
   end_
-  ret
 
 # ( n -- )
 # save base
