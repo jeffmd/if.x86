@@ -63,65 +63,80 @@
 # Inline macros
 # push registers on return stack
 
-.macro rpush_ 
+# r=
+.macro r_w_ 
   pushl %eax
 .endm
 
-.macro rpusha_ 
+# r=a
+.macro r_a_ 
   pushl %esi
 .endm
 
-.macro rpushb_
+# r=b
+.macro r_b_
   pushl %edi
 .endm
 
-.macro rpushx_
+# r=x
+.macro r_x_
   pushl %ecx
 .endm
 
-.macro rpushy_
+# r=y
+.macro r_y_
   pushl %edx
 .endm
 
-.macro rpushdsp_
+# r=dsp
+.macro r_dsp_
   pushl %ebx
 .endm
 
 # pop value from return stack into register
 
-.macro rpop_
+# r
+.macro r_
   popl %eax
 .endm
 
-.macro rpopa_ 
+# a=r
+.macro a_r_ 
   popl %esi
 .endm
 
-.macro rpopb_ 
+# b=r
+.macro b_r_ 
   popl %edi
 .endm
 
-.macro rpopx_ 
+# x=r
+.macro x_r_ 
   popl %ecx
 .endm
 
-.macro rpopy_ 
+# y=r
+.macro y_r_ 
   popl %edx
 .endm
 
-.macro rpopdsp_ 
+# dsp=r
+.macro dsp_r_ 
   popl %ebx
 .endm
 
-.macro rnip_
+# r-1
+.macro r_sub_1_
   leal 4(%esp), %esp
 .endm
 
-.macro rnip2_
+# r-2
+.macro r_sub_2_
   leal 8(%esp), %esp
 .endm
 
-.macro rnip3_
+# r-3
+.macro r_sub_3_
   leal 12(%esp), %esp
 .endm
 
@@ -205,7 +220,7 @@
 
 # store register value in return stack
 
-# r0=w
+# r0=
 .macro r0_w_
   movl %eax, (%esp)
 .endm
@@ -255,7 +270,7 @@
   movl %edx, 4(%esp)
 .endm
 
-# r2=w
+# r2=
 .macro r2_w_
   movl %eax, 8(%esp)
 .endm
@@ -287,14 +302,14 @@
   movl %esp, %eax
 .endm
 
-# rsp=w
+# rsp=
 .macro rsp_w_
   movl %eax, %esp
 .endm
 
 # move values between data stack locations and registers
 
-# d0=w
+# d0=
 .macro d0_w_
   mov %eax, (%ebx)
 .endm
@@ -304,7 +319,7 @@
   movl (%ebx), %eax
 .endm
 
-# d1=w
+# d1=
 .macro d1_w_
   mov %eax, 4(%ebx)
 .endm
@@ -314,7 +329,7 @@
   movl 4(%ebx), %eax
 .endm
 
-# d1=w
+# d2=
 .macro d2_w_
   mov %eax, 8(%ebx)
 .endm
@@ -446,89 +461,98 @@
 
 # make space on data stack
 
-# put1
-.macro put1_ # move stack pointer down one cell
+# d+1
+.macro d_plus_1_ # move stack pointer down one cell
   leal -4(%ebx), %ebx
 .endm
 
-# put2
-.macro put2_ # move stack pointer down two cells
+# d+2
+.macro d_plus_2_ # move stack pointer down two cells
   leal -8(%ebx), %ebx
 .endm
 
-# put3
-.macro put3_ # move stack pointer down three cells
+# d+3
+.macro d_plus_3_ # move stack pointer down three cells
   leal -12(%ebx), %ebx
 .endm
 
 # push register on data stack
 
-.macro push_ # save WR on data stack
-  put1_
+# d=
+.macro d_w_ # save WR on data stack
+  d_p1_
   d0_w_
 .endm
 
-# pusha
-.macro pusha_ # save a on data stack
-  put1_
+# d=a
+.macro d_a_ # save a on data stack
+  d_p1_
   d0_a_
 .endm
 
-# pushb
-.macro pushb_ # save b on data stack
-  put1_
+# d=b
+.macro d_b_ # save b on data stack
+  d_p1_
   d0_b_
 .endm
 
-# pushx
-.macro pushx_ # save x on data stack
-  put1_
+# d=x
+.macro d_x_ # save x on data stack
+  d_p1_
   d0_x_
 .endm
 
-# pushy
-.macro pushy_ # save y on data stack
-  put1_
+# d=y
+.macro d_y_ # save y on data stack
+  d_p1_
   d0_y_
 .endm
 
-.macro nip_
+# d-1
+.macro d_sub_1_
   leal 4(%ebx), %ebx
 .endm
 
-.macro nip2_
+# d-2
+.macro d_sub_2_
   leal 8(%ebx), %ebx
 .endm
 
-.macro nip3_
+# d-3
+.macro d_sub_3_
   leal 12(%ebx), %ebx
 .endm
 
 # pop value from data stack into register
 
-.macro pop_ # load WR from stack, increment stack pointer
+# d
+.macro w_d_ # load WR from stack, increment stack pointer
   d0_
-  nip_
+  d_m1_
 .endm
 
-.macro popa_
+# a=d
+.macro a_d_
   a_d0_
-  nip_
+  d_m1_
 .endm
 
-.macro popb_
+# b=d
+.macro b_d_
   b_d0_
-  nip_
+  d_m1_
 .endm
 
-.macro popx_
+# x=d
+.macro x_d_
   x_d0_
-  nip_
+  d_m1_
 .endm
 
-.macro popy_
+# y=d
+.macro y_d_
   y_d0_
-  nip_
+  d_m1_
 .endm
 
 # test with bit constant
@@ -541,211 +565,212 @@
   movl %ebx, %eax
 .endm
 
-# dsp=w
+# dsp=
 .macro dsp_w_
   movl %eax, %ebx
 .endm
 
-# w+=y
-.macro w_plus_y_
+# +y
+.macro plus_y_
   addl %edx, %eax
 .endm
 
-# w+=x
-.macro w_plus_x_
+# +x
+.macro plus_x_
   addl %ecx, %eax
 .endm
 
-# w+=a
-.macro w_plus_a_
+# +a
+.macro plus_a_
   addl %esi, %eax
 .endm
 
-# w+=b
-.macro w_plus_b_
+# +b
+.macro plus_b_
   addl %edi, %eax
 .endm
 
-# y+=w
-.macro y_plus_w_
+# y+
+.macro y_plus_
   addl %eax, %edx
 .endm
 
-# y+=x
+# y+x
 .macro y_plus_x_
   addl %ecx, %edx
 .endm
 
-# y+=a
+# y+a
 .macro y_plus_a_
   addl %esi, %edx
 .endm
 
-# y+=b
+# y+b
 .macro y_plus_b_
   addl %edi, %edx
 .endm
 
-# x+=w
-.macro x_plus_w_
+# x+w
+.macro x_plus_
   addl %eax, %ecx
 .endm
 
-# x+=y
+# x+y
 .macro x_plus_y_
   addl %edx, %ecx
 .endm
 
-# x+=a
+# x+a
 .macro x_plus_a_
   addl %esi, %ecx
 .endm
 
-# x+=b
+# x+b
 .macro x_plus_b_
   addl %edi, %ecx
 .endm
 
-# a+=w
-.macro a_plus_w_
+# a+
+.macro a_plus_
   addl %eax, %esi
 .endm
 
-# a+=b
+# a+b
 .macro a_plus_b_
   addl %edi, %esi
 .endm
 
-# a+=x
+# a+x
 .macro a_plus_x_
   addl %ecx, %esi
 .endm
 
-# a+=y
+# a+y
 .macro a_plus_y_
   addl %edx, %esi
 .endm
 
-# b+=w
-.macro b_plus_w_
+# b+
+.macro b_plus_
   addl %eax, %edi
 .endm
 
-# b+=a
+# b+a
 .macro b_plus_a_
   addl %esi, %edi
 .endm
 
-# b+=x
+# b+x
 .macro b_plus_x_
   addl %ecx, %edi
 .endm
 
-# b+=y
+# b+y
 .macro b_plus_y_
   addl %edx, %edi
 .endm
 
-# w-=y
-.macro w_minus_y_
+# -y
+.macro sub_y_
   sub %edx, %eax
 .endm
 
-# w-=x
-.macro w_minus_x_
+# -x
+.macro sub_x_
   sub %ecx, %eax
 .endm
 
-# w-=a
-.macro w_minus_a_
+# -a
+.macro sub_a_
   sub %esi, %eax
 .endm
 
-# w-=b
-.macro w_minus_b_
+# -b
+.macro sub_b_
   sub %edi, %eax
 .endm
 
-# y-=w
-.macro y_minus_w_
+# y-
+.macro y_sub_
   sub %eax, %edx
 .endm
 
-# y-=x
-.macro y_minus_x_
+# y-x
+.macro y_sub_x_
   sub %ecx, %edx
 .endm
 
-# y-=a
-.macro y_minus_a_
+# y-a
+.macro y_sub_a_
   sub %esi, %edx
 .endm
 
-# y-=b
-.macro y_minus_b_
+# y-b
+.macro y_sub_b_
   sub %edi, %edx
 .endm
 
-# x-=w
-.macro x_minus_w_
+# x-
+.macro x_sub_
   sub %eax, %ecx
 .endm
 
-# x-=y
-.macro x_minus_y_
+# x-y
+.macro x_sub_y_
   sub %edx, %ecx
 .endm
 
-# x-=a
-.macro x_minus_a_
+# x-a
+.macro x_sub_a_
   sub %esi, %ecx
 .endm
 
-# x-=b
-.macro x_minus_b_
+# x-b
+.macro x_sub_b_
   sub %edi, %ecx
 .endm
 
-# a-=w
-.macro a_minus_w_
+# a-
+.macro a_sub_w_
   sub %eax, %esi
 .endm
 
-# a-=b
-.macro a_minus_b_
+# a-b
+.macro a_sub_b_
   sub %edi, %esi
 .endm
 
-# a-=x
-.macro a_minus_x_
+# a-x
+.macro a_sub_x_
   sub %ecx, %esi
 .endm
 
-# a-=y
-.macro a_minus_y_
+# a-y
+.macro a_sub_y_
   sub %edx, %esi
 .endm
 
-# b-=w
-.macro b_minus_w_
+# b-
+.macro b_sub_
   sub %eax, %edi
 .endm
 
-# b-=a
-.macro b_minus_a_
+# b-a
+.macro b_sub_a_
   sub %esi, %edi
 .endm
 
-# b-=x
-.macro b_minus_x_
+# b-x
+.macro b_sub_x_
   sub %ecx, %edi
 .endm
 
-# b-=y
-.macro b_minus_y_
+# b-y
+.macro b_sub_y_
   sub %edx, %edi
 .endm
 
+# -
 .macro neg_
   neg %eax
 .endm
@@ -766,67 +791,67 @@
   neg %edi
 .endm
 
-# w&=y
-.macro w_and_y_
+# &y
+.macro and_y_
   and %edx, %eax
 .endm
 
-# w&=x
-.macro w_and_x_
+# &x
+.macro and_x_
   and %ecx, %eax
 .endm
 
-# w&=a
-.macro w_and_a_
+# &a
+.macro and_a_
   and %esi, %eax
 .endm
 
-# w&=b
-.macro w_and_b_
+# &b
+.macro and_b_
   and %edi, %eax
 .endm
 
-# w|=y
-.macro w_or_y_
+# |y
+.macro or_y_
   or %edx, %eax
 .endm
 
-# w|=x
-.macro w_or_x_
+# |x
+.macro or_x_
   or %ecx, %eax
 .endm
 
-# w|=a
-.macro w_or_a_
+# |a
+.macro or_a_
   or %esi, %eax
 .endm
 
-# w|=b
-.macro w_or_b_
+# |b
+.macro or_b_
   or %edi, %eax
 .endm
 
-# w^=y
-.macro w_xor_y_
+# ^y
+.macro xor_y_
   xor %edx, %eax
 .endm
 
-# w^=x
-.macro w_xor_x_
+# ^x
+.macro xor_x_
   xor %ecx, %eax
 .endm
 
-# w^=a
-.macro w_xor_a_
+# ^a
+.macro xor_a_
   xor %esi, %eax
 .endm
 
-# w^=b
-.macro w_xor_b_
+# ^b
+.macro xor_b_
   xor %edi, %eax
 .endm
 
-# ~
+# !
 .macro not_
   not %eax
 .endm
@@ -876,133 +901,133 @@
   movl $\val, %edx
 .endm
 
-# 1+
-.macro oneplus_
+# +1
+.macro plus_1_
   inc %eax
 .endm
 
 # 1-
-.macro oneminus_
+.macro _1_sub_
   dec %eax
 .endm
 
-# 2+
-.macro twoplus_
+# +2
+.macro plus_2_
   add $2, %eax
 .endm
 
-# 4+
-.macro fourplus_
+# +4
+.macro plus_4_
   add $4, %eax
 .endm
 
 # 2-
-.macro twominus_
+.macro _2_sub_
   sub $2, %eax
 .endm
 
 # 4-
-.macro fourminus_
+.macro _4_sub_
   sub $4, %eax
 .endm
 
-# 2/
-.macro twoslash_
+# /2
+.macro div_2_
   sar %eax
 .endm
 
-# 4/
-.macro fourslash_
+# /4
+.macro div_4_
   sar $2, %eax
 .endm
 
-# 2*
-.macro twostar_
+# *2
+.macro mul_2_
   sal %eax
 .endm
 
-# 4*
-.macro fourstar_
+# *4
+.macro mul_4_
   sal $2, %eax
 .endm
 
-# x/=2
-.macro x_twoslash_
+# x/2
+.macro x_div_2_
   sar %ecx
 .endm
 
-# x/=4
-.macro x_fourslash_
+# x/4
+.macro x_div_4_
   sar $2, %ecx
 .endm
 
-# x*=2
-.macro x_twostar_
+# x*2
+.macro x_mul_2_
   sal %ecx
 .endm
 
-# x*=4
-.macro x_fourstar_
+# x*4
+.macro x_mul_4_
   sal $2, %ecx
 .endm
 
-# y/=2
-.macro y_twoslash_
+# y/2
+.macro y_div_2_
   sar %edx
 .endm
 
-# y/=4
-.macro y_fourslash_
+# y/4
+.macro y_div_4_
   sar $2, %edx
 .endm
 
-# y*=2
-.macro y_twostar_
+# y*2
+.macro y_mul_2_
   sal %edx
 .endm
 
-# y*=4
-.macro y_fourstar_
+# y*4
+.macro y_mul_4_
   sal $2, %edx
 .endm
 
-# a/=2
-.macro a_twoslash_
+# a/2
+.macro a_div_2_
   sar %esi
 .endm
 
-# a/=4
-.macro a_fourslash_
+# a/4
+.macro a_div_4_
   sar $2, %esi
 .endm
 
-# a*=2
-.macro a_twostar_
+# a*2
+.macro a_mul_2_
   sal %esi
 .endm
 
-# a*=4
-.macro a_fourstar_
+# a*4
+.macro a_mul_4_
   sal $2, %esi
 .endm
 
-# b/=2
-.macro b_twoslash_
+# b/2
+.macro b_div_2_
   sar %edi
 .endm
 
-# b/=4
-.macro b_fourslash_
+# b/4
+.macro b_div_4_
   sar $2, %edi
 .endm
 
-# b*=2
-.macro b_twostar_
+# b*2
+.macro b_mul_2_
   sal %edi
 .endm
 
-# b*=4
-.macro b_fourstar_
+# b*4
+.macro b_mul_4_
   sal $2, %edi
 .endm
 
@@ -1080,13 +1105,13 @@
 
 .macro lshift_
   x_w_
-  pop_
+  w_d_
   shl %cl, %eax
 .endm
 
 .macro rshift_
   x_w_
-  pop_
+  w_d_
   shr %cl, %eax
 .endm
 
@@ -1097,22 +1122,22 @@
   movl (%eax), %eax
 .endm
 
-# a=@w
+# a=@
 .macro a_mw_
   movl (%eax), %esi
 .endm
 
-# b=@w
+# b=@
 .macro b_mw_
   movl (%eax), %edi
 .endm
 
-# x=@w
+# x=@
 .macro x_mw_
   movl (%eax), %ecx
 .endm
 
-# y=@w
+# y=@
 .macro y_mw_
   movl (%eax), %edx
 .endm
@@ -1122,22 +1147,22 @@
   movsxw (%eax), %eax
 .endm
 
-# a=h@w
+# a=h@
 .macro a_hmw_
   movsxw (%eax), %esi
 .endm
 
-# b=h@w
+# b=h@
 .macro b_hmw_
   movsxw (%eax), %edi
 .endm
 
-# x=h@w
+# x=h@
 .macro x_hmw_
   movsxw (%eax), %ecx
 .endm
 
-# y=h@w
+# y=h@
 .macro y_hmw_
   movsxw (%eax), %edx
 .endm
@@ -1147,22 +1172,22 @@
   movsxb (%eax), %eax
 .endm
 
-# a=c@w
+# a=c@
 .macro a_cmw_
   movsxb (%eax), %esi
 .endm
 
-# b=c@w
+# b=c@
 .macro b_cmw_
   movsxb (%eax), %edi
 .endm
 
-# x=c@w
+# x=c@
 .macro x_cmw_
   movsxb (%eax), %ecx
 .endm
 
-# y=c@w
+# y=c@
 .macro y_cmw_
   movsxb (%eax), %edx
 .endm
@@ -1170,74 +1195,74 @@
 
 # store register in memory pointed to by working register
 
-# @w=y
+# @=y
 .macro mw_y_
   movl %edx, (%eax)
 .endm
 
-# @w=x
+# @=x
 .macro mw_x_
   movl %ecx, (%eax)
 .endm
 
-# @w=a
+# @=a
 .macro mw_a_
   movl %esi, (%eax)
 .endm
 
-# @w=b
+# @=b
 .macro mw_b_
   movl %edi, (%eax)
 .endm
 
 # store register in memory pointed to by working register
 
-# h@w=y
+# h@=y
 .macro hmw_y_
   movw %dx, (%eax)     
 .endm
 
-# h@w=x
+# h@=x
 .macro hmw_x_
   movw %cx, (%eax)     
 .endm
 
-# h@w=a
+# h@=a
 .macro hmw_a_
   movw %si, (%eax)     
 .endm
 
-# h@w=b
+# h@=b
 .macro hmw_b_
   movw %di, (%eax)     
 .endm
 
-# c@w=x
+# c@=x
 .macro cmw_x_
   movb %cl, (%eax)     
 .endm
 
-# c@w=y
+# c@=y
 .macro cmw_y_
   movb %dl, (%eax)     
 .endm
 
-# a=w
+# a=
 .macro a_w_
   mov %eax, %esi
 .endm
 
-# b=w
+# b=
 .macro b_w_
   mov %eax, %edi
 .endm
 
-# x=w
+# x=
 .macro x_w_
   mov %eax, %ecx
 .endm
 
-# y=w
+# y=
 .macro y_w_
   mov %eax, %edx
 .endm
@@ -1267,7 +1292,7 @@
   movl (%esi), %eax
 .endm
 
-# @a=w
+# @a=
 .macro ma_w_
   mov %eax, (%esi)
 .endm
@@ -1277,7 +1302,7 @@
   movl (%edi), %eax
 .endm
 
-# @b=w
+# @b=
 .macro mb_w_
   mov %eax, (%edi)
 .endm
@@ -1287,12 +1312,12 @@
   movl (%ecx), %eax
 .endm
 
-# @x=w
+# @x=
 .macro mx_w_
   mov %eax, (%ecx)
 .endm
 
-# @x=y
+# @x=
 .macro mx_y_
   mov %edx, (%ecx)
 .endm
@@ -1312,7 +1337,7 @@
   movl (%edx), %eax
 .endm
 
-# @y=w
+# @y=
 .macro my_w_
   mov %eax, (%edx)
 .endm
@@ -1322,7 +1347,7 @@
   movsxw (%esi), %eax
 .endm
 
-# h@a=w
+# h@a=
 .macro hma_w_
   movw %ax, (%esi)
 .endm
@@ -1332,7 +1357,7 @@
   movsxw (%edi), %eax
 .endm
 
-# h@b=w
+# h@b=
 .macro hmb_w_
   movw %ax, (%edi)
 .endm
@@ -1342,7 +1367,7 @@
   movsxw (%ecx), %eax
 .endm
 
-# h@x=w
+# h@x=
 .macro hmx_w_
   movw %ax, (%ecx)
 .endm
@@ -1352,7 +1377,7 @@
   movsxw (%edx), %eax
 .endm
 
-# h@y=w
+# h@y=
 .macro hmy_w_
   movw %ax, (%edx)
 .endm
@@ -1362,7 +1387,7 @@
   movsxb (%esi), %eax
 .endm
 
-# c@a=w
+# c@a=
 .macro cma_w_
   movb %al, (%esi)
 .endm
@@ -1372,7 +1397,7 @@
   movsxb (%edi), %eax
 .endm
 
-# c@b=w
+# c@b=
 .macro cmb_w_
   movb %al, (%edi)
 .endm
@@ -1382,7 +1407,7 @@
   movsxb (%ecx), %eax
 .endm
 
-# c@x=w
+# c@x=
 .macro cmx_w_
   movb %al, (%ecx)
 .endm
@@ -1392,138 +1417,138 @@
   movsxb (%edx), %eax
 .endm
 
-# c@y=w
+# c@y=
 .macro cmy_w_
   movb %al, (%edx)
 .endm
 
-# a+=4
-.macro a_plus4_
+# a+4
+.macro a_plus_4_
   add $4, %esi
 .endm
 
-# b+=4
-.macro b_plus4_
+# b+4
+.macro b_plus_4_
   add $4, %edi
 .endm
 
-# x+=4
-.macro x_plus4_
+# x+4
+.macro x_plus_4_
   add $4, %ecx
 .endm
 
-# y+=4
-.macro y_plus4_
+# y+4
+.macro y_plus_4_
   add $4, %edx
 .endm
 
-# a-=4
-.macro a_minus4_
+# a-4
+.macro a_sub_4_
   sub $4, %esi
 .endm
 
-# b-=4
-.macro b_minus4_
+# b-4
+.macro b_sub_4_
   sub $4, %edi
 .endm
 
-# x-=4
-.macro x_minus4_
+# x-4
+.macro x_sub_4_
   sub $4, %ecx
 .endm
 
-# y-=4
-.macro y_minus4_
+# y-4
+.macro y_sub_4_
   sub $4, %edx
 .endm
 
-# a+=2
-.macro a_plus2_
+# a+2
+.macro a_plus_2_
   add $2, %esi
 .endm
 
-# b+=2
-.macro b_plus2_
+# b+2
+.macro b_plus_2_
   add $2, %edi
 .endm
 
-# x+=2
-.macro x_plus2_
+# x+2
+.macro x_plus_2_
   add $2, %ecx
 .endm
 
-# y+=2
-.macro y_plus2_
+# y+2
+.macro y_plus_2_
   add $2, %edx
 .endm
 
-# a-=2
-.macro a_minus2_
+# a-2
+.macro a_sub_2_
   sub $2, %esi
 .endm
 
-# b-=2
-.macro b_minus2_
+# b-2
+.macro b_sub_2_
   sub $2, %edi
 .endm
 
-# x-=2
-.macro x_minus2_
+# x-2
+.macro x_sub_2_
   sub $2, %ecx
 .endm
 
-# y-=2
-.macro y_minus2_
+# y-2
+.macro y_sub_2_
   sub $2, %edx
 .endm
 
-# a+=1
-.macro a_plus1_
+# a+1
+.macro a_plus_1_
   inc %esi
 .endm
 
-# b+=1
-.macro b_plus1_
+# b+1
+.macro b_plus_1_
   inc %edi
 .endm
 
-# x+=1
-.macro x_plus1_
+# x+1
+.macro x_plus_1_
   inc %ecx
 .endm
 
-# y+=1
-.macro y_plus1_
+# y+1
+.macro y_plus_1_
   inc %edx
 .endm
 
-# a-=1
-.macro a_minus1_
+# a-1
+.macro a_sub_1_
   dec %esi
 .endm
 
-# b-=1
-.macro b_minus1_
+# b-1
+.macro b_sub_1_
   dec %edi
 .endm
 
-# x-=1
-.macro x_minus1_
+# x-1
+.macro x_sub_1_
   dec %ecx
 .endm
 
-# y-=1
-.macro y_minus1_
+# y-1
+.macro y_sub_1_
   dec %edx
 .endm
 
 # if zero flag then go to addr
-.macro if_0_ addr
+.macro ifz_ addr
   je \addr
 .endm
 
 # if not zero flag then go to addr
-.macro if_not_0_ addr
+.macro ifnz_ addr
   jne \addr
 .endm
 

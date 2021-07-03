@@ -3,8 +3,8 @@
 # ( xt -- )
 # execute XT
 Forthword_ EXEC, 0, "exec"
-  rpush_
-  pop_
+  r_w_
+  d_
   end_
 
 # ( xt -- )
@@ -16,7 +16,7 @@ Forthword_ NOOP, INLINE_OPT, "noop"
 # ( u1 u2 -- flag )
 # flag is true if u1 > u2 (unsigned)
 Forthword_ UGREATER, 0, "u>"
-  popy_
+  y_d_
   sub %edx, %eax
   sbb %eax, %eax
   end_
@@ -24,7 +24,7 @@ Forthword_ UGREATER, 0, "u>"
 # ( u1 u2 -- flag)
 # flag is true if u1 < u2 (unsigned)
 Forthword_ ULESS, 0, "u<"
-  popy_
+  y_d_
   sub %eax, %edx
 # w = a-b  -- carry set if a is less than b
   sbb %edx, %edx

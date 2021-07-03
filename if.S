@@ -132,9 +132,9 @@ Forthword_ WARM, 0, "warm"
   type_ "if.x86 0.2\n"
   # check if command line args need to be loaded
 .if BUILD_LEVEL > 1
-	do_ DOCMDARG
+  do_ DOCMDARG
 .endif
-	end_do_ QUIT
+  end_do_ QUIT
 
 # ( -- addr)
 # start address of the data stack
@@ -154,16 +154,16 @@ Forthword_ RECOVER, 0, "recover"
   do_ RESET
   
 .if BUILD_LEVEL > 1
-	do_ ONLY
+  do_ ONLY
 .if BUILD_LEVEL > 9
   do_ DECIMAL           # default to decimal base
 .endif
 .endif
 
   type_ "recovering...\n"
-	do_ QUIT
-	pop %ebp
-	end_
+  do_ QUIT
+  pop %ebp
+  end_
 
 .globl COLD
 .type COLD, @function
@@ -175,10 +175,10 @@ Forthword_ COLD, 0, "cold"
   movl $topdatastack, %ebx
   movl $sysvar_base, %ebp
   
-	rsp_
-	y_w_
-	do_ RSP0
-	mw_y_
+  rsp_
+  y_w_
+  do_ RSP0
+  mw_y_
   
 .if BUILD_LEVEL > 1
   do_ WIPE

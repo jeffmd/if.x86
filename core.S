@@ -5,14 +5,14 @@
 # used if data in program mem and need an address to it
 # must be called
 Forthword_ POPRET, 0, "popret"
-  rpop_
+  r_
   end_
     
 # ( n1 n2 -- flag )
 # flag is true if WR and NOS are equal
 Forthword_ EQUAL, 0, "=="
   sub (%ebx), %eax
-  nip_
+  d_sub_1_
   sub $1, %eax
   sbb %eax, %eax
   end_
@@ -21,7 +21,7 @@ Forthword_ EQUAL, 0, "=="
 # flag is true if n1 is less than n2
 Forthword_ LESS, 0, "<"
   cmp %eax, (%ebx)
-  nip_
+  d_sub_1_
   jge 1f
   zero_
   not_
@@ -35,7 +35,7 @@ Forthword_ LESS, 0, "<"
 Forthword_ GREATER, 0, ">"
            # Get x1 into a register.
   cmp %eax, (%ebx)  # Is x2 greater?
-  nip_
+  d_sub_1_
 GREATER_CHK:
   jle 1f
   zero_
@@ -62,18 +62,18 @@ forthword_ ZEROLESS, INLINE_OPT, "0<"
 # copy ram using bytes.  Assumes no overlap.
 Forthword_ MCPY, 0, "mcpy"
   iszero_         # ( start dest count )
-  if_0_ MCPY_END
+  ifz_ MCPY_END
 
-  rpusha_
-  rpushb_
+  r_a_
+  r_b_
   b_d0_              # ( start dest count ) B: dest
   x_w_               # ( start dest count ) X: count
   a_d1_              # (  start dest count ) A: start
   cld
   rep movsb
-  rpopb_
-  rpopa_
+  b_r_
+  a_r_
 
 MCPY_END:
-  nip2_
+  d_sub_2_
   end_

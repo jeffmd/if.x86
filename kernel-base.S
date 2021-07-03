@@ -79,21 +79,21 @@ Forthword_ PNIB, 0, ".h"
 # ( n -- )
 # simple 32 bit hex print
 Forthword_ PHEX, 0, ".$"
-  push_        # ( n n )
+  d_w_         # ( n n )
   lit_ '$      # ( n $ )
-  do_ EMIT    # ( n ? )
+  do_ EMIT     # ( n ? )
   lit_ 28      # ( n 28 )
 PHEX_BEGIN:
   y_d0_
-  push_
-  pushy_       # ( n x n x )
+  d_w_
+  d_y_         # ( n x n x )
   rshift_      # ( n x n' )
   do_ PNIB
-  pop_         # ( n x )
-  fourminus_   # ( n x-4 )
-  if_not_0_ PHEX_BEGIN
+  d_           # ( n x )
+  sub_4_       # ( n x-4 )
+  ifnz_ PHEX_BEGIN
 
-  pop_         # ( n )
+  d_           # ( n )
   do_ PNIB
   lit_ 32      # ( 32 )
   end_do_ EMIT
@@ -105,7 +105,7 @@ Forthword_ BYE, 0, "bye"
   x_w_
   lit_y_ 1
   hmx_
-  w_or_y_
+  or_y_
   hmx_w_
   end_
 
@@ -140,7 +140,7 @@ Forthword_ QP_RD, 0, "?prd"
   # output ready prompt if in interpret mode
   # <-if>
   iszero_
-  if_not_0_ QP_RD_exit
+  ifnz_ QP_RD_exit
     exit_do_ PROMPTRDY
 
 QP_RD_exit:
@@ -153,19 +153,19 @@ QP_RD_exit:
 Forthword_ DOREFILL, 0, "(refill)"
   # if just starting new input line then check prompt and reset input position
   do_ G_IN                # ( >inaddr )
-  hmw_                     # ( >in )
-  iszero_                  # ( >in )
-  if_0_ DOREFILL_do
+  hmw_                    # ( >in )
+  iszero_                 # ( >in )
+  ifz_ DOREFILL_do
     do_ INRESET
 
 DOREFILL_do:
   # refill the input buffer
-  end_do_ REFILL           # ( f )
+  end_do_ REFILL          # ( f )
 
 # ( -- )
 # Fetch pause vector and EXEC it. may make a context/task switch
 Forthword_ DOPAUSE, 0, "(pause)"
-  push_
+  d_w_
   do_ SLEEP ## temp fix for cpu hogging
   do_ PAUSE_FETCH
   end_do_ EXEC
@@ -176,7 +176,7 @@ Forthword_ DOTASKS, 0, "(tasks)"
   # <begin>
   do_ DOREFILL     # ( flag )
   iszero_
-  if_0_ DOTASKS_N1
+  ifz_ DOTASKS_N1
     # there is something in the input buffer, try interpreting it
 .if BUILD_LEVEL > 1
     do_ DOINTERPRET
@@ -189,7 +189,7 @@ DOTASKS_N1:
   hmw_
   bittest_ TERMINATE_F
   # <again>
-  if_0_ DOTASKS
+  ifz_ DOTASKS
   
   end_
 
@@ -217,9 +217,9 @@ Forthword_ IDLETIMEFETCH, 0, "idletime@"
 # ( n -- )
 # sleep for n micro seconds
 Forthword_ USLEEP, 0, "usleep"
-  rpush_
+  r_w_
   do_ usleep
-  rnip_
+  r_sub_1_
   end_
 
 # ( -- )
@@ -227,7 +227,7 @@ Forthword_ USLEEP, 0, "usleep"
 Forthword_ SLEEP, 0, "sleep"
   do_ IDLETIMEFETCH
   iszero_
-  if_0_ NO_IDLESLEEP
+  ifz_ NO_IDLESLEEP
   exit_do_ USLEEP
 NO_IDLESLEEP:
   end_
