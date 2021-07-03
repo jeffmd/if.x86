@@ -526,33 +526,33 @@
 # pop value from data stack into register
 
 # d
-.macro w_d_ # load WR from stack, increment stack pointer
+.macro d_ # load WR from stack, increment stack pointer
   d0_
-  d_m1_
+  d_sub_1_
 .endm
 
 # a=d
 .macro a_d_
   a_d0_
-  d_m1_
+  d_sub_1_
 .endm
 
 # b=d
 .macro b_d_
   b_d0_
-  d_m1_
+  d_sub_1_
 .endm
 
 # x=d
 .macro x_d_
   x_d0_
-  d_m1_
+  d_sub_1_
 .endm
 
 # y=d
 .macro y_d_
   y_d0_
-  d_m1_
+  d_sub_1_
 .endm
 
 # test with bit constant
