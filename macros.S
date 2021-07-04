@@ -462,17 +462,17 @@
 # make space on data stack
 
 # d+1
-.macro d_plus_1_ # move stack pointer down one cell
+.macro d_add_1_ # move stack pointer down one cell
   leal -4(%ebx), %ebx
 .endm
 
 # d+2
-.macro d_plus_2_ # move stack pointer down two cells
+.macro d_add_2_ # move stack pointer down two cells
   leal -8(%ebx), %ebx
 .endm
 
 # d+3
-.macro d_plus_3_ # move stack pointer down three cells
+.macro d_add_3_ # move stack pointer down three cells
   leal -12(%ebx), %ebx
 .endm
 
@@ -480,31 +480,31 @@
 
 # d=
 .macro d_w_ # save WR on data stack
-  d_p1_
+  d_add_1_
   d0_w_
 .endm
 
 # d=a
 .macro d_a_ # save a on data stack
-  d_p1_
+  d_add_1_
   d0_a_
 .endm
 
 # d=b
 .macro d_b_ # save b on data stack
-  d_p1_
+  d_add_1_
   d0_b_
 .endm
 
 # d=x
 .macro d_x_ # save x on data stack
-  d_p1_
+  d_add_1_
   d0_x_
 .endm
 
 # d=y
 .macro d_y_ # save y on data stack
-  d_p1_
+  d_add_1_
   d0_y_
 .endm
 
@@ -571,102 +571,102 @@
 .endm
 
 # +y
-.macro plus_y_
+.macro add_y_
   addl %edx, %eax
 .endm
 
 # +x
-.macro plus_x_
+.macro add_x_
   addl %ecx, %eax
 .endm
 
 # +a
-.macro plus_a_
+.macro add_a_
   addl %esi, %eax
 .endm
 
 # +b
-.macro plus_b_
+.macro add_b_
   addl %edi, %eax
 .endm
 
 # y+
-.macro y_plus_
+.macro y_add_
   addl %eax, %edx
 .endm
 
 # y+x
-.macro y_plus_x_
+.macro y_add_x_
   addl %ecx, %edx
 .endm
 
 # y+a
-.macro y_plus_a_
+.macro y_add_a_
   addl %esi, %edx
 .endm
 
 # y+b
-.macro y_plus_b_
+.macro y_add_b_
   addl %edi, %edx
 .endm
 
 # x+w
-.macro x_plus_
+.macro x_add_
   addl %eax, %ecx
 .endm
 
 # x+y
-.macro x_plus_y_
+.macro x_add_y_
   addl %edx, %ecx
 .endm
 
 # x+a
-.macro x_plus_a_
+.macro x_add_a_
   addl %esi, %ecx
 .endm
 
 # x+b
-.macro x_plus_b_
+.macro x_add_b_
   addl %edi, %ecx
 .endm
 
 # a+
-.macro a_plus_
+.macro a_add_
   addl %eax, %esi
 .endm
 
 # a+b
-.macro a_plus_b_
+.macro a_add_b_
   addl %edi, %esi
 .endm
 
 # a+x
-.macro a_plus_x_
+.macro a_add_x_
   addl %ecx, %esi
 .endm
 
 # a+y
-.macro a_plus_y_
+.macro a_add_y_
   addl %edx, %esi
 .endm
 
 # b+
-.macro b_plus_
+.macro b_add_
   addl %eax, %edi
 .endm
 
 # b+a
-.macro b_plus_a_
+.macro b_add_a_
   addl %esi, %edi
 .endm
 
 # b+x
-.macro b_plus_x_
+.macro b_add_x_
   addl %ecx, %edi
 .endm
 
 # b+y
-.macro b_plus_y_
+.macro b_add_y_
   addl %edx, %edi
 .endm
 
@@ -902,7 +902,7 @@
 .endm
 
 # +1
-.macro plus_1_
+.macro add_1_
   inc %eax
 .endm
 
@@ -912,12 +912,12 @@
 .endm
 
 # +2
-.macro plus_2_
+.macro add_2_
   add $2, %eax
 .endm
 
 # +4
-.macro plus_4_
+.macro add_4_
   add $4, %eax
 .endm
 
@@ -1423,22 +1423,22 @@
 .endm
 
 # a+4
-.macro a_plus_4_
+.macro a_add_4_
   add $4, %esi
 .endm
 
 # b+4
-.macro b_plus_4_
+.macro b_add_4_
   add $4, %edi
 .endm
 
 # x+4
-.macro x_plus_4_
+.macro x_add_4_
   add $4, %ecx
 .endm
 
 # y+4
-.macro y_plus_4_
+.macro y_add_4_
   add $4, %edx
 .endm
 
@@ -1463,22 +1463,22 @@
 .endm
 
 # a+2
-.macro a_plus_2_
+.macro a_add_2_
   add $2, %esi
 .endm
 
 # b+2
-.macro b_plus_2_
+.macro b_add_2_
   add $2, %edi
 .endm
 
 # x+2
-.macro x_plus_2_
+.macro x_add_2_
   add $2, %ecx
 .endm
 
 # y+2
-.macro y_plus_2_
+.macro y_add_2_
   add $2, %edx
 .endm
 
@@ -1503,22 +1503,22 @@
 .endm
 
 # a+1
-.macro a_plus_1_
+.macro a_add_1_
   inc %esi
 .endm
 
 # b+1
-.macro b_plus_1_
+.macro b_add_1_
   inc %edi
 .endm
 
 # x+1
-.macro x_plus_1_
+.macro x_add_1_
   inc %ecx
 .endm
 
 # y+1
-.macro y_plus_1_
+.macro y_add_1_
   inc %edx
 .endm
 
