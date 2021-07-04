@@ -17,7 +17,7 @@ Forthword_ SHARPTIB, 0, "#tib"
 # address and current length of the input buffer
 Forthword_ STIB, 0, "stib"
   user_ ram_tib
-  push_
+  d_w_
   user_ ram_sharptib
   hmw_
   end_
@@ -45,7 +45,7 @@ Forthword_ STDIN, 0, "stdin"
 # fetch key from deffered routine, should leave a single character
 # in WR if a key was pressed. If no key pressed then -1 is in WR.
 Forthword_ KEY, 0, "key"
-  push_
+  d_w_
   do_ KEYADDR
   mw_
   end_do_ EXEC
@@ -70,55 +70,55 @@ Forthword_ ACCEPT, 0, "accept"
   do_ KEY        # ( k )
   iszero_
   jg ACCEPT_checkeol
-  oneplus_
+  add_1_
   exit_
 
 ACCEPT_checkeol:
   # check for EOL
   cmp $10, %eax
   # <if>
-  if_not_0_ ACCEPT_checkreturn
+  ifnz_ ACCEPT_checkreturn
   exit_
 
 ACCEPT_checkreturn:
   cmp $13, %eax     # ( k )
   # <if>
-  if_not_0_ ACCEPT_checkdelete
+  ifnz_ ACCEPT_checkdelete
   exit_
 
 ACCEPT_checkdelete:
   # check delete
   cmp $127, %eax     # ( k )
   # <if>
-  if_not_0_ ACCEPT_checkcontrol
+  ifnz_ ACCEPT_checkcontrol
   # delete previous character
   # check beginning of line
   # if cursor is 0 then at begining of input
-  push_             # ( k k )
+  d_w_             # ( k k )
   do_ SHARPTIB      # ( k #tib )
   hmw_              # ( k tib )
   # <if>
   iszero_           # ( k tib )
-  pop_              # ( k )
-  if_not_0_ ACCEPT_dodelete
+  d_              # ( k )
+  ifnz_ ACCEPT_dodelete
   # at the beginning of the line, ignore this character
   zero_             # ( 0 )
   exit_
 
 ACCEPT_dodelete:
   andl $8, %eax
-  push_               # ( k k )
+  d_w_               # ( k k )
   do_ EMIT           # ( k ? )
   bl_                 # ( k bl )
   do_ EMIT            # ( k ? )
-  pop_                # ( k )
+  d_                # ( k )
   do_ EMIT            # ( ? )
   # decrease cursor position by one
   true_               # ( true )
   y_w_                # ( true Y:true )
   do_ SHARPTIB        # ( #tibaddr )
   x_hmw_
-  x_plus_y_
+  x_add_y_
   hmw_x_              # ( #tibaddr )
   goto_ ACCEPT_checkmaxinput
 
@@ -132,30 +132,30 @@ ACCEPT_checkcontrol:
 
 ACCEPT_echo:
     # emit the key
-  push_                  # ( k k )
+  d_w_                   # ( k k )
   do_ EMIT               # ( k ? )
   # now store the key in the input buffer
   do_ STIB               # ( k tibaddr #tib)
   y_d0_                  # ( k tibaddr #tib) Y: tibaddr
-  w_plus_y_              # ( k tibaddr tibaddr+#tib )
+  add_y_                 # ( k tibaddr tibaddr+#tib )
   x_d1_                  # ( k tibaddr tibaddr+#tib ) X: k
   cmw_x_                 # ( k tibaddr tibaddr+#tib )
-  nip2_                  # ( tibaddr+#tib )
+  r_sub_2_               # ( tibaddr+#tib )
 
-  do_ SHARPTIB          # ( #tib )
+  do_ SHARPTIB           # ( #tib )
   y_hmw_
-  y_plus1_
+  y_add_1_
   hmw_y_                 # ( ? )
 
 ACCEPT_checkmaxinput:
   # check if max number of char input
-  do_ SHARPTIB          # ( #tibaddr )
+  do_ SHARPTIB           # ( #tibaddr )
   y_hmw_                 # ( #tib )
   lit_ TIBSIZE           # ( tibsize )
-  w_minus_y_             # ( tibsize-#tib )
+  sub_y_                 # ( tibsize-#tib )
   # <if>
   iszero_                # ( tibsize-#tib )
-  if_0_ ACCEPT_atmaxinput
+  ifz_ ACCEPT_atmaxinput
   zero_
   exit_
 
@@ -169,10 +169,10 @@ ACCEPT_atmaxinput:
 Forthword_ REFILLTIB, 0, "reftib"
   do_ ACCEPT                 # ( f )
   iszero_                    # ( f )
-  if_0_ REFILLTIB_exit
-  push_
+  ifz_ REFILLTIB_exit
+  d_w_
   do_ CR
-  pop_
+  d_
 
 REFILLTIB_exit:
   end_
