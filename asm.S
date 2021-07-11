@@ -20,8 +20,8 @@ Forthword_ RELDST, 0, "reldst"
   # calculate relative distance in bytes from start to dest
   # rel dist = dest - start
   y_w_                  # ( dest start ) Y: start
-  pop_                  # ( dest )
-  w_minus_y_            # ( dest-start )
+  d_                    # ( dest )
+  sub_y_                # ( dest-start )
   end_
 
 # build assembler instruction jmp - unconditional long jump
@@ -30,7 +30,7 @@ Forthword_ RELDST, 0, "reldst"
 Forthword_ JUMP, 0, "jmpl"
   # 0xe9 XXXX XXXX XXXX
   sub $5, %eax
-  push_
+  d_w_
   lit_ 0xe9
   end_
 
@@ -45,16 +45,16 @@ Forthword_ JUMPS, 0, "jmps"
 # ( reldist -- )
 # reldist: relative distance as 2's compliment
 Forthword_ JMP_COMMA, 0, "jmp,"
-	do_ JUMP             # ( rellong jumpinst )
-	do_ COMMA            # ( rellong ? )
-  pop_                 # ( rellong )
-	do_ DWCOMMA          # ( ? )
-	end_do_ CALLOFF
+  do_ JUMP             # ( rellong jumpinst )
+  do_ COMMA            # ( rellong ? )
+  d_                   # ( rellong )
+  do_ DWCOMMA          # ( ? )
+  end_do_ CALLOFF
 
 # compile jump at start address
 # ( start dest -- )
 Forthword_ JMPC, 0, "jmpc"
-  push_
+  d_w_
   d1_                  # ( start dest start )
   do_ RELDST           # ( start reldst )
   do_ JUMP             # ( start rellong jumpinst )
@@ -62,9 +62,9 @@ Forthword_ JMPC, 0, "jmpc"
   d1_                  # ( start rellong start )
   cmw_y_               # ( start rellong start )
   y_d0_                # ( start rellong start Y:rellong )
-  oneplus_             # ( start rellong start+1 )
+  add_1_               # ( start rellong start+1 )
   mw_y_                # ( start rellong start+1 )
-  nip2_                # ( start+1 )
+  d_sub_2_             # ( start+1 )
   end_do_ TAILOPTOFF
 
 # conditional jump over a jmp if not zero
@@ -89,12 +89,12 @@ Forthword_ COMPILEXT, 0, "cxt"
   #sbr fflags, 1<<DIS_CALL_OPT_FB
   
   # should word be inlinned?
-	test $(INLINE_OPT << 8), %eax
+  test $(INLINE_OPT << 8), %eax
 	# if bit 0 of high byte flag is 0 then word is to be inlinned
-  if_not_0_ DO_COMPILEXT
+  ifnz_ DO_COMPILEXT
     # not a call so disable tail call optimization
     do_ CALLOFF        # ( xt ? )
-    pop_               # ( xt )
+    d_                 # ( xt )
     exit_do_ INLINE
 
 DO_COMPILEXT:
@@ -111,10 +111,10 @@ Forthword_ CALLC, 0, "call,"
   # call is an 8 bit instruction with a 32 bit 2's compliment offset
   # bit pattern:
   #
-  push_                # ( dist dist )
+  d_w_                 # ( dist dist )
   lit_ 0xe8            # ( dist 0xe8 )
   do_ COMMA            # ( dist ? )
-  pop_                 # ( dist )
+  d_                   # ( dist )
   # adjust rel distance to account for instruction length of call
   sub $5, %eax         # ( dist-5 )
   # store offset
@@ -124,41 +124,41 @@ Forthword_ CALLC, 0, "call,"
 # ( n ins -- )
 Forthword_ DOLIT, 0, "(lit,)"
   do_ COMMA
-  pop_
+  d_
   # store 32 bit val from tos
   end_do_ DWCOMMA
 
 # compile top of stack as inlinned immediate 32 bit constant
 # ( n -- )
 Forthword_ WLIT_C, 0, "w=,"
-  push_
+  d_w_
   lit_ 0xb8
   end_do_ DOLIT
 
 # compile Y register load inlinned immediate 32 bit constant
 # ( n -- )
 Forthword_ YLIT_C, 0, "y=,"
-  push_
+  d_w_
   lit_ 0xba
   end_do_ DOLIT
 
 # compile X register load inlinned immediate 32 bit constant
 # ( n -- )
 Forthword_ XLIT_C, 0, "x=,"
-  push_
+  d_w_
   lit_ 0xb9
   end_do_ DOLIT
 
 # compile A register load inlinned immediate 32 bit constant
 # ( n -- )
 Forthword_ ALIT_C, 0, "a=,"
-  push_
+  d_w_
   lit_ 0xbe
   end_do_ DOLIT
 
 # compile B register load inlinned immediate 32 bit constant
 # ( n -- )
 Forthword_ BLIT_C, 0, "b=,"
-  push_
+  d_w_
   lit_ 0xbf
   end_do_ DOLIT

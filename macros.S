@@ -731,7 +731,7 @@
 .endm
 
 # a-
-.macro a_sub_w_
+.macro a_sub_
   sub %eax, %esi
 .endm
 

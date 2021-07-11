@@ -54,14 +54,14 @@ Forthword_ DIGITQ, 0, "digit?"
   exit_
 
 DIGITQ0:
-  push_
-  push_                # ( n n n )
+  d_w_
+  d_w_                 # ( n n n )
   do_ BASEFETCH        # ( n n base )
   do_ UGREATEREQUAL    # ( n flag )
   iszero_
-  if_0_ PFA_DIGITQ_DONE
+  ifz_ PFA_DIGITQ_DONE
   zero_                # ( n 0 )
-  nip_                 # ( 0 )
+  d_sub_1_             # ( 0 )
   exit_
 
 PFA_DIGITQ_DONE:
@@ -73,17 +73,17 @@ PFA_DIGITQ_DONE:
 #forthword_ SETBASE, 0, "setbase"
 SETBASE:        
   cmp $'$, %eax
-  if_not_0_ PFA_SETBASE0
+  ifnz_ PFA_SETBASE0
   exit_do_ HEX
 
 PFA_SETBASE0:
   cmp $'%, %eax
-  if_not_0_ PFA_SETBASE1
+  ifnz_ PFA_SETBASE1
   exit_do_ BIN
 
 PFA_SETBASE1:
   cmp $'&, %eax
-  if_not_0_ PFA_SETBASE2
+  ifnz_ PFA_SETBASE2
   exit_do_ DECIMAL
 
 PFA_SETBASE2:        # ( error)
@@ -95,13 +95,13 @@ PFA_SETBASE2:        # ( error)
 # skip a numeric prefix character
 #forthword_ PRAEFIX, 0, "praefix"
 PRAEFIX:             # ( addr len -- addr' len' )
-  push_
+  d_w_
   d1_              # ( addr len addr )
   cmw_             # ( addr len c )
   cmp $0x30, %eax
   jb PFA_PRAEFIX0
   # no praefix
-  pop_             # ( addr len )
+  d_               # ( addr len )
   exit_
 
 PFA_PRAEFIX0:
@@ -113,34 +113,34 @@ PFA_PRAEFIX0:
 # check for - sign
 # forthword_ NUMBERSIGN, 0, "#-"
 NUMBERSIGN:        # ( addr len -- )
-  push_
+  d_w_
   d1_            # ( addr len addr )
   cmw_           # ( addr len char )
   cmp $'-, %eax
-  if_0_ NUMBERSIGN_HASSIGN
+  ifz_ NUMBERSIGN_HASSIGN
     zero_      # ( addr len 0 )
     exit_
 
 NUMBERSIGN_HASSIGN:
-  rpush_           # ( addr len char ) (R: char )
+  r_w_             # ( addr len char ) (R: char )
   lit_ 1           # ( addr len 1 )
   do_ SLASHSTRING  # ( addr len )
-  push_            # ( addr len len )
-  rpop_            # ( addr len char ) (R: )
+  d_w_             # ( addr len len )
+  r_               # ( addr len char ) (R: )
   end_
 
 # ( u1 addr len -- u2 addr2 len2 )
 # convert a string to a number  c-addr2/u2 is the unconverted string
 Forthword_ TO_NUMBER, 0, ">num"
   iszero_
-  if_0_ TO_NUMBER_END
-    push_
+  ifz_ TO_NUMBER_END
+    d_w_
     d1_                  # ( u addr len addr )
     cmw_                 # ( u addr len char )
     do_ DIGITQ           # ( u addr len [digit] flag )
     iszero_
-    pop_                 # ( u adr len [digit] )
-    if_not_0_ TO_NUMBER_CONV
+    d_                 # ( u adr len [digit] )
+    ifnz_ TO_NUMBER_CONV
       # character is not a recognized number
       exit_              # ( u adr len )
 
@@ -149,7 +149,7 @@ TO_NUMBER_CONV:
   x_w_                 # ( u adr len digit ) X: digit
   do_ BASEFETCH        # ( u adr len base )
   imul %edx, %eax      # ( u adr len u*base )
-  w_plus_x_            # ( u adr len u'' )
+  add_x_               # ( u adr len u'' )
   d2_w_                # ( u'' adr len u'' )
   lit_ 1               # ( u'' adr len 1 )
   do_ SLASHSTRING      # ( u'' adr' len' )
@@ -161,17 +161,17 @@ TO_NUMBER_END:
 # (addr len -- [n] f)
 # convert a string at addr to a number
 Forthword_ NUMBER, 0, "num"
-  push_                   # ( addr len len )
+  d_w_                    # ( addr len len )
   do_ BASEFETCH           # ( addr len base )
-  rpush_                  # ( addr len base ) (R: base)
-  pop_                    # ( addr len )
+  r_w_                    # ( addr len base ) (R: base)
+  d_                      # ( addr len )
   do_ NUMBERSIGN          # ( addr len flag )
-  rpush_                  # ( addr len flag ) (R: base flagsign)
-  pop_                    # ( addr len )
+  r_w_                    # ( addr len flag ) (R: base flagsign)
+  d_                      # ( addr len )
   do_ PRAEFIX             # ( addr' len' )
   do_ NUMBERSIGN          # ( addr len flagsign2 )
   y_r0_                   # ( addr len flagsign2 Y:flagsign ) (R: base flagsign)
-  w_or_y_                 # ( addr len flagsign' )
+  or_y_                   # ( addr len flagsign' )
   r0_w_                   # ( addr len flagsign' ) (R: base flagsign')
   x_d0_                   # ( addr len flagsign' ) X: len
   y_d1_                   # ( addr len flagsign' ) Y: addr
@@ -183,30 +183,30 @@ Forthword_ NUMBER, 0, "num"
   # check length of the remaining string.
   # if zero: a single cell number is entered
   iszero_
-  pop_                    # ( n addr' )
-  if_0_ PFA_NUMBER_SIGN
+  d_                      # ( n addr' )
+  ifz_ PFA_NUMBER_SIGN
 
   # error in string to number conversion
-  nip_                    # ( addr' ) (R: base flagsign' )
-  rnip_                   # ( addr' ) (R: base )
+  d_sub_1_                # ( addr' ) (R: base flagsign' )
+  r_sub_1_                # ( addr' ) (R: base )
   zero_                   # ( 0 ) (R: base )
   goto_ PFA_NUMBER_DONE
 
 PFA_NUMBER_SIGN:
   # incorporate sign into number
-  rpop_                   # ( n flagsign' ) (R: base )
+  r_                      # ( n flagsign' ) (R: base )
   iszero_
-  if_0_ PFA_NUMBER_TRUE
-  pop_                    # ( n )
+  ifz_ PFA_NUMBER_TRUE
+  d_                      # ( n )
   neg_                    # ( -n )
-  push_                   # ( -n -n )
+  d_w_                    # ( -n -n )
 
 PFA_NUMBER_TRUE:
   true_                   # ( n true ) (R: base )
 
 PFA_NUMBER_DONE:
-  push_                   # ( n flag flag )
-  rpop_                   # ( n flag base ) (R: )
+  d_w_                    # ( n flag flag )
+  r_                      # ( n flag base ) (R: )
   do_ BASESTORE           # ( n flag ? )
-  pop_                    # ( n flag )
+  d_                      # ( n flag )
   end_

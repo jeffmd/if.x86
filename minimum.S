@@ -15,7 +15,7 @@ Forthword_ WIPE, 0, "WIPE"
   y_0_
   lit_ EE_FORTHWORDLIST
   mw_y_
-  fourplus_
+  add_4_
   mw_y_
 
   lit_y_ HERESTART

@@ -10,20 +10,20 @@ Forthword_ D_W, INLINE_OPT, "d="
   
 # ( n -- ? n  )
 # restore top of data stack once
-Forthword_ D_PLUS_1, INLINE_OPT, "d+1"
-  d_plus_1_
+Forthword_ D_ADD_1, INLINE_OPT, "d+1"
+  d_add_1_
   end_  
   
 # ( n -- ? ? n )
 # restore top of data stack twice
-Forthword_ D_PLUS_2, INLINE_OPT, "d+2"
-  d_plus_2_
+Forthword_ D_ADD_2, INLINE_OPT, "d+2"
+  d_add_2_
   end_  
   
 # ( n -- ? ? ? n)
 # restore top of data stack three times
-Forthword_ D_PLUS_3, INLINE_OPT, "d+3"
-  d_plus_3_
+Forthword_ D_ADD_3, INLINE_OPT, "d+3"
+  d_add_3_
   end_  
   
 # ( n1 n2 -- n1 a  n2 )
@@ -84,15 +84,15 @@ Forthword_ D0_W, INLINE_OPT, "d0="
     
 # ( n3 n2 n1 -- n1 n2 n1 )
 #   d1 d0 WR
-# d1=w
-Forthword_ D1_W, INLINE_OPT, "d1=w"
+# d1=
+Forthword_ D1_W, INLINE_OPT, "d1="
   d1_w_
   end_
     
 # ( n4 n3 n2 n1 -- n1 n3 n2 n1 )
 #   d2 d1 d0 WR
-# d2=w
-Forthword_ D2_W, INLINE_OPT, "d2=w"
+# d2=
+Forthword_ D2_W, INLINE_OPT, "d2="
   d2_w_
   end_
     
@@ -649,26 +649,26 @@ Forthword_ R0PLUS, INLINE_OPT, "r0+"
 
 # ( n1 -- n1+y )
 # w = w + y
-Forthword_ PLUS_Y, INLINE_OPT, "+y"
-  plus_y_
+Forthword_ ADD_Y, INLINE_OPT, "+y"
+  add_y_
   end_
 
 # ( n1 -- n1+x )
 # w = w + x
-Forthword_ PLUS_X, INLINE_OPT, "+x"
-  plus_x_
+Forthword_ ADD_X, INLINE_OPT, "+x"
+  add_x_
   end_
 
 # ( n1 -- n1+a )
 # w = w + a
-Forthword_ PLUS_A, INLINE_OPT, "+a"
-  plus_a_
+Forthword_ ADD_A, INLINE_OPT, "+a"
+  add_a_
   end_
 
 # ( n1 -- n1+b )
 # w = w + b
-Forthword_ PLUS_B, INLINE_OPT, "+b"
-  plus_b_
+Forthword_ ADD_B, INLINE_OPT, "+b"
+  add_b_
   end_
 
 # ( n1|u1 -- n1-y|u1-y )
@@ -697,26 +697,26 @@ Forthword_ SUB_B, INLINE_OPT, "-b"
 
 # ( n1 -- n1 Y:Y+n1 )
 # y = y + w
-Forthword_ Y_PLUS, INLINE_OPT, "y+"
-  y_plus_
+Forthword_ Y_ADD, INLINE_OPT, "y+"
+  y_add_
   end_
 
 # ( n1 -- n1 Y:Y+A )
 # y = y + a
-Forthword_ Y_PLUS_A, INLINE_OPT, "y+a"
-  y_plus_a_
+Forthword_ Y_ADD_A, INLINE_OPT, "y+a"
+  y_add_a_
   end_
 
 # ( n1 -- n1 Y:Y+B )
 # y = y + b
-Forthword_ Y_PLUS_B, INLINE_OPT, "y+b"
-  y_plus_b_
+Forthword_ Y_ADD_B, INLINE_OPT, "y+b"
+  y_add_b_
   end_
 
 # ( n1 -- n1 Y:Y+X )
 # y = y + x
-Forthword_ Y_PLUS_X, INLINE_OPT, "y+x"
-  y_plus_x_
+Forthword_ Y_ADD_X, INLINE_OPT, "y+x"
+  y_add_x_
   end_
 
 # ( n1 -- n1 Y:Y-n1 )
@@ -745,26 +745,26 @@ Forthword_ Y_SUB_X, INLINE_OPT, "y-x"
 
 # ( n1 -- n1 X:X+n1 )
 # x = x + w
-Forthword_ X_PLUS_W, INLINE_OPT, "x+"
-  x_plus_
+Forthword_ X_ADD_W, INLINE_OPT, "x+"
+  x_add_
   end_
 
 # ( n1 -- n1 X:X+a )
 # x = x + a
-Forthword_ X_PLUS_A, INLINE_OPT, "x+a"
-  x_plus_a_
+Forthword_ X_ADD_A, INLINE_OPT, "x+a"
+  x_add_a_
   end_
 
 # ( n1 -- n1 X:X+B )
 # x = x + b
-Forthword_ X_PLUS_B, INLINE_OPT, "x+b"
-  x_plus_b_
+Forthword_ X_ADD_B, INLINE_OPT, "x+b"
+  x_add_b_
   end_
 
 # ( n1 -- n1 X:X+Y )
 # x = x + y
-Forthword_ X_PLUS_Y, INLINE_OPT, "x+y"
-  x_plus_y_
+Forthword_ X_ADD_Y, INLINE_OPT, "x+y"
+  x_add_y_
   end_
 
 # ( n1 -- n1 X:X-n1 )
@@ -793,26 +793,26 @@ Forthword_ X_SUB_Y, INLINE_OPT, "x-y"
 
 # ( n1 -- n1 A:A+n1 )
 # a = a + n1
-Forthword_ A_PLUS, INLINE_OPT, "a+"
-  a_plus_
+Forthword_ A_ADD, INLINE_OPT, "a+"
+  a_add_
   end_
 
 # ( n1 -- n1 A:A+B )
 # a = a + b
-Forthword_ A_PLUS_B, INLINE_OPT, "a+b"
-  a_plus_b_
+Forthword_ A_ADD_B, INLINE_OPT, "a+b"
+  a_add_b_
   end_
 
 # ( n1 -- n1 A:A+X )
 # a = a + x
-Forthword_ A_PLUS_X, INLINE_OPT, "a+x"
-  a_plus_x_
+Forthword_ A_ADD_X, INLINE_OPT, "a+x"
+  a_add_x_
   end_
 
 # ( n1 -- n1 A:A+Y )
 # a = a + y
-Forthword_ A_PLUS_Y, INLINE_OPT, "a+y"
-  a_plus_y_
+Forthword_ A_ADD_Y, INLINE_OPT, "a+y"
+  a_add_y_
   end_
 
 # ( n1 -- n1 A:A-n1 )
@@ -841,26 +841,26 @@ Forthword_ A_SUB_Y, INLINE_OPT, "a-y"
 
 # ( n1 -- n1 B:B+n1 )
 # b = b + w
-Forthword_ B_PLUS, INLINE_OPT, "b+"
-  b_plus_
+Forthword_ B_ADD, INLINE_OPT, "b+"
+  b_add_
   end_
 
 # ( n1 -- n1 B:B+A )
 # b = b + a
-Forthword_ B_PLUS_A, INLINE_OPT, "b+a"
-  b_plus_a_
+Forthword_ B_ADD_A, INLINE_OPT, "b+a"
+  b_add_a_
   end_
 
 # ( n1 -- n1 B:B+X )
 # b = b + x
-Forthword_ B_PLUS_X, INLINE_OPT, "b+x"
-  b_plus_x_
+Forthword_ B_ADD_X, INLINE_OPT, "b+x"
+  b_add_x_
   end_
 
 # ( n1 -- n1 B:B+Y )
 # b = b + y
-Forthword_ B_PLUS_Y, INLINE_OPT, "b+y"
-  b_plus_y_
+Forthword_ B_ADD_Y, INLINE_OPT, "b+y"
+  b_add_y_
   end_
 
 # ( n1 -- n1 B:B-n1 )
@@ -890,7 +890,7 @@ Forthword_ B_SUB_Y, INLINE_OPT, "b-y"
 # ( u1|n1 u2|n2 -- u3|n3 )
 # signed multiply 32b x 32b = 32b
 Forthword_ MULU, INLINE_OPT,  "*"
-  popy_
+  y_d_
   imul %edx, %eax 
   end_
 
@@ -902,25 +902,25 @@ Forthword_ NEG, INLINE_OPT, "-"
 
 # ( Y:n1 -- Y:-n1 )
 # 2-compliment of Y
-Forthword_ NEG_Y, INLINE_OPT, "-y"
+Forthword_ NEG_Y, INLINE_OPT, "0-y"
   neg_y_
   end_
 
 # ( X:n1 -- X:-n1 )
 # 2-compliment of X
-Forthword_ NEG_X, INLINE_OPT, "-x"
+Forthword_ NEG_X, INLINE_OPT, "0-x"
   neg_x_
   end_
 
 # ( A:n1 -- A:-n1 )
 # 2-compliment of A
-Forthword_ NEG_A, INLINE_OPT, "-a"
+Forthword_ NEG_A, INLINE_OPT, "0-a"
   neg_a_
   end_
 
 # ( B:n1 -- B:-n1 )
 # 2-compliment of B
-Forthword_ NEG_B, INLINE_OPT, "-b"
+Forthword_ NEG_B, INLINE_OPT, "0-b"
   neg_b_
   end_
 
@@ -1036,8 +1036,8 @@ Forthword_ NOTEQUAL, INLINE_OPT, "!="
 
 # ( n1 -- n1+1 ) 
 # optimized increment
-Forthword_ PLUS_1, INLINE_OPT, "+1"
-  plus_1_
+Forthword_ ADD_1, INLINE_OPT, "+1"
+  add_1_
   end_
 
 # ( n1 -- n1-1 )
@@ -1054,8 +1054,8 @@ Forthword_ _2_SUB, INLINE_OPT, "2-"
 
 # ( n1 -- n1+2 )
 # optimized decrement
-Forthword_ PLUS_2, INLINE_OPT, "+2"
-  plus_2_
+Forthword_ ADD_2, INLINE_OPT, "+2"
+  add_2_
   end_
 
 # ( n1 -- n1-4 )
@@ -1065,51 +1065,51 @@ Forthword_ _4_SUB, INLINE_OPT, "4-"
   end_
 
 # ( n1 -- n1+4 )
-# optimized decrement
-Forthword_ PLUS_4, INLINE_OPT, "+4"
-  plus_4_
+# optimized increment
+Forthword_ ADD_4, INLINE_OPT, "+4"
+  add_4_
   end_
 
 # ( n1 -- n1/2 )
 # optimized divide by 2
-Forthword_ TWOSLASH, INLINE_OPT, "2/"
-  twoslash_
+Forthword_ DIV_2, INLINE_OPT, "/2"
+  div_2_
   end_
 
 # ( n1 -- n1*2 )
 # optimized 2 multiply
-Forthword_ TWOSTAR, INLINE_OPT, "2*"
-  twostar_
+Forthword_ MUL_2, INLINE_OPT, "*2"
+  mul_2_
   end_
 
 # ( n1 -- n1/4 )
 # optimized divide by 4
-Forthword_ FOURSLASH, INLINE_OPT, "4/"
-  fourslash_
+Forthword_ DIV_4, INLINE_OPT, "/4"
+  div_4_
   end_
 
 # ( n1 -- n*4 )
 # optimized four multiply
-Forthword_ MUL_4, INLINE_OPT, "4*"
+Forthword_ MUL_4, INLINE_OPT, "*4"
   mul_4_
   end_
 
 # ( X:n1 -- X:n1/2 )
 # optimized X divide by 2
-Forthword_ XTWOSLASH, INLINE_OPT, "x/2"
-  x_twoslash_
+Forthword_ X_DIV_2, INLINE_OPT, "x/2"
+  x_div_2_
   end_
 
 # ( X:n1 -- X:n1*2 )
 # optimized X 2 multiply
-Forthword_ XTWOSTAR, INLINE_OPT, "x*2"
-  x_twostar_
+Forthword_ X_MUL_2, INLINE_OPT, "x*2"
+  x_mul_2_
   end_
 
 # ( X:n1 -- X:n1/4 )
 # optimized X divide by 4
-Forthword_ XFOURSLASH, INLINE_OPT, "x/4"
-  x_fourslash_
+Forthword_ X_DIV_4, INLINE_OPT, "x/4"
+  x_div_4_
   end_
 
 # ( X:n1 -- X:n*4 )
@@ -1120,20 +1120,20 @@ Forthword_ X_MUL_4, INLINE_OPT, "x*4"
 
 # ( Y:n1 -- Y:n1/2 )
 # optimized y divide by 2
-Forthword_ YTWOSLASH, INLINE_OPT, "y/2"
-  y_twoslash_
+Forthword_ Y_DIV_2, INLINE_OPT, "y/2"
+  y_div_2_
   end_
 
 # ( Y:n1 -- Y:n1*2 )
 # optimized y 2 multiply
-Forthword_ YTWOSTAR, INLINE_OPT, "y*2"
-  y_twostar_
+Forthword_ Y_MUL_2, INLINE_OPT, "y*2"
+  y_mul_2_
   end_
 
 # ( Y:n1 -- Y:n1/4 )
 # optimized y divide by 4
-Forthword_ YFOURSLASH, INLINE_OPT, "y/4"
-  y_fourslash_
+Forthword_ Y_DIV_4, INLINE_OPT, "y/4"
+  y_div_4_
   end_
 
 # ( Y:n1 -- Y:n*4 )
@@ -1144,49 +1144,49 @@ Forthword_ Y_MUL_4, INLINE_OPT, "y*4"
 
 # ( A:n1 -- A:n1/2 )
 # optimized A divide by 2
-Forthword_ ATWOSLASH, INLINE_OPT, "a/=2"
-  a_twoslash_
+Forthword_ A_DIV_2, INLINE_OPT, "a/2"
+  a_div_2_
   end_
 
 # ( A:n1 -- A:n1*2 )
 # optimized A 2 multiply
-Forthword_ ATWOSTAR, INLINE_OPT, "a*=2"
-  a_twostar_
+Forthword_ A_MUL_2, INLINE_OPT, "a*2"
+  a_mul_2_
   end_
 
 # ( A:n1 -- A:n1/4 )
 # optimized A divide by 4
-Forthword_ AFOURSLASH, INLINE_OPT, "a/=4"
-  a_fourslash_
+Forthword_ A_DIV_4, INLINE_OPT, "a/4"
+  a_div_4_
   end_
 
 # ( A:n1 -- A:n*4 )
 # optimized A four multiply
-Forthword_ AMUL_4, INLINE_OPT, "a*=4"
+Forthword_ A_MUL_4, INLINE_OPT, "a*4"
   a_mul_4_
   end_
 
 # ( B:n1 -- B:n1/2 )
 # optimized B divide by 2
-Forthword_ BTWOSLASH, INLINE_OPT, "b/=2"
-  b_twoslash_
+Forthword_ B_DIV_2, INLINE_OPT, "b/2"
+  b_div_2_
   end_
 
 # ( B:n1 -- B:n1*2 )
 # optimized B 2 multiply
-Forthword_ BTWOSTAR, INLINE_OPT, "b*=2"
-  b_twostar_
+Forthword_ B_MUL_2, INLINE_OPT, "b*2"
+  b_mul_2_
   end_
 
 # ( B:n1 -- B:n1/4 )
 # optimized B divide by 4
-Forthword_ BFOURSLASH, INLINE_OPT, "b/=4"
-  b_fourslash_
+Forthword_ B_DIV_4, INLINE_OPT, "b/4"
+  b_div_4_
   end_
 
 # ( B:n1 -- B:n*4 )
 # optimized B four multiply
-Forthword_ BMUL_4, INLINE_OPT, "b*4"
+Forthword_ B_MUL_4, INLINE_OPT, "b*4"
   b_mul_4_
   end_
 
@@ -1490,21 +1490,21 @@ Forthword_ CMA_W, INLINE_OPT, "c@a="
 
 # ( -- )
 # a = a + 4
-Forthword_ A_PLUS_4, INLINE_OPT, "a+4"
-  a_plus_4_
+Forthword_ A_ADD_4, INLINE_OPT, "a+4"
+  a_add_4_
   end_
 
 # ( -- )
 # a = a + 2
-Forthword_ A_PLUS_2, INLINE_OPT, "a+2"
-  a_plus_2_
+Forthword_ A_ADD_2, INLINE_OPT, "a+2"
+  a_add_2_
   end_
 
 
 # ( -- )
 # a = a + 1
-Forthword_ A_PLUS_1, INLINE_OPT, "a+1"
-  a_plus_1_
+Forthword_ A_ADD_1, INLINE_OPT, "a+1"
+  a_add_1_
   end_
 
 # ( -- )
@@ -1563,20 +1563,20 @@ Forthword_ CMB_W, INLINE_OPT, "c@b="
 
 # ( -- )
 # update register B with post increment 4+ from last memory operation
-Forthword_ B_PLUS_4, INLINE_OPT, "b+4"
-  b_plus_4_
+Forthword_ B_ADD_4, INLINE_OPT, "b+4"
+  b_add_4_
   end_
 
 # ( -- )
 # update register B with post increment 2+ from last memory operation
-Forthword_ B_PLUS_2, INLINE_OPT, "b+2"
-  b_plus_2_
+Forthword_ B_ADD_2, INLINE_OPT, "b+2"
+  b_add_2_
   end_
 
 # ( -- )
 # update register B with post increment 1+ from last memory operation
-Forthword_ B_PLUS_1, INLINE_OPT, "b+1"
-  b_plus_1_
+Forthword_ B_ADD_1, INLINE_OPT, "b+1"
+  b_add_1_
   end_
 
 # ( -- )
@@ -1635,21 +1635,21 @@ Forthword_ CMX_W, INLINE_OPT, "c@x="
 
 # ( -- )
 # update register X with post increment 4+ from last memory operation
-Forthword_ X_PLUS_4, INLINE_OPT, "x+4"
-  x_plus_4_
+Forthword_ X_ADD_4, INLINE_OPT, "x+4"
+  x_add_4_
   end_
 
 # ( -- )
 # update register X with post increment 2+ from last memory operation
-Forthword_ X_PLUS_2, INLINE_OPT, "x+2"
-  x_plus_2_
+Forthword_ X_ADD_2, INLINE_OPT, "x+2"
+  x_add_2_
   end_
 
 
 # ( -- )
 # update register X with post increment 1+ from last memory operation
-Forthword_ X_PLUS_1, INLINE_OPT, "x+1"
-  x_plus_1_
+Forthword_ X_ADD_1, INLINE_OPT, "x+1"
+  x_add_1_
   end_
 
 # ( -- )
@@ -1708,21 +1708,21 @@ Forthword_ CMY_W, INLINE_OPT, "c@y="
   
 # ( -- )
 # y = y + 4
-Forthword_ Y_PLUS_4, INLINE_OPT, "y+4"
-  y_plus_4_
+Forthword_ Y_ADD_4, INLINE_OPT, "y+4"
+  y_add_4_
   end_
 
 # ( -- )
 # y = y + 2
-Forthword_ Y_PLUS_2, INLINE_OPT, "y+2"
-  y_plus_2_
+Forthword_ Y_ADD_2, INLINE_OPT, "y+2"
+  y_add_2_
   end_
 
 
 # ( -- )
 # y = y + 1
-Forthword_ Y_PLUS_1, INLINE_OPT, "y+1"
-  y_plus_1_
+Forthword_ Y_ADD_1, INLINE_OPT, "y+1"
+  y_add_1_
   end_
 
 # ( -- )

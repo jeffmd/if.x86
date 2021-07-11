@@ -34,7 +34,7 @@ Forthword_ DPPLUS, 0, "dp+"
   y_w_
   do_ DPSHARP
   x_mw_
-  x_plus_y_
+  x_add_y_
   mw_x_
   end_
 
@@ -57,7 +57,7 @@ Forthword_ CPPLUS, 0, "cp+"
   y_w_
   do_ CPSHARP
   x_mw_
-  x_plus_y_
+  x_add_y_
   mw_x_
   end_
 
@@ -81,39 +81,39 @@ Forthword_ TAILOPT, 0, ";opt"
   # optimize only if smudge is not zero
   do_ SMUDGE
   iszero_
-  if_not_0_ CHECK_DIS_CALL_OPT
+  ifnz_ CHECK_DIS_CALL_OPT
   end_
 
 CHECK_DIS_CALL_OPT:
   # check fflags to see if tail call optimization can be done
   testw $(1 << DIS_CALL_OPT_FB), fflags
-  if_0_ CHECK_LAST_IS_CALL
+  ifnz_ CHECK_LAST_IS_CALL
   # don't optimize tail call, just compile a ret.
     exit_do_ RET_C          # ( )
 
 CHECK_LAST_IS_CALL:
   testw $(1 << LAST_IS_CALL_FB), fflags
-  if_not_0_ TAIL_CALL_OPTIMIZE
+  ifnz_ TAIL_CALL_OPTIMIZE
     exit_do_ RET_C
 
 TAIL_CALL_OPTIMIZE:
   # replace CP - 5 call instruction with 0xe9
   lit_ 0xe9          # ( 0xe9 )
-  push_              # ( 0xe9 0xe9 )
-  do_ CP            # ( 0xe9 CP )
+  d_w_               # ( 0xe9 0xe9 )
+  do_ CP             # ( 0xe9 CP )
   sub $5, %eax       # ( 0xe9 CP-5 )
-  push_              # ( 0xe9 CP-5 CP-5 )
+  d_w_               # ( 0xe9 CP-5 CP-5 )
   # make sure current instruction is a call otherwise compile a return
   cmw_               # ( 0xe9 CP-5 inst )
   and $0xff, %eax
   cmp $0xe8, %eax
-  if_0_ DO_JMPOPT
-    nip2_
+  ifz_ DO_JMPOPT
+    d_sub_2_
     exit_do_ RET_C
 DO_JMPOPT:
   d0_                # ( 0xe9 CP-5 CP-5 )
   y_d1_              # ( 0xe9 CP-5 CP-5 ) Y: 0xe9
-  nip2_              # ( CP-5 )
+  d_sub_2_           # ( CP-5 )
   cmw_y_             # ( CP-5 )
   # clear last is call flag in fflags
   andw $~(1 << LAST_IS_CALL_FB), fflags
@@ -123,8 +123,8 @@ DO_JMPOPT:
 # update wid from smudge if valid
 Forthword_ UWID, 0, "uwid"
   do_ SMUDGE    # ( xt )
-  iszero_        # ( xt )
-  if_0_ UWID_end
+  iszero_       # ( xt )
+  ifz_ UWID_end
 
   # wid.word = smudge
   y_w_         # ( xt ) Y:xt
@@ -142,7 +142,7 @@ UWID_end:
 # store 8 bit value in WR into code section ram at (code pointer) CP
 Forthword_ COMMA, 0, ","
   y_w_             # ( n )
-  do_ CP          # ( CP )
+  do_ CP           # ( CP )
   cmw_y_           # ( CP )
   lit_ 1
   end_do_ CPPLUS   # 
@@ -170,26 +170,26 @@ Forthword_ DPSTORE, 0, "@dp="
 # copies a counted string with flags from s-addr to d-addr
 # returns destination address + len
 Forthword_ COPYSTRING, 0, "copy$"
-  rpusha_
-  rpushb_
+  r_a_
+  r_b_
   b_w_               # ( s-addr len len' d-addr ) B: d-addr
   d0_                # ( s-addr len len' len')
   hmb_w_
-  b_plus2_
+  b_add_2_
   x_d1_
   a_d2_              # ( s-addr ) A: addr
   cld
   rep movsb
   b_                 # ( s-addr+len )
-  nip3_
-  rpopb_
-  rpopa_
+  d_sub_3_
+  b_r_
+  a_r_
   end_
 
 # ( addr len len' -- )
 # copies a counted string with flags to program ram
 Forthword_ STRINGPROGSTORE, 0, "@cp=$"
-  push_
+  d_w_
   do_ CP
   do_ COPYSTRING
   y_w_
@@ -200,7 +200,7 @@ Forthword_ STRINGPROGSTORE, 0, "@cp=$"
 # ( addr len len' -- )
 # copies a counted string with flags to dictionary ram
 Forthword_ STRINGDICTSTORE, 0, "@dp=$"
-  push_
+  d_w_
   do_ DP
   do_ COPYSTRING
   y_w_
@@ -217,30 +217,30 @@ Forthword_ STRINGDICTSTORE, 0, "@dp=$"
 # count is the number of bytes copied
 Forthword_ COPY_BYTE_UNTIL, 0, "copy.byte.until"
   # fetch from ram and check if equal to match byte
-  rpusha_
-  rpushb_
+  r_a_
+  r_b_
   x_w_               # ( source destination term ) X: term
   b_d0_              # ( source destination match ) B: destination
   a_d1_              # ( source destination match ) A: source
   # begin
 CBU_BEGIN:
     cma_             # ( source destination byte )
-    a_plus1_
+    a_add_1_
     and $0xFF, %eax
     cmp %eax, %ecx    
     # until
-    if_0_ CBU_DONE
+    ifz_ CBU_DONE
     cmb_w_           # ( source destination byte ) [B]: byte
-    b_plus1_         # ( source destination byte ) B+1
+    b_add_1_         # ( source destination byte ) B+1
     exit_do_ CBU_BEGIN
 
 CBU_DONE:
   y_d0_              # ( source destination byte ) Y: destination
-  nip2_              # ( byte )
+  d_sub_2_           # ( byte )
   b_                 # ( destination+count )
-  w_minus_y_         # ( count )
-  rpopb_
-  rpopa_
+  sub_y_             # ( count )
+  b_r_
+  a_r_
   end_
 
 # ( start -- )
@@ -248,9 +248,9 @@ CBU_DONE:
 Forthword_ INLINE, 0, "inline"
   # find the ret instruction, want count to ret
   # count will be number of bytes to inline
-  push_                    # ( start start )
-  do_ CP                  # ( start cp )
-  push_                    # ( start cp cp )
+  d_w_                     # ( start start )
+  do_ CP                   # ( start cp )
+  d_w_                     # ( start cp cp )
   lit_ 0xc3                # ( start cp 0xc3 )
   do_ COPY_BYTE_UNTIL     # ( count )
   end_do_ CPPLUS
