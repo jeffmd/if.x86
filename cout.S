@@ -9,9 +9,9 @@ Forthword_ EMITADDR, 0, "emit#"
 # ( c -- )
 # fetch the emit vector and EXEC it. Will emit a character from WR
 Forthword_ PUTCHAR, 0, "putchar"
-  rpush_
+  r_w_
   do_ putchar
-  rnip_
+  r_sub_1_
   end_
 
 # ( -- )
@@ -35,7 +35,7 @@ Forthword_ EMIT_ON, 0, "emit.on"
 # ( c -- )
 # fetch the emit vector and EXEC it. Will emit a character from WR
 Forthword_ EMIT, 0, "emit"
-  push_
+  d_w_
   do_ EMITADDR
   mw_
   end_do_ EXEC
@@ -58,22 +58,22 @@ Forthword_ BL, INLINE_OPT, "bl"
 # print a counted string
 Forthword_ TYPE, 0, "type"
   iszero_
-  if_0_ TYPE_END
+  ifz_ TYPE_END
 
-  rpusha_
-  rpushb_
-  popa_           # Address of string
+  r_a_
+  r_b_
+  a_d_            # Address of string
   b_w_            # number of char to emit
 
 TYPE1:
   cma_
-  a_plus1_
+  a_add_1_
   do_ EMIT
-  b_minus1_
-  if_not_0_ TYPE1
+  b_sub_1_
+  ifnz_ TYPE1
 
-  rpopb_
-  rpopa_
+  b_r_
+  a_r_
 
 TYPE_END:
   end_

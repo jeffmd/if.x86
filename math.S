@@ -4,7 +4,7 @@
 # compare two values leave the smaller one
 Forthword_ MIN, 0, "min"
   y_w_
-  pop_
+  d_
   cmp %eax, %edx
   jge 1f
   y_
@@ -15,7 +15,7 @@ Forthword_ MIN, 0, "min"
 # compare two values, leave the bigger one
 Forthword_ MAX, 0, "max"
   y_w_
-  pop_
+  d_
   cmp %eax, %edx
   jl 1f
   y_

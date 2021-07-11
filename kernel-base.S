@@ -90,7 +90,7 @@ PHEX_BEGIN:
   rshift_      # ( n x n' )
   do_ PNIB
   d_           # ( n x )
-  sub_4_       # ( n x-4 )
+  _4_sub_      # ( n x-4 )
   ifnz_ PHEX_BEGIN
 
   d_           # ( n )

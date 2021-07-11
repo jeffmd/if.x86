@@ -24,35 +24,35 @@ Forthword_ CONTEXT, 0, "context"
 # get the link field address from the name field address
 Forthword_ NFA2LFA, 0, "nfa>lfa"
   do_ STRINGLEN                # ( nfa+2 len+flags )
-  popy_                        # ( len ) Y: nfa+2
+  y_d_                         # ( len ) Y: nfa+2
   # mask out flags in len, allow up to 31 characters
   and $31, %eax                # ( len )
-  w_plus_y_                    # ( nfa+2+len )
+  add_y_                       # ( nfa+2+len )
   end_
 
 # ( nfa -- [ 0 ] | [ xt xtflags] )
 # convert name field address to xt and xtflags
 Forthword_ NFATOXTF, 0, "nfa>xtf"
   iszero_                     # ( n )
-  if_0_ NFATOXTF_EXIT
+  ifz_ NFATOXTF_EXIT
 
   y_hmw_                      # ( nfa Y:xtflags )
-  rpushy_                     # ( nfa ) (R: xtflags)
+  r_y_                        # ( nfa ) (R: xtflags)
   do_ NFA2LFA                 # ( lfa )
-  fourplus_   # lfa>xtlink    # ( xtlink )
+  add_4_      # lfa>xtlink    # ( xtlink )
   mw_                         # ( xt )
-  push_                       # ( xt xt )
-  rpop_                       # ( xt xtflags )
+  d_w_                        # ( xt xt )
+  r_                          # ( xt xtflags )
 
 NFATOXTF_EXIT:
   end_
 
 # ( addr len idx -- 0 | nfa )
 FINDWI:
-  fourstar_          # ( addr len idx*4 )
+  mul_4_             # ( addr len idx*4 )
   y_w_               # ( addr len idx*4 ) Y: idx*4
   do_ CONTEXT        # ( addr len context )
-  w_plus_y_          # ( addr len context' )
+  add_y_             # ( addr len context' )
   mw_                # ( addr len wid )
   end_next_
 
@@ -62,7 +62,7 @@ FINDWI:
 # nfa if word is found
 Forthword_ FINDNFA, 0, "findnfa"
   iszero_
-  if_0_ FINDNFA_END
+  ifz_ FINDNFA_END
 
   # <begin>
 FINDNFA_BEGIN:
@@ -71,20 +71,20 @@ FINDNFA_BEGIN:
 FINDNFA_BEGIN1:
   iszero_                     # ( c-addr len nfa )
   # terminate if 0 found
-  if_0_ FINDNFA_END
+  ifz_ FINDNFA_END
 
-  rpush_                      # ( c-addr len nfa) (R: nfa )
+  r_w_                        # ( c-addr len nfa) (R: nfa )
   y_d1_                       # ( c-addr len nfa ) Y:c-addr
   x_d0_                       # ( c-addr len nfa ) X:len
-  pushy_                      # ( c-addr len c-addr nfa )
-  pushx_                      # ( c-addr len c-addr len nfa )
+  d_y_                        # ( c-addr len c-addr nfa )
+  d_x_                        # ( c-addr len c-addr len nfa )
   do_ STRINGLEN               # ( c-addr len c-addr len f-addr len )
   and $31, %eax               # ( c-addr len c-addr len f-addr 0:len )
   do_ MCMP                    # ( c-addr len flag )
   iszero_
-  rpop_                       # ( c-addr len nfa ) (R: )
+  r_                          # ( c-addr len nfa ) (R: )
   # if not zero then string was found
-  if_not_0_ FINDNFA_END
+  ifnz_ FINDNFA_END
     
   # next try
   do_ NFA2LFA                 # ( c-addr len lfa )
@@ -92,20 +92,20 @@ FINDNFA_BEGIN1:
   goto_ FINDNFA_BEGIN
 
 FINDNFA_END:
-  nip2_                       # ( nfa )
+  d_sub_2_                    # ( nfa )
   end_
 
 # ( addr len idx * )
 FINDLAST:
   d1_
-  nip2_                       # ( addr len )
+  d_sub_2_                    # ( addr len )
   # fall into froot
 
 # ( addr len --  0 | nfa )
 # search root wordlists for the name from string addr/len
 Forthword_ FINDROOT, 0, "froot"
   # put root wid on stack
-  push_               # ( addr len len )
+  d_w_                # ( addr len len )
   lit_ VE_WIPE        # ( addr len VE_COLD )
   end_goto_ FINDNFA_BEGIN1
 
@@ -114,15 +114,15 @@ Forthword_ FINDROOT, 0, "froot"
 Forthword_ CONTIDX_FETCH, 0 "contidx@"
   do_ CONTEXT         # ( context )
   # get context index
-  twominus_           # ( context-2 )
+  _2_sub_             # ( context-2 )
   y_w_                # ( contidx ) Y:contidx
   hmw_                # ( idx )
   x_w_            
-  push_               # ( idx idx ) X:idx
+  d_w_                # ( idx idx ) X:idx
   lit_ (MAX_CONTEXTS - 1) # ( idx max )
   do_ GREATER         # ( flag )
   iszero_
-  if_0_ 1f
+  ifz_ 1f
     lit_ (MAX_CONTEXTS - 1)  # ( max )
     hmy_w_
     exit_
@@ -135,10 +135,10 @@ Forthword_ CONTIDX_FETCH, 0 "contidx@"
 Forthword_ FINDW, 0, "findw"
   # loop through context slots to find a word
   # start with last slot
-  push_               # ( addr len len )
+  d_w_                # ( addr len len )
   do_ CONTIDX_FETCH   # ( addr len idx )
   # get context index and use as counter
-  push_               # ( addr len idx idx )
+  d_w_                # ( addr len idx idx )
   
 FINDW_BEGIN:
   iszero_
@@ -146,21 +146,21 @@ FINDW_BEGIN:
 
   y_d2_
   x_d1_
-  pushy_
-  pushx_            # ( addr len idx addr len idx )
+  d_y_
+  d_x_                # ( addr len idx addr len idx )
   do_ FINDWI        # ( addr len idx nfa )
   iszero_
   # if not zero then word found, end loop
-  if_not_0_ FINDW_END
+  ifnz_ FINDW_END
 
   d0_                 # ( addr len idx idx )
   # decrement index
-  oneminus_           # ( addr len idx idx-1 )
+  _1_sub_             # ( addr len idx idx-1 )
   d0_w_               # ( addr len idx-1 idx-1 )
   goto_ FINDW_BEGIN
 
 FINDW_END:
-  nip3_           # ( nfa )
+  d_sub_3_            # ( nfa )
   end_
 
 # ( -- )
@@ -175,12 +175,12 @@ Forthword_ ONLY, IMMEDIATE_EN, "only"
   do_ CONTEXT                 # ( CONTEXT )
   mw_y_                       # ( CONTEXT )
   # move index to slot 1
-  twominus_                   # ( CONTEXT-2 )
+  _2_sub_                     # ( CONTEXT-2 )
   lit_y_ 1                    # ( CONTEXT-2 Y:1 )
   hmw_y_                      # ( CONTEXT-2 )
   # make second slot have no vocab
-  twoplus_                    # ( CONTEXT )
+  add_2_                      # ( CONTEXT )
   y_0_
-  fourplus_                   # ( CONTEXT+4 )
+  add_4_                      # ( CONTEXT+4 )
   mw_y_
   end_

@@ -30,15 +30,15 @@ Forthword_ HERE, 0, "here"
 Forthword_ DOCMDARG, 0, "docmdarg"
   do_ ARGCADDR       # ( ARGCADDR )
   mw_                # ( ARGC )
-  push_              # ( ARGC ARGC )
+  d_w_               # ( ARGC ARGC )
   lit_ 1             # ( ARGC 1 )
   do_ GREATER        # ( flag )
   iszero_
-  if_0_ DOCMDARG_EXIT
+  ifz_ DOCMDARG_EXIT
 
   do_ ARGVADDR       # ( ARGVADDR )
   mw_                # ( ARGV )
-  fourplus_          # ( ARGV+4 )
+  add_4_             # ( ARGV+4 )
   mw_                # ( ptr )
 .if BUILD_LEVEL > 9
   exit_do_ DOINCLUDE
@@ -52,13 +52,13 @@ DOCMDARG_EXIT:
 # gives the number of seconds and microseconds since the Epoch
 Forthword_ TIME, 0, "time"
   zero_
-  push_
-  push_
-  rpush_
-  rpushdsp_
+  d_w_
+  d_w_
+  r_w_
+  r_dsp_
   do_ gettimeofday
-  rnip2_
-  pop_
+  r_sub_2_
+  d_
   end_
 
 # ( -- n )
@@ -66,7 +66,7 @@ Forthword_ TIME, 0, "time"
 Forthword_ DEPTH, 0, "depth"
   do_ DSP0      # ( dp0 )
   sub %ebx, %eax
-  fourslash_    # ( cnt/4 )
+  div_4_        # ( cnt/4 )
   # acount for value push on data stack
   end_
 
@@ -76,7 +76,7 @@ Forthword_ QSTACK, 0, "?dsp"
   do_ DEPTH        # ( depth )
   zeroless_        # ( flag )
   iszero_
-  if_0_ QSTACKFIN
+  ifz_ QSTACKFIN
     slit_ " Stack Underflow!"
     do_ THROW
 
@@ -91,23 +91,23 @@ Forthword_ HANDLER, 0, "handler"
 # ( i*x xt -- j*x 0 | i*x n )
 # setup handler to catch exceptions and then EXEC XT.
 Forthword_ CATCH, 0, "catch"
-  rpushdsp_           # ( xt ) (R: ret -- callerret SP )
-  push_               # ( xt xt )
+  r_dsp_              # ( xt ) (R: ret -- callerret SP )
+  d_w_                # ( xt xt )
   do_ HANDLER         # ( xt haddr )
   y_w_
   mw_                 # ( xt hxt )
-  rpush_              # ( xt hxt ) (R: callerret SP hxt )
+  r_w_                # ( xt hxt ) (R: callerret SP hxt )
   rsp_                # ( xt RSP ) (R: callerret SP hxt)
   # @handler=rsp
   my_w_               # ( xt RSP )
-  pop_                # ( xt )
+  d_                  # ( xt )
   do_ EXEC
   # restore handler
   # r> handler !
-  rpopy_              # ( hxt ) (R: callerret SP )
+  y_r_                # ( hxt ) (R: callerret SP )
   do_ HANDLER         # ( haddr )
   mw_y_               # ( haddr )
-  rnip_               # ( haddr ) (R: callerret)
+  r_sub_1_            # ( haddr ) (R: callerret)
   zero_               # ( 0 )
   end_
 
@@ -120,8 +120,8 @@ Forthword_ THROW, 0, "throw"
   x_w_               # ( haddr X:haddr )
   mw_                # ( RP_handler )
   rsp_w_             # ( RP_handler ) (R: callerret SP hxt)
-  rpop_              # ( hxt ) (R: callerret SP )
+  r_                 # ( hxt ) (R: callerret SP )
   mx_w_              # ( hxt )
-  rpopdsp_           # ( SP ) (R: callerret )
+  dsp_r_             # ( SP ) (R: callerret )
   lit_ 1             # ( 1 )
   end_

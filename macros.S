@@ -1105,13 +1105,13 @@
 
 .macro lshift_
   x_w_
-  w_d_
+  d_
   shl %cl, %eax
 .endm
 
 .macro rshift_
   x_w_
-  w_d_
+  d_
   shr %cl, %eax
 .endm
 
