@@ -157,7 +157,7 @@ Forthword_ PARSE, 0, "parse"
   r_w_               # ( c ) (R: c )
   do_ SRCIN          # ( addr len )
   d_w_               # ( addr len len )
-  r_w_               # ( addr len c ) (R: )
+  r_                 # ( addr len c ) (R: )
   do_ CSCAN          # ( addr' len'')
   add_1_             # ( addr' len''+1 )
   # skip terminating delimeter

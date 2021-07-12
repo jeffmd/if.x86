@@ -33,7 +33,7 @@ Forthword_ REGSET, IMMEDIATE_EN, "regset"
 
 # ( -- )
 # Select W register for literal
-Forthword_ WSET, IMMEDIATE_EN, "w="
+Forthword_ WSET, IMMEDIATE_EN, "w#"
   d_w_
   lit_ WLIT_C
   d_w_
@@ -42,7 +42,7 @@ Forthword_ WSET, IMMEDIATE_EN, "w="
   
 # ( -- )
 # Select A register for literal
-Forthword_ ASET, IMMEDIATE_EN, "a="
+Forthword_ ASET, IMMEDIATE_EN, "a#"
   d_w_
   lit_ ALIT_C
   d_w_
@@ -51,7 +51,7 @@ Forthword_ ASET, IMMEDIATE_EN, "a="
 
 # ( -- )
 # Select B register for literal
-Forthword_ BSET, IMMEDIATE_EN, "b="
+Forthword_ BSET, IMMEDIATE_EN, "b#"
   d_w_
   lit_ BLIT_C
   d_w_
@@ -60,7 +60,7 @@ Forthword_ BSET, IMMEDIATE_EN, "b="
 
 # ( -- )
 # Select X register for literal
-Forthword_ XSET, IMMEDIATE_EN, "x="
+Forthword_ XSET, IMMEDIATE_EN, "x#"
   d_w_
   lit_ XLIT_C
   d_w_
@@ -69,7 +69,7 @@ Forthword_ XSET, IMMEDIATE_EN, "x="
 
 # ( -- )
 # Select Y register for literal
-Forthword_ YSET, IMMEDIATE_EN, "y="
+Forthword_ YSET, IMMEDIATE_EN, "y#"
   d_w_
   lit_ YLIT_C
   d_w_
@@ -78,31 +78,31 @@ Forthword_ YSET, IMMEDIATE_EN, "y="
 
 # ( n -- )
 # store n in WR
-Forthword_ WLIT_INTERP, IMMEDIATE_EN, "[w=]"
+Forthword_ WLIT_INTERP, IMMEDIATE_EN, "[w#]"
   movl %eax, WR
   end_
 
 # ( n -- )
 # store n in RY
-Forthword_ YLIT_INTERP, IMMEDIATE_EN, "[y=]"
+Forthword_ YLIT_INTERP, IMMEDIATE_EN, "[y#]"
   movl %eax, RY
   end_
 
 # ( n -- )
 # store n in RX
-Forthword_ XLIT_INTERP, IMMEDIATE_EN, "[x=]"
+Forthword_ XLIT_INTERP, IMMEDIATE_EN, "[x#]"
   movl %eax, RX
   end_
 
 # ( n -- )
 # store n in RA
-Forthword_ ALIT_INTERP, IMMEDIATE_EN, "[a=]"
+Forthword_ ALIT_INTERP, IMMEDIATE_EN, "[a#]"
   movl %eax, RA
   end_
 
 # ( n -- )
 # store n in RB
-Forthword_ BLIT_INTERP, IMMEDIATE_EN, "[b=]"
+Forthword_ BLIT_INTERP, IMMEDIATE_EN, "[b#]"
   movl %eax, RB
   end_
 

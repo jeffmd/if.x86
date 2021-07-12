@@ -140,7 +140,7 @@ ACCEPT_echo:
   add_y_                 # ( k tibaddr tibaddr+#tib )
   x_d1_                  # ( k tibaddr tibaddr+#tib ) X: k
   cmw_x_                 # ( k tibaddr tibaddr+#tib )
-  r_sub_2_               # ( tibaddr+#tib )
+  d_sub_2_               # ( tibaddr+#tib )
 
   do_ SHARPTIB           # ( #tib )
   y_hmw_
