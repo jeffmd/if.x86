@@ -129,7 +129,7 @@ Forthword_ WARM, 0, "warm"
   do_ DECIMAL           # default to decimal base
 .endif
 .endif
-  type_ "if.x86 0.2\n"
+  type_ "if.x86 0.3\n"
   # check if command line args need to be loaded
 .if BUILD_LEVEL > 1
   do_ DOCMDARG
