@@ -78,7 +78,7 @@ Forthword_ YSET, IMMEDIATE_EN, "y#"
 
 # ( n -- )
 # store n in WR
-Forthword_ WLIT_INTERP, IMMEDIATE_EN, "[w#]"
+Forthword_ WLIT_INTERP, IMMEDIATE_EN, "[#]"
   movl %eax, WR
   end_
 

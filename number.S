@@ -139,20 +139,20 @@ Forthword_ TO_NUMBER, 0, ">num"
     cmw_                 # ( u addr len char )
     do_ DIGITQ           # ( u addr len [digit] flag )
     iszero_
-    d_                 # ( u adr len [digit] )
+    d_                   # ( u adr len [digit] )
     ifnz_ TO_NUMBER_CONV
       # character is not a recognized number
       exit_              # ( u adr len )
 
 TO_NUMBER_CONV:
-  y_d2_                # ( u adr len digit ) Y: u
-  x_w_                 # ( u adr len digit ) X: digit
-  do_ BASEFETCH        # ( u adr len base )
-  imul %edx, %eax      # ( u adr len u*base )
-  add_x_               # ( u adr len u'' )
-  d2_w_                # ( u'' adr len u'' )
-  lit_ 1               # ( u'' adr len 1 )
-  do_ SLASHSTRING      # ( u'' adr' len' )
+  y_d2_                  # ( u adr len digit ) Y: u
+  x_w_                   # ( u adr len digit ) X: digit
+  do_ BASEFETCH          # ( u adr len base )
+  imul %edx, %eax        # ( u adr len u*base )
+  add_x_                 # ( u adr len u'' )
+  d2_w_                  # ( u'' adr len u'' )
+  lit_ 1                 # ( u'' adr len 1 )
+  do_ SLASHSTRING        # ( u'' adr' len' )
   exit_do_ TO_NUMBER
 
 TO_NUMBER_END:

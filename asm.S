@@ -130,35 +130,35 @@ Forthword_ DOLIT, 0, "(lit,)"
 
 # compile top of stack as inlinned immediate 32 bit constant
 # ( n -- )
-Forthword_ WLIT_C, 0, "w=,"
+Forthword_ WLIT_C, 0, "#,"
   d_w_
   lit_ 0xb8
   end_do_ DOLIT
 
 # compile Y register load inlinned immediate 32 bit constant
 # ( n -- )
-Forthword_ YLIT_C, 0, "y=,"
+Forthword_ YLIT_C, 0, "y#,"
   d_w_
   lit_ 0xba
   end_do_ DOLIT
 
 # compile X register load inlinned immediate 32 bit constant
 # ( n -- )
-Forthword_ XLIT_C, 0, "x=,"
+Forthword_ XLIT_C, 0, "x#,"
   d_w_
   lit_ 0xb9
   end_do_ DOLIT
 
 # compile A register load inlinned immediate 32 bit constant
 # ( n -- )
-Forthword_ ALIT_C, 0, "a=,"
+Forthword_ ALIT_C, 0, "a#,"
   d_w_
   lit_ 0xbe
   end_do_ DOLIT
 
 # compile B register load inlinned immediate 32 bit constant
 # ( n -- )
-Forthword_ BLIT_C, 0, "b=,"
+Forthword_ BLIT_C, 0, "b#,"
   d_w_
   lit_ 0xbf
   end_do_ DOLIT
