@@ -5,9 +5,9 @@
 \ Compiler
 \ skip everything up to the closing bracket on the same line
 : (
-    push          \ ( ?  ? )
+    d=            \ ( ?  ? )
     $29 parse     \ ( ?  addr u )
-    nip pop       \ ( ? )
+    d-1 d         \ ( ? )
 ; immediate
 
 
@@ -31,12 +31,12 @@
 
 \ store address of the next free dictionary cell
 : dp= ( addr -- )
-    y=w dp# @w=y
+    y= dp# @=y
 ;
 
 \ store address of the next free code cell
 : cp= ( addr -- )
-    y=w cp# @w=y
+    y= cp# @=y
 ;
 
 
@@ -44,8 +44,8 @@
 \ create a dictionary entry and register in word list
 : rword
     (create)      ( nfa )
-    y=w cur@       ( wid Y:nfa )
-    @w=y           ( wid )
+    y= cur@       ( wid Y:nfa )
+    @=y           ( wid )
 ;
 
 ( -- dcell )
@@ -56,20 +56,20 @@ rword dcell inlined
 
 ( n -- n+dcell )
 \ add data stack cell size to n
-rword dcell+ inlined
-    ] 4+ [
+rword +dcell inlined
+    ] +4 [
     ret,
 
 ( n -- n-dcell )
 \ subtract data stack cell size from n
-rword dcell- inlined
+rword -dcell inlined
     ] 4- [
     ret,
 
 ( n -- n*dcell )
 \ multiply n by data stack cell size 
-rword dcell* inlined
-    ] 4* [
+rword *dcell inlined
+    ] *4 [
     ret,
 
 ( C:"<spaces>name" -- 0 | nfa )
@@ -87,8 +87,7 @@ rword dcell* inlined
 
 \ search dictionary for name, returns XT
 : '  ( "<spaces>name" -- XT )
-    'f
-    pop
+    'f d
 ;
 
 ( -- ) ( C: "<space>name" -- )
@@ -96,8 +95,7 @@ rword dcell* inlined
 \ what ' does in the interpreter mode, do in colon definitions
 \ compiles xt as literal
 : [']
-    '
-    w=,
+    ' #,
 ; :ic
 
 
@@ -107,12 +105,12 @@ rword dcell* inlined
 \ and xt and flag are compiled as two literals
 : ['f]
     'f
-    push d1
-    w=,
+    d= d1
+    #,
     \ compile literal of 'f push
-    [ 'f push push d1 w=, ]
-    push
-    [ d0 w=, nip pop ]
+    [ 'f d= d= d1 #, ]
+    d=
+    [ d0 #, d-1 d ]
     cxt
-    d0 w=, nip pop
+    d0 #, d-1 d
 ; :ic
